@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Map</title>
+</head>
+<body>
+
+    <h1>Some Location</h1>
+
+    <iframe
+
+	src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.210087093375!2d144.9631980153163!3d-37.81410797975191!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad646b5d2ba4df7%3A0x40149027877f770!2sFederation%20Square!5e0!3m2!1sen!2sau!4v1678886400000!5m2!1sen!2sau"
+
+        width="100%" 
+        height="450" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+
+    </iframe>
+
+<gmp-map
+  center="43.4142989,-124.2301242"
+  zoom="4"
+  map-id="DEMO_MAP_ID"
+  style="height: 400px"
+>
+  <gmp-advanced-marker
+    position="37.4220656,-122.0840897"
+    title="Mountain View, CA"
+  ></gmp-advanced-marker>
+  <gmp-advanced-marker
+    position="47.648994,-122.3503845"
+    title="Seattle, WA"
+  ></gmp-advanced-marker>
+</gmp-map>
+
+</body>
+</html>
