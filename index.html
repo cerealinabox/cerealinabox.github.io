@@ -13,7 +13,7 @@
         h2 { margin-bottom: 8px; }
         #last-updated { color: #555; margin-bottom: 20px; }
         button { margin-bottom: 20px; padding: 8px 16px; font-size: 14px; }
-        table, th, td { border: 2px solid #444; border-collapse: collapse; padding: 8px; width: 40%; margin-top: 40px; text-align: center; font-weight: bold; }
+        table, th, td { border: 2px solid #444; border-collapse: collapse; padding: 8px; width: 100%; margin-top: 40px; text-align: center; font-weight: bold; }
         th { background-color: #ffb561; }
         .error { color: #c00; font-weight: bold; }
     </style>
@@ -23,16 +23,24 @@
     <h2>Singapore PSI Dashboard</h2>
     <button onclick="updatePSITable()">Refresh</button>
     <div id="last-updated"></div>
-    <table id="PSItable">
-        <tr>
-            <th>Data ID</th>
-            <th>Central</th>
-            <th>West</th>
-            <th>East</th>
-            <th>North</th>
-            <th>South</th>
-        </tr>
-    </table>
+<table id="PSItable">
+    <colgroup>
+        <col style="width: 40%;">
+        <col style="width: 12%;">
+        <col style="width: 12%;">
+        <col style="width: 12%;">
+        <col style="width: 12%;">
+        <col style="width: 12%;">
+    </colgroup>
+    <tr>
+        <th>Data ID</th>
+        <th>Central</th>
+        <th>West</th>
+        <th>East</th>
+        <th>North</th>
+        <th>South</th>
+    </tr>
+</table>
     <div id="error-msg" class="error"></div>
     <script src="psi_dashboard.js"></script>
 </body>
