@@ -1,13 +1,36 @@
-fetch('https://api.data.gov.sg/v1/environment/psi')
- .then(r => r.json())
- .then(data => {
- d3.select('#timestring').text(data.items[0].update_timestamp);
- let readings = data.items[0].readings;
- Object.keys(readings).forEach(metric => {
- let row = d3.select('#PSItable').append('tr');
- row.append('td').text(metric);
- ['central','west','east','north','south'].forEach(region => {
- row.append('td').text(readings[metric][region]);
- });
- });
- });
+<!doctype html>
+<html>
+ 
+<head>
+    <meta charset="utf-8">
+    <title>Singapore PSI Dashboard (Live Refresh, Modular Script)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { margin-bottom: 8px; }
+        #last-updated { color: #555; margin-bottom: 20px; }
+        button { margin-bottom: 20px; padding: 8px 16px; font-size: 14px; }
+        table, th, td { border: 1px solid #444; border-collapse: collapse; padding: 8px; min-width: 70px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .error { color: #c00; font-weight: bold; }
+    </style>
+</head>
+ 
+<body>
+    <h2>Singapore PSI Dashboard (Live Refresh)</h2>
+    <button onclick="updatePSITable()">Refresh</button>
+    <div id="last-updated"></div>
+    <table id="PSItable">
+        <tr>
+            <th>Data ID</th>
+            <th>Central</th>
+            <th>West</th>
+            <th>East</th>
+            <th>North</th>
+            <th>South</th>
+        </tr>
+    </table>
+    <div id="error-msg" class="error"></div>
+    <script src="psi_dashboard.js"></script>
+</body>
+ 
+</html>
