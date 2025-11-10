@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Interactive SVG Diagrams — 5×2 Presentable Layout (Fixed)</title>
+<style>
+  :root{
+    --svg-size:220px;
+    --col2-width:360px;
+    --page-pad:32px;
+    --card-bg:#fff;
+    --soft-shadow: 0 8px 20px rgba(12,24,40,0.06);
+  }
+  /* Page layout */
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: #f3f6f8;
+    color:#0b2030;
+    padding:var(--page-pad);
+  }
+  .wrap{
+    max-width:1200px;
+    margin:0 auto;
+  }
+  header{ text-align:center; margin-bottom:18px; }
+  h1{ margin:0; font-size:20px; font-weight:700; letter-spacing:-0.2px; color:#072034; }
+  p.lead{ margin:6px 0 0 0; color:#3c5866; font-size:13px; }
+
+  /* grid of two columns: left for SVG cells stacked, right for captions stacked */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr var(--col2-width);
+    gap:18px;
+    align-items: start;
+  }
+
+  /* each cell is a card containing centered svg */
+  .card {
+    background: var(--card-bg);
+    border-radius:10px;
+    padding:14px;
+    box-shadow: var(--soft-shadow);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: var(--svg-size);
+    overflow: visible;
+  }
+
+  /* captions column */
+  .caption {
+    background: var(--card-bg);
+    border-radius:10px;
+    padding:16px;
+    box-shadow: var(--soft-shadow);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height: var(--svg-size);
+  }
+  .cap-title { font-weight:700; font-size:16px; margin-bottom:6px; }
+  .cap-sub { color:#3c5866; font-size:13px; white-space:pre-line; }
+
+  /* center and size SVGs consistently */
+  svg.diagram {
+    width: var(--svg-size);
+    height: var(--svg-size);
+    display:block;
+    overflow:visible;
+  }
+
+  /* common small styles used by many diagrams */
+  .axis{ stroke:#bbb; stroke-width:1 }
+  .grid-line{ stroke:#eee; stroke-width:.6 }
+
+  /* --- Row1: parallelogram styles --- */
+  .r1-shape{ fill: rgba(60,140,200,0.18); stroke:#157; stroke-width:1.4 }
+  /* CHANGED: highlight color to red */
+  .r1-outline{ stroke:#d33; stroke-width:2.2; fill:none; stroke-dasharray:240; stroke-dashoffset:240; pointer-events:none }
+  .r1-dot { fill:#023; }
+  .r1-label { font-size:9px; font-weight:700; font-family:Arial, sans-serif; fill:#012 }
+  .label-bg{ fill:#fff; opacity:0.98; rx:3; ry:3 }
+
+  #parSVG:hover .r1-outline { animation: r1dash 1.6s linear infinite }
+  @keyframes r1dash { to{ stroke-dashoffset:0 } }
+
+  /* --- Row2: nodes --- */
+  .node { fill:#e8f3fb; stroke:#0a58a3; stroke-width:2; cursor:pointer; transition:transform .12s ease, fill .12s }
+  .node-label { font-size:12px; fill:#05345a; font-weight:700; text-anchor:middle; dominant-baseline:middle; pointer-events:none }
+  .conn { stroke:#ff6b00; stroke-width:3.5; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:300; stroke-dashoffset:300; transition:stroke-dashoffset 520ms linear, opacity 220ms; opacity:0; pointer-events:none }
+  .conn.show{ stroke-dashoffset:0; opacity:1 }
+
+  /* --- Row3: bimodal curve (points + vectors) --- */
+  .curve{ fill:none; stroke:#0a58a3; stroke-width:2.4 }
+  .pt{ fill:#012; stroke:#fff; stroke-width:.8 }
+  .vec{ stroke:#d33; stroke-width:2.2; stroke-linecap:round; stroke-dasharray:60; stroke-dashoffset:60; transition:stroke-dashoffset .9s ease, opacity .3s; opacity:0 }
+  svg.bimodal:hover .vec{ stroke-dashoffset:0; opacity:1 }
+
+  /* --- Row4: area chart --- */
+  .chart-grid{ stroke:#f0ecef; stroke-width:1 }
+  .area-fill{ fill:#e78fb3; opacity:.6; transition:opacity .2s }
+  .area-line{ fill:none; stroke:#c13b7a; stroke-width:2 }
+  .hover-line{ stroke:#333; stroke-width:1; stroke-dasharray:4 2; opacity:0; transition:opacity .12s }
+  /* separated the dot (circle) style from tooltip text */
+  .dot-circle{ fill:#fff; stroke:#c13b7a; stroke-width:2; opacity:0; transition:opacity .12s }
+  .tooltip-text{ fill:#072034; font-size:12px; opacity:1; pointer-events:none }
+  .chart:hover .area-fill{ opacity:0.85 }
+
+  /* --- Row5: bars anchored to axis --- */
+  .bar { fill:#6aa1c9; transform-origin:50% 100%; transform-box: fill-box; transform: scaleY(0.06); transition: transform 600ms cubic-bezier(.2,.9,.2,1), fill 220ms; }
+  .bar[data-s="0.95"]{ --s:0.95 } .bar[data-s="0.7"]{ --s:0.7 } .bar[data-s="0.45"]{ --s:0.45 }
+  .bars svg:hover .bar{ transform: scaleY(var(--s)) } .bars svg .bar:hover{ fill:#2b6f95; transform: scaleY(calc(var(--s)*1.08)); transition: transform 260ms ease }
+
+  /* small responsive tweak */
+  @media (max-width: 960px){
+    .grid{ grid-template-columns: 1fr; }
+    .caption{ order: 2 }
+    .card{ order: 1 }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Interactive SVG Diagrams</h1>
+    <p class="lead">Hover each diagram on the left to reveal its interaction. Captions on the right explain each diagram.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- ROW 1 -->
+    <div class="card" aria-label="Diagram 1: parallelogram">
+      <svg id="parSVG" class="diagram" width="220" height="220" viewBox="-8 -8 116 116" role="img" aria-labelledby="cap1">
+        <title id="cap1">Parallelogram — hover to animate outline (red)</title>
+        <rect x="-8" y="-8" width="116" height="116" fill="#fff" />
+        <!-- grid back -->
+        <g aria-hidden="true">
+          <g class="grid-line">
+            <line x1="10" x2="10" y1="0" y2="100"/><line x1="20" x2="20" y1="0" y2="100"/><line x1="30" x2="30" y1="0" y2="100"/><line x1="40" x2="40" y1="0" y2="100"/><line x1="50" x2="50" y1="0" y2="100"/><line x1="60" x2="60" y1="0" y2="100"/><line x1="70" x2="70" y1="0" y2="100"/><line x1="80" x2="80" y1="0" y2="100"/><line x1="90" x2="90" y1="0" y2="100"/>
+            <line y1="10" y2="10" x1="0" x2="100"/><line y1="20" y2="20" x1="0" x2="100"/><line y1="30" y2="30" x1="0" x2="100"/><line y1="40" y2="40" x1="0" x2="100"/><line y1="50" y2="50" x1="0" x2="100"/><line y1="60" y2="60" x1="0" x2="100"/><line y1="70" y2="70" x1="0" x2="100"/><line y1="80" y2="80" x1="0" x2="100"/><line y1="90" y2="90" x1="0" x2="100"/>
+          </g>
+        </g>
+
+        <!-- shape and outline (outline now red) -->
+        <polygon class="r1-shape" points="20,20 80,20 60,80 0,80" />
+        <polyline class="r1-outline" points="20,20 80,20 60,80 0,80 20,20" />
+
+        <!-- dots -->
+        <circle class="r1-dot" cx="20" cy="20" r="2.8" />
+        <circle class="r1-dot" cx="80" cy="20" r="2.8" />
+        <circle class="r1-dot" cx="60" cy="80" r="2.8" />
+        <circle class="r1-dot" cx="0"  cy="80" r="2.8" />
+
+        <!-- labels with white bg so they remain readable -->
+        <g transform="translate(24,8)">
+          <rect class="label-bg" x="-6" y="-7" width="54" height="16" rx="3"></rect>
+          <text class="r1-label" x="0" y="4">A (2,2)</text>
+        </g>
+        <g transform="translate(84,8)">
+          <rect class="label-bg" x="-6" y="-7" width="54" height="16" rx="3"></rect>
+          <text class="r1-label" x="0" y="4">B (8,2)</text>
+        </g>
+        <g transform="translate(64,88)">
+          <rect class="label-bg" x="-6" y="-7" width="54" height="16" rx="3"></rect>
+          <text class="r1-label" x="0" y="4">C (6,8)</text>
+        </g>
+        <g transform="translate(8,88)">
+          <rect class="label-bg" x="-6" y="-7" width="44" height="16" rx="3"></rect>
+          <text class="r1-label" x="0" y="4">D (0,8)</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="caption" aria-hidden="false">
+      <div class="cap-title">Diagram 1</div>
+      <div class="cap-sub">[ Interaction ] - Mouse over to highlight path of parallelogram</div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="card" aria-label="Diagram 2 nodes">
+      <svg id="nodesSVG" class="diagram" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="cap2">
+        <title id="cap2">Alphabet nodes — hover on a node to connect it to A</title>
+        <rect width="400" height="220" fill="#fff" opacity="0"/>
+        <path id="conn" class="conn" d="" />
+
+        <!-- Node A (center root) -->
+        <g id="node-A" transform="translate(80,110)" data-id="A" aria-hidden="true">
+          <circle class="node" r="20"></circle>
+          <text class="node-label">A</text>
+        </g>
+
+        <!-- Other freeform nodes -->
+        <g id="node-B" transform="translate(220,30)" data-id="B" tabindex="0" role="button" aria-label="B">
+          <circle class="node" r="18"></circle>
+          <text class="node-label">B</text>
+        </g>
+
+        <g id="node-C" transform="translate(350,60)" data-id="C" tabindex="0" role="button" aria-label="C">
+          <circle class="node" r="18"></circle>
+          <text class="node-label">C</text>
+        </g>
+
+        <g id="node-D" transform="translate(300,160)" data-id="D" tabindex="0" role="button" aria-label="D">
+          <circle class="node" r="18"></circle>
+          <text class="node-label">D</text>
+        </g>
+
+        <g id="node-E" transform="translate(180,175)" data-id="E" tabindex="0" role="button" aria-label="E">
+          <circle class="node" r="18"></circle>
+          <text class="node-label">E</text>
+        </g>
+
+        <g id="node-F" transform="translate(40,40)" data-id="F" tabindex="0" role="button" aria-label="F">
+          <circle class="node" r="18"></circle>
+          <text class="node-label">F</text>
+        </g>
+
+        <g id="node-G" transform="translate(320,100)" data-id="G" tabindex="0" role="button" aria-label="G">
+          <circle class="node" r="18"></circle>
+          <text class="node-label">G</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="caption">
+      <div class="cap-title">Diagram 2</div>
+      <div class="cap-sub">[ Interaction ] - Mouse over to highlight path of alphabet node from A</div>
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="card" aria-label="Diagram 3 bimodal">
+      <svg id="bimodalSVG" class="diagram bimodal" viewBox="-5 -5 110 110" role="img" aria-labelledby="cap3">
+        <title id="cap3">Bimodal curve — hover to show sample points and tangent vectors</title>
+        <rect width="100" height="100" fill="#fff" />
+        <g class="grid-line" aria-hidden="true">
+          <line x1="10" x2="10" y1="0" y2="100"/><line x1="20" x2="20" y1="0" y2="100"/><line x1="30" x2="30" y1="0" y2="100"/><line x1="40" x2="40" y1="0" y2="100"/><line x1="50" x2="50" y1="0" y2="100"/><line x1="60" x2="60" y1="0" y2="100"/><line x1="70" x2="70" y1="0" y2="100"/><line x1="80" x2="80" y1="0" y2="100"/><line x1="90" x2="90" y1="0" y2="100"/>
+          <line y1="10" y2="10" x1="0" x2="100"/><line y1="20" y2="20" x1="0" x2="100"/><line y1="30" y2="30" x1="0" x2="100"/><line y1="40" y2="40" x1="0" x2="100"/><line y1="50" y2="50" x1="0" x2="100"/><line y1="60" y2="60" x1="0" x2="100"/><line y1="70" y2="70" x1="0" x2="100"/><line y1="80" y2="80" x1="0" x2="100"/><line y1="90" y2="90" x1="0" x2="100"/>
+        </g>
+
+        <!-- bimodal path -->
+        <path id="curvePath" class="curve" d="M5,70 C25,10 35,5 50,30 C65,55 75,10 95,70" />
+
+        <!-- sampled points and tangents -->
+        <g id="samplePoints"></g>
+        <g id="tangentLines"></g>
+      </svg>
+    </div>
+
+    <div class="caption">
+      <div class="cap-title">Diagram 3</div>
+      <div class="cap-sub">[ Interaction ] - Mouse over to show vertex points along bimodal curve and tangent vectors from points.</div>
+    </div>
+
+    <!-- ROW 4 -->
+    <div class="card" aria-label="Diagram 4 frequency chart">
+      <svg id="chart" class="diagram chart" viewBox="0 0 200 120" role="img" aria-labelledby="cap4">
+        <title id="cap4">Frequency area chart — hover to show tooltip and frequency</title>
+        <rect width="200" height="120" fill="#fff"/>
+
+        <!-- grid back -->
+        <g class="chart-grid" aria-hidden="true">
+          <line x1="50" x2="50" y1="10" y2="100"/><line x1="80" x2="80" y1="10" y2="100"/><line x1="110" x2="110" y1="10" y2="100"/><line x1="140" x2="140" y1="10" y2="100"/><line x1="170" x2="170" y1="10" y2="100"/>
+          <line x1="30" x2="190" y1="20" y2="20"/><line x1="30" x2="190" y1="40" y2="40"/><line x1="30" x2="190" y1="60" y2="60"/><line x1="30" x2="190" y1="80" y2="80"/><line x1="30" x2="190" y1="100" y2="100"/>
+        </g>
+
+        <!-- axes -->
+        <g aria-hidden="true">
+          <line class="axis" x1="30" x2="30" y1="10" y2="100"/>
+          <line class="axis" x1="30" x2="190" y1="100" y2="100"/>
+        </g>
+
+        <!-- area + line -->
+        <path id="area" class="area-fill"/>
+        <path id="line" class="area-line"/>
+
+        <!-- hover elements -->
+        <line id="vline" class="hover-line" x1="0" x2="0" y1="10" y2="100"/>
+        <!-- CHANGED: circle uses .dot-circle, separate from tooltip text -->
+        <circle id="dot" class="dot-circle" r="4"/>
+        <g id="tooltip" style="display:none">
+          <rect x="0" y="0" width="70" height="22" rx="4" ry="4" fill="#fff" stroke="#ddd"/>
+          <!-- tooltip text class is now tooltip-text and visible -->
+          <text id="tooltip-text" class="tooltip-text" x="8" y="15">val</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="caption">
+      <div class="cap-title">Diagram 4</div>
+      <div class="cap-sub">[ Interaction ] - Mouse over to show tool tip and frequency count</div>
+    </div>
+
+    <!-- ROW 5 -->
+    <div class="card bars" aria-label="Diagram 5 bar chart">
+      <svg class="diagram" viewBox="0 0 120 100" role="img" aria-labelledby="cap5">
+        <title id="cap5">Bar chart — hover to grow bars from axis</title>
+        <rect width="120" height="100" fill="#fff" opacity="0"/>
+        <!-- axes -->
+        <line x1="10" x2="10" y1="10" y2="90" stroke="#bbb" stroke-width="1"/>
+        <line x1="10" x2="110" y1="90" y2="90" stroke="#bbb" stroke-width="1"/>
+        <!-- bars (y + height chosen so bottom aligns to y+height = 90) -->
+        <g transform="translate(22,0)"><rect class="bar" x="0" y="30" width="18" height="60" data-s="0.95" /></g>
+        <g transform="translate(52,0)"><rect class="bar" x="0" y="42" width="18" height="48" data-s="0.7" /></g>
+        <g transform="translate(82,0)"><rect class="bar" x="0" y="58" width="18" height="32" data-s="0.45" /></g>
+        <text x="31" y="96" font-size="9" text-anchor="middle">A</text>
+        <text x="61" y="96" font-size="9" text-anchor="middle">B</text>
+        <text x="91" y="96" font-size="9" text-anchor="middle">C</text>
+      </svg>
+    </div>
+
+    <div class="caption">
+      <div class="cap-title">Diagram 5</div>
+      <div class="cap-sub">[ Interaction ] - Mouse over to show change in bar height</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* tiny selector helpers */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from((r||document).querySelectorAll(s));
+
+/* ---------------------------
+   ROW 2: nodes A..G interactions
+   hover on nodes B..G draws animated connector from node A to the hovered node
+   --------------------------- */
+(() => {
+  const svg = $('#nodesSVG');
+  if(!svg) return;
+  const conn = $('#conn', svg);
+  const A = $('#node-A', svg);
+
+  function getCenter(g){
+    const t = g.getAttribute('transform') || '';
+    const m = /translate\(\s*([-\d.]+)[ ,]+([-\d.]+)\s*\)/.exec(t);
+    if(m) return {x:+m[1], y:+m[2]};
+    const c = g.querySelector('circle').getBBox();
+    return {x: c.x + c.width/2, y: c.y + c.height/2};
+  }
+
+  const aCenter = getCenter(A);
+  const nodeIds = ['node-B','node-C','node-D','node-E','node-F','node-G'];
+
+  nodeIds.forEach(id => {
+    const g = document.getElementById(id);
+    if(!g) return;
+    const circle = g.querySelector('circle');
+    g.addEventListener('mouseenter', () => {
+      const c = getCenter(g);
+      // subtle curved path between A and hovered node (quadratic)
+      const mx = (aCenter.x + c.x) / 2;
+      const cpY = Math.min(aCenter.y, c.y) - 20;
+      const d = `M ${aCenter.x} ${aCenter.y} Q ${mx} ${cpY} ${c.x} ${c.y}`;
+      conn.setAttribute('d', d);
+      conn.classList.add('show');
+      circle.setAttribute('fill', '#ffefdc');
+      circle.setAttribute('transform', 'scale(1.06)');
+    });
+    g.addEventListener('mouseleave', () => {
+      conn.classList.remove('show');
+      circle.setAttribute('fill', '#e8f3fb');
+      circle.removeAttribute('transform');
+    });
+    // keyboard accessible
+    g.addEventListener('focus', ()=> g.dispatchEvent(new Event('mouseenter')));
+    g.addEventListener('blur',  ()=> g.dispatchEvent(new Event('mouseleave')));
+  });
+})();
+
+/* ---------------------------
+   ROW 3: sample points and tangent LINES (no arrowheads)
+   Draw 6 sample points and a short tangent line at each. Lines animate on hover (CSS).
+   --------------------------- */
+(() => {
+  const svg = $('#bimodalSVG');
+  if(!svg) return;
+  const path = $('#curvePath', svg);
+  if(!path) return;
+  const ptsG = $('#samplePoints', svg);
+  const vecG = $('#tangentLines', svg);
+
+  const total = path.getTotalLength();
+  const samples = 6;
+  const arrowLen = 18;
+  const delta = Math.max(1, total * 0.006);
+
+  for(let i=0;i<samples;i++){
+    const L = ((i+1)/(samples+1)) * total;
+    const p = path.getPointAtLength(L);
+    // point
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('class','pt');
+    c.setAttribute('r','2.8');
+    c.setAttribute('cx', `${p.x}`);
+    c.setAttribute('cy', `${p.y}`);
+    ptsG.appendChild(c);
+
+    // tangent line approximate
+    const f = path.getPointAtLength(Math.min(total, L + delta));
+    let dx = f.x - p.x, dy = f.y - p.y;
+    const len = Math.hypot(dx,dy) || 1; dx /= len; dy /= len;
+    const x2 = p.x + dx * arrowLen, y2 = p.y + dy * arrowLen;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('class','vec');
+    line.setAttribute('x1', `${p.x}`); line.setAttribute('y1', `${p.y}`);
+    line.setAttribute('x2', `${x2}`); line.setAttribute('y2', `${y2}`);
+    vecG.appendChild(line);
+  }
+})();
+
+/* ---------------------------
+   ROW 4: area chart with hover tooltip
+   --------------------------- */
+(() => {
+  const svg = $('#chart');
+  if(!svg) return;
+  const area = $('#area', svg);
+  const line = $('#line', svg);
+  const vline = $('#vline', svg);
+  const dot = $('#dot', svg);
+  const tip = $('#tooltip', svg);
+  const ttext = $('#tooltip-text', svg);
+
+  // mock frequency data (x 0..1)
+  const data = [
+    {x:0, v:0}, {x:0.08, v:0.5}, {x:0.18, v:1.2}, {x:0.28, v:0.6}, {x:0.38, v:0.9},
+    {x:0.48, v:2.5}, {x:0.58, v:1.1}, {x:0.68, v:3.5}, {x:0.78, v:2.2}, {x:0.88, v:4.0}, {x:1, v:0.8}
+  ];
+
+  const left=30, right=190, bottom=100, top=10, w = right-left, h = bottom-top;
+  const vmax = Math.max(...data.map(d=>d.v));
+  const vx = t => left + t*w;
+  const vy = v => bottom - (v/vmax) * h;
+
+  // build path d attributes
+  let dArea = `M ${vx(data[0].x)} ${bottom}`;
+  let dLine = `M ${vx(data[0].x)} ${vy(data[0].v)}`;
+  data.forEach((pt,i) => {
+    const x = vx(pt.x), y = vy(pt.v);
+    dArea += ` L ${x} ${y}`;
+    if(i>0) dLine += ` L ${x} ${y}`;
+  });
+  dArea += ` L ${vx(data[data.length-1].x)} ${bottom} Z`;
+  area.setAttribute('d', dArea);
+  line.setAttribute('d', dLine);
+
+  vline.style.opacity = 0; dot.style.opacity = 0; tip.style.display = 'none';
+
+  svg.addEventListener('mousemove', (e) => {
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    if(p.x < left || p.x > right){ vline.style.opacity=0; dot.style.opacity=0; tip.style.display='none'; return; }
+    vline.setAttribute('x1', p.x); vline.setAttribute('x2', p.x); vline.style.opacity = 1;
+    const tx = (p.x - left)/w;
+    let best = Infinity, nearest = data[0];
+    data.forEach(d => { const dd = Math.abs(d.x - tx); if(dd < best){ best = dd; nearest = d; }});
+    const nx = vx(nearest.x), ny = vy(nearest.v);
+    dot.setAttribute('cx', nx); dot.setAttribute('cy', ny); dot.style.opacity = 1;
+    tip.style.display = 'block';
+    const txPos = Math.min(200-80, Math.max(10, nx + 6));
+    tip.setAttribute('transform', `translate(${txPos},${Math.max(12, ny-28)})`);
+    // UPDATE tooltip text content (now visible)
+    if(ttext) ttext.textContent = `freq: ${nearest.v.toFixed(2)}`;
+  });
+
+  svg.addEventListener('mouseleave', ()=>{ vline.style.opacity=0; dot.style.opacity=0; tip.style.display='none'; });
+})();
+
+/* No JS needed for Row5 bars (CSS transform handles animation) */
+
+</script>
+</body>
+</html>
