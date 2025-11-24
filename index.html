@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Bubble Heatmap (Data_2)</title>
+  <title>Attack-Defense Accuracy (Data1 & Data_2)</title>
   <style>
 /* ========== Global ========== */
 html,
@@ -26,7 +26,7 @@ h3 {
   color: #e0f2fe;
 }
 
-/* ========== Top summary row ========== */
+/* ========== Top summary row (2 panels) ========== */
 .layout-top {
   display: flex;
   width: 100%;
@@ -84,6 +84,184 @@ h3 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ========== Defense summary modal ========== */
+
+.defense-modal {
+  position: fixed;
+  inset: 0;
+  display: none;              /* toggled by .open */
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.defense-modal.open {
+  display: flex;
+}
+
+.defense-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(15,23,42,0.85), rgba(0,0,0,0.95));
+  backdrop-filter: blur(3px);
+}
+
+.defense-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(440px, 96vw);
+  max-height: 78vh;
+  background: radial-gradient(circle at top, #020617 0, #020617 60%, #000000 100%);
+  border-radius: 10px;
+  padding: 8px 10px 8px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.4),
+    0 18px 35px rgba(15, 23, 42, 0.95);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.defense-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.defense-modal-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e0f2fe;
+}
+
+.defense-modal-subtitle {
+  font-size: 9px;
+  color: #9ca3af;
+}
+
+.defense-modal-close {
+  background: rgba(15,23,42,0.9);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+
+.defense-modal-close:hover {
+  background: rgba(30,64,175,0.9);
+  border-color: #38bdf8;
+  transform: translateY(-0.5px);
+}
+
+.defense-summary-badge {
+  display: inline-block;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  font-size: 8px;
+  color: #e5e7eb;
+  margin-right: 4px;
+}
+
+.defense-modal-body {
+  font-size: 9px;
+  color: #e5e7eb;
+  overflow-y: auto;
+}
+
+/* mini table inside modal */
+.defense-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 3px;
+  font-size: 9px;
+}
+
+.defense-summary-table th,
+.defense-summary-table td {
+  padding: 2px 4px;
+  text-align: right;
+}
+
+.defense-summary-table th:first-child,
+.defense-summary-table td:first-child {
+  text-align: left;
+}
+
+/* charts in modal */
+.defense-charts {
+  margin-top: 4px;
+  border-top: 1px dashed rgba(55,65,81,0.8);
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.defense-chart-block {
+  width: 100%;
+}
+
+.defense-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* grouped bar styling */
+.defense-bar {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    stroke-width 0.15s ease,
+    stroke 0.15s ease;
+  cursor: pointer;
+}
+
+.defense-bar:hover {
+  opacity: 1;
+  stroke: #e5e7eb;
+  stroke-width: 0.7;
+  transform: translateY(-0.5px);
+}
+
+/* Legend for grouped chart */
+.defense-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 3px;
+  font-size: 8px;
+}
+
+.defense-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+}
+
+.defense-chart-legend-swatch {
+  width: 10px;
+  height: 7px;
+  border-radius: 999px;
 }
 
 /* ========== Main wrapper ========== */
@@ -348,6 +526,16 @@ th {
   font-size: 9px;
 }
 
+/* Make header cells clickable for defense stats */
+th.defense-header {
+  cursor: pointer;
+  user-select: none;
+}
+th.defense-header:hover {
+  background: radial-gradient(circle at top, #1d4ed8, #020617 65%);
+}
+
+/* Row label */
 td:first-child {
   background: #020617;
   font-weight: 500;
@@ -427,7 +615,7 @@ tbody tr:hover td:not(:first-child):not(.highlight-range):not(.dimmed-range) {
   z-index: -1;
 }
 
-/* ========== Tooltip ========== */
+/* ========== Tooltip for table cells ========== */
 .value-cell-tooltip {
   position: fixed;
   pointer-events: none;
@@ -581,7 +769,7 @@ tbody tr:hover td:not(:first-child):not(.highlight-range):not(.dimmed-range) {
 </head>
 
 <body>
-<h3>Bubble Heatmap (Data_2)</h3>
+<h3>Attack-Defense Accuracy (Data_1 & Data_2)</h3>
 
 <div class="layout-top">
   <div class="range-summary" id="rangeSummary">
@@ -669,20 +857,42 @@ tbody tr:hover td:not(:first-child):not(.highlight-range):not(.dimmed-range) {
       <thead>
         <tr>
           <th></th>
-          <th>ERM</th>
-          <th>DA</th>
-          <th>PGDT</th>
-          <th>TRADES</th>
-          <th>MART</th>
-          <th>RS</th>
-          <th>IBP</th>
-          <th>PRL</th>
-          <th>TandT</th>
+          <!-- clickable headers for popup -->
+          <th class="defense-header" data-defense="ERM">ERM</th>
+          <th class="defense-header" data-defense="DA">DA</th>
+          <th class="defense-header" data-defense="PGDT">PGDT</th>
+          <th class="defense-header" data-defense="TRADES">TRADES</th>
+          <th class="defense-header" data-defense="MART">MART</th>
+          <th class="defense-header" data-defense="RS">RS</th>
+          <th class="defense-header" data-defense="IBP">IBP</th>
+          <th class="defense-header" data-defense="PRL">PRL</th>
+          <th class="defense-header" data-defense="TandT">TandT</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
 
+  </div>
+</div>
+
+<!-- ===== Defense summary popup modal ===== -->
+<div class="defense-modal" id="defenseModal" aria-hidden="true">
+  <div class="defense-modal-backdrop" id="defenseModalBackdrop"></div>
+  <div class="defense-modal-panel" role="dialog" aria-modal="true" aria-labelledby="defenseModalTitle">
+    <div class="defense-modal-header">
+      <div>
+        <div class="defense-modal-title" id="defenseModalTitle">Defense summary</div>
+        <div class="defense-modal-subtitle" id="defenseModalSubtitle">
+          Std Acc / CRR / CRA for CIFAR100, CIFAR10, SVHN, MNIST
+        </div>
+      </div>
+      <button class="defense-modal-close" id="defenseModalClose" aria-label="Close defense summary">
+        ×
+      </button>
+    </div>
+    <div class="defense-modal-body" id="defenseModalContent">
+      <!-- filled dynamically -->
+    </div>
   </div>
 </div>
 
@@ -726,11 +936,11 @@ let attackDefenseData = []; // will be set from JSON or fallback
 const defenses = ["ERM","DA","PGDT","TRADES","MART","RS","IBP","PRL","TandT"];
 
 const colorStops = [
-  { min: 0,  max: 20,  color: "#60a5fa" },
+  { min: 0,  max: 20,  color: "#bfdbfe" },
   { min: 20, max: 40,  color: "#60a5fa" },
-  { min: 40, max: 60,  color: "#60a5fa" },
-  { min: 60, max: 80,  color: "#60a5fa" },
-  { min: 80, max: 101, color: "#60a5fa" }
+  { min: 40, max: 60,  color: "#3b82f6" },
+  { min: 60, max: 80,  color: "#2563eb" },
+  { min: 80, max: 101, color: "#1d4ed8" }
 ];
 
 const HIGHLIGHT_LEVEL_CLASSES = [
@@ -745,11 +955,203 @@ let currentData = [];
 let activeBand = null;
 let tooltipDiv = null;
 
+/* Defense summary data */
+const defenseSummaryData = {
+  "ERM": {
+    "Std Acc": {
+      "CIFAR100": 81.03,
+      "CIFAR10": 94.85,
+      "SVHN": 94.44,
+      "MNIST": 99.37
+    },
+    "CRR": {
+      "CIFAR100": 9.28,
+      "CIFAR10": 1.25,
+      "SVHN": 52.72,
+      "MNIST": 26.01
+    },
+    "CRA": {
+      "CIFAR100": 4.52,
+      "CIFAR10": 1.25,
+      "SVHN": 51.04,
+      "MNIST": 24.96
+    }
+  },
+  "DA": {
+    "Std Acc": {
+      "CIFAR100": 78.27,
+      "CIFAR10": 94.21,
+      "SVHN": 94.69,
+      "MNIST": 99.42
+    },
+    "CRR": {
+      "CIFAR100": 15.04,
+      "CIFAR10": 81.08,
+      "SVHN": 82.08,
+      "MNIST": 85.23
+    },
+    "CRA": {
+      "CIFAR100": 6.15,
+      "CIFAR10": 76.07,
+      "SVHN": 82.01,
+      "MNIST": 84.12
+    }
+  },
+  "PGDT": {
+    "Std Acc": {
+      "CIFAR100": 64.35,
+      "CIFAR10": 84.38,
+      "SVHN": 91.19,
+      "MNIST": 99.16
+    },
+    "CRR": {
+      "CIFAR100": 57.07,
+      "CIFAR10": 87.07,
+      "SVHN": 87.89,
+      "MNIST": 94.65
+    },
+    "CRA": {
+      "CIFAR100": 32.93,
+      "CIFAR10": 82.90,
+      "SVHN": 86.68,
+      "MNIST": 94.63
+    }
+  },
+  "TRADES": {
+    "Std Acc": {
+      "CIFAR100": 62.55,
+      "CIFAR10": 80.42,
+      "SVHN": 86.16,
+      "MNIST": 99.10
+    },
+    "CRR": {
+      "CIFAR100": 59.27,
+      "CIFAR10": 88.54,
+      "SVHN": 87.89,
+      "MNIST": 94.76
+    },
+    "CRA": {
+      "CIFAR100": 38.85,
+      "CIFAR10": 78.80,
+      "SVHN": 84.76,
+      "MNIST": 94.61
+    }
+  },
+  "MART": {
+    "Std Acc": {
+      "CIFAR100": 63.68,
+      "CIFAR10": 81.54,
+      "SVHN": 90.20,
+      "MNIST": 98.94
+    },
+    "CRR": {
+      "CIFAR100": 58.79,
+      "CIFAR10": 78.90,
+      "SVHN": 85.23,
+      "MNIST": 94.13
+    },
+    "CRA": {
+      "CIFAR100": 49.37,
+      "CIFAR10": 72.21,
+      "SVHN": 78.82,
+      "MNIST": 94.09
+    }
+  },
+  "RS": {
+    "Std Acc": {
+      "CIFAR100": 56.87,
+      "CIFAR10": 89.45,
+      "SVHN": 88.35,
+      "MNIST": 97.16
+    },
+    "CRR": {
+      "CIFAR100": 60.38,
+      "CIFAR10": 90.00,
+      "SVHN": 76.29,
+      "MNIST": 87.15
+    },
+    "CRA": {
+      "CIFAR100": 47.50,
+      "CIFAR10": 87.98,
+      "SVHN": 70.64,
+      "MNIST": 86.29
+    }
+  },
+  "IBP": {
+    "Std Acc": {
+      "CIFAR100": 39.45,
+      "CIFAR10": 48.40,
+      "SVHN": 73.09,
+      "MNIST": 97.78
+    },
+    "CRR": {
+      "CIFAR100": 49.34,
+      "CIFAR10": 54.70,
+      "SVHN": 61.94,
+      "MNIST": 89.18
+    },
+    "CRA": {
+      "CIFAR100": 29.20,
+      "CIFAR10": 40.00,
+      "SVHN": 57.26,
+      "MNIST": 88.51
+    }
+  },
+  "PRL": {
+    "Std Acc": {
+      "CIFAR100": 64.89,
+      "CIFAR10": 93.82,
+      "SVHN": 92.00,
+      "MNIST": 99.32
+    },
+    "CRR": {
+      "CIFAR100": 56.71,
+      "CIFAR10": 90.71,
+      "SVHN": 93.11,
+      "MNIST": 96.03
+    },
+    "CRA": {
+      "CIFAR100": 50.77,
+      "CIFAR10": 90.63,
+      "SVHN": 91.07,
+      "MNIST": 95.01
+    }
+  },
+  "TandT": {
+    "Std Acc": {
+      "CIFAR100": 65.56,
+      "CIFAR10": 94.23,
+      "SVHN": 94.79,
+      "MNIST": 99.32
+    },
+    "CRR": {
+      "CIFAR100": 62.05,
+      "CIFAR10": 95.08,
+      "SVHN": 93.15,
+      "MNIST": 97.80
+    },
+    "CRA": {
+      "CIFAR100": 52.07,
+      "CIFAR10": 91.75,
+      "SVHN": 92.81,
+      "MNIST": 96.80
+    }
+  }
+};
+
+const DATASETS_ORDER = ["CIFAR100","CIFAR10","SVHN","MNIST"];
+const METRICS_ORDER = ["Std Acc","CRR","CRA"];
+const METRIC_COLORS = {
+  "Std Acc": "#60a5fa", // blue
+  "CRR": "#34d399",     // green
+  "CRA": "#f97316"      // orange
+};
+
 /* Short labels for tooltips */
 function getShortAttackName(name) {
   const aliases = {
-    "Add Gaussian Noise": "Add Gaussian Noise",
-    "No Attack": "No Attack"
+    "Add Gaussian Noise": "AGN",
+    "No Attack": "No Atk"
   };
   return aliases[name] || name;
 }
@@ -901,6 +1303,186 @@ function updateSummaryAndTop3(min, max) {
           </div>`
        ).join("")}
      </div>`;
+}
+
+/* ----------------- Defense summary modal + grouped chart ----------------- */
+
+function createDefenseChartsHTML(summary) {
+  // Compute global max across all metrics/datasets for y-scale
+  let maxVal = 0;
+  DATASETS_ORDER.forEach(ds => {
+    METRICS_ORDER.forEach(metric => {
+      const v = summary[metric]?.[ds] ?? 0;
+      if (v > maxVal) maxVal = v;
+    });
+  });
+  if (maxVal <= 0) maxVal = 1;
+
+  const width = 380;
+  const height = 130;
+  const marginLeft = 30;
+  const marginRight = 10;
+  const marginTop = 20;
+  const marginBottom = 22;
+  const chartWidth = width - marginLeft - marginRight;
+  const chartHeight = height - marginTop - marginBottom;
+
+  const groupWidth = chartWidth / DATASETS_ORDER.length;
+  const barGroupTotalWidth = groupWidth * 0.7;
+  const barWidth = barGroupTotalWidth / METRICS_ORDER.length;
+  const groupOffset = (groupWidth - barGroupTotalWidth) / 2;
+
+  const axisY = height - marginBottom;
+
+  // simple tick values (0 and max)
+  const ticks = [0, maxVal];
+
+  // Legend HTML
+  const legendHtml = `
+    <div class="defense-chart-legend">
+      ${METRICS_ORDER.map(metric => `
+        <div class="defense-chart-legend-item">
+          <span class="defense-chart-legend-swatch" style="background:${METRIC_COLORS[metric]};"></span>
+          <span>${metric}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  let svg = `<svg class="defense-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
+
+  // Y-axis ticks & gridlines
+  ticks.forEach(t => {
+    const y = axisY - (t / maxVal) * chartHeight;
+    const label = t.toFixed(0);
+    svg += `
+      <line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}"
+            stroke="#1f2933" stroke-width="0.6" stroke-dasharray="${t === 0 ? "0" : "2,2"}"></line>
+      <text x="${marginLeft - 4}" y="${y + 2}" text-anchor="end" font-size="7" fill="#6b7280">
+        ${label}
+      </text>
+    `;
+  });
+
+  // X-axis line
+  svg += `<line x1="${marginLeft}" y1="${axisY}" x2="${width - marginRight}" y2="${axisY}" stroke="#4b5563" stroke-width="0.8"/>`;
+
+  // Bars + dataset labels
+  DATASETS_ORDER.forEach((ds, i) => {
+    const xGroupStart = marginLeft + i * groupWidth + groupOffset;
+    const shortLabel = ds.replace("CIFAR", "C"); // C100, C10, SVHN, MNIST
+
+    METRICS_ORDER.forEach((metric, mIndex) => {
+      const v = summary[metric]?.[ds] ?? 0;
+      const barHeight = (v / maxVal) * chartHeight;
+      const x = xGroupStart + mIndex * barWidth;
+      const y = axisY - barHeight;
+      const color = METRIC_COLORS[metric];
+
+      svg += `
+        <rect
+          class="defense-bar"
+          x="${x.toFixed(1)}"
+          y="${y.toFixed(1)}"
+          width="${barWidth.toFixed(1)}"
+          height="${Math.max(barHeight, 0.5).toFixed(1)}"
+          fill="${color}"
+          opacity="0.9"
+          rx="2"
+          ry="2"
+        >
+          <title>${metric} – ${ds}: ${v.toFixed(2)}</title>
+        </rect>
+      `;
+    });
+
+    // dataset axis label
+    svg += `
+      <text
+        x="${(xGroupStart + barGroupTotalWidth / 2).toFixed(1)}"
+        y="${height - 5}"
+        text-anchor="middle"
+        font-size="7"
+        fill="#9ca3af"
+      >${shortLabel}</text>
+    `;
+  });
+
+  // Chart title inside SVG
+  svg += `
+    <text
+      x="${marginLeft}"
+      y="${marginTop - 6}"
+      text-anchor="start"
+      font-size="8"
+      fill="#9ca3af"
+    >Datasets vs. metrics</text>
+  `;
+
+  svg += `</svg>`;
+
+  return `<div class="defense-charts">
+    <div class="defense-chart-block">
+      ${legendHtml}
+      ${svg}
+    </div>
+  </div>`;
+}
+
+function renderDefenseSummary(defenseKey) {
+  const modal = document.getElementById("defenseModal");
+  const title = document.getElementById("defenseModalTitle");
+  const subtitle = document.getElementById("defenseModalSubtitle");
+  const content = document.getElementById("defenseModalContent");
+
+  const summary = defenseSummaryData[defenseKey];
+  title.textContent = `Defense summary: ${defenseKey}`;
+  subtitle.textContent = "Std Acc / CRR / CRA for CIFAR100, CIFAR10, SVHN, MNIST";
+
+  if (!summary) {
+    content.innerHTML =
+      `<p>No summary data found for <strong>${defenseKey}</strong>.</p>`;
+  } else {
+    const badges = METRICS_ORDER.map(metric =>
+      `<span class="defense-summary-badge">${metric}</span>`
+    ).join(" ");
+
+    const rowsHtml = DATASETS_ORDER.map(ds => {
+      const cells = METRICS_ORDER.map(metric => {
+        const v = summary[metric][ds];
+        return `<td>${v.toFixed(2)}</td>`;
+      }).join("");
+      return `<tr><td>${ds}</td>${cells}</tr>`;
+    }).join("");
+
+    const chartsHtml = createDefenseChartsHTML(summary);
+
+    content.innerHTML =
+      `<div>${badges}</div>
+       <table class="defense-summary-table">
+         <thead>
+           <tr>
+             <th>Dataset</th>
+             <th>Std Acc</th>
+             <th>CRR</th>
+             <th>CRA</th>
+           </tr>
+         </thead>
+         <tbody>
+           ${rowsHtml}
+         </tbody>
+       </table>
+       ${chartsHtml}`;
+  }
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function hideDefenseModal() {
+  const modal = document.getElementById("defenseModal");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
 }
 
 /* ----------------- Highlighting ----------------- */
@@ -1213,7 +1795,7 @@ function renderLegend() {
       } else {
         activeBand = { min: stop.min, max: stop.max };
         setActiveLegendIndex(idx);
-        highlightRange(stop.min, stop.max);
+        highlightRange(activeBand.min, activeBand.max);
       }
     });
   });
@@ -1237,6 +1819,31 @@ function bindControls() {
       highlightRange(activeBand.min, activeBand.max);
     } else {
       clearHighlights();
+    }
+  });
+
+  // Defense header → open popup
+  document.querySelectorAll("th.defense-header").forEach(th => {
+    th.addEventListener("click", () => {
+      const def = th.dataset.defense;
+      renderDefenseSummary(def);
+    });
+    th.addEventListener("keypress", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        const def = th.dataset.defense;
+        renderDefenseSummary(def);
+      }
+    });
+    th.setAttribute("tabindex", "0");
+    th.setAttribute("title", "Click to view defense summary");
+  });
+
+  // Modal close / backdrop / Esc
+  document.getElementById("defenseModalClose").addEventListener("click", hideDefenseModal);
+  document.getElementById("defenseModalBackdrop").addEventListener("click", hideDefenseModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      hideDefenseModal();
     }
   });
 }
