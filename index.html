@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bubble Heatmap (Data_2)</title>
+  <style>
+/* ========== Global ========== */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at top, #111827 0, #020617 45%, #000000 100%);
+  color: #e5e7eb;
+}
+
+h3 {
+  margin: 4px 8px 2px 8px;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  color: #e0f2fe;
+}
+
+/* ========== Top summary row ========== */
+.layout-top {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+  margin: 0 8px 4px 8px;
+}
+
+.range-summary,
+.top3-panel {
+  flex: 1;
+  height: 60px;
+  font-size: 10px;
+  line-height: 1.3;
+  color: #e5e7eb;
+  background: radial-gradient(circle at top left, #1e293b 0, #020617 65%);
+  border-radius: 8px;
+  padding: 5px 7px;
+  border: 1px solid #111827;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.range-summary-title,
+.top3-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #a5b4fc;
+  font-size: 10px;
+}
+
+.range-legend-note {
+  margin-top: 1px;
+  font-size: 9px;
+  color: #9ca3af;
+}
+
+/* Top-3 layout */
+.top3-row {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.top3-box {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.7);
+  border-radius: 6px;
+  padding: 3px 5px;
+  font-size: 9px;
+  color: #e5e7eb;
+  text-align: left;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.12);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========== Main wrapper ========== */
+.responsive-bubble-wrapper {
+  width: 100%;
+  box-shadow: 0 0 18px rgba(15, 23, 42, 0.8);
+  background: radial-gradient(circle at top, #020617 0, #020617 40%, #000000 100%);
+  border-top: 1px solid #1f2937;
+}
+
+.inner {
+  margin: 4px 8px 6px 8px;
+}
+
+/* ========== Meta block / controls ========== */
+.meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 4px;
+  font-size: 9px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.meta-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.meta-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.controls-label {
+  color: #9ca3af;
+  font-size: 9px;
+}
+
+select,
+input[type='text'] {
+  background: #020617;
+  border: 1px solid #1f2937;
+  color: #e5e7eb;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 9px;
+  outline: none;
+  box-shadow: 0 0 4px rgba(15, 23, 42, 0.6);
+}
+
+select:focus,
+input[type='text']:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+}
+
+/* ========== Legend: numeric bands ========== */
+.legend {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: 9px;
+  color: #cbd5f5;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.legend-title {
+  font-weight: 600;
+  margin-right: 2px;
+  color: #9ca3af;
+  font-size: 9px;
+}
+
+.legend-items {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Base chip */
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid transparent;
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease,
+    color 0.12s ease,
+    box-shadow 0.12s ease,
+    transform 0.12s ease;
+}
+
+/* Hover → subtle translucent light wash */
+.legend-item:hover {
+  background: rgba(249, 250, 251, 0.08);
+  border-color: rgba(229, 231, 235, 0.4);
+  color: #e5e7eb;
+  box-shadow: 0 0 4px rgba(148, 163, 184, 0.4);
+}
+
+/* Selected → cyan */
+.legend-item--active {
+  background: radial-gradient(circle at top, rgba(34, 211, 238, 0.35), #0f172a);
+  border-color: #22d3ee;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+  transform: translateY(-0.5px);
+  color: #e0f2fe;
+}
+
+.legend-circle-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.legend-item:hover .legend-circle-svg circle,
+.legend-item--active .legend-circle-svg circle {
+  opacity: 1;
+}
+
+.circle-legend-note {
+  font-size: 9px;
+  color: #9ca3af;
+  margin-left: 4px;
+}
+
+/* ========== Secondary legend (tint + chevrons) ========== */
+.legend-secondary-row {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 9px;
+  color: #e5e7eb;
+  width: 100%;
+}
+
+.legend-secondary-title {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.legend-secondary-items {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.legend-secondary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(31, 41, 55, 0.9);
+}
+
+.legend-secondary-swatch {
+  width: 12px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.legend-secondary-note {
+  color: #9ca3af;
+  font-size: 9px;
+  margin-left: 4px;
+}
+
+.legend-chevron {
+  font-size: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 2px;
+}
+
+.legend-chevron-min {
+  color: #f97373; /* red */
+}
+
+.legend-chevron-max {
+  color: #4ade80; /* green */
+}
+
+/* ========== Size legend ========== */
+.legend-size-row {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 9px;
+  color: #e5e7eb;
+  width: 100%;
+}
+
+.legend-size-title {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.legend-size-note {
+  color: #9ca3af;
+}
+
+/* ========== Gridless table ========== */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  table-layout: fixed;
+  font-size: 10px;
+  background: #020617;
+  margin-bottom: 1em;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 3px 3px;
+  text-align: center;
+  position: relative;
+  white-space: nowrap;
+  box-sizing: border-box;
+  color: #e5e7eb;
+  transition: background-color 0.25s ease, opacity 0.25s ease;
+  border: none; /* gridless */
+}
+
+th {
+  background: linear-gradient(to bottom, #111827, #020617);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  color: #bfdbfe;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 9px;
+}
+
+td:first-child {
+  background: #020617;
+  font-weight: 500;
+  text-align: right;
+  padding-right: 6px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #e5e7eb;
+  font-size: 9px;
+}
+
+/* Row hover (non-band) */
+tbody tr:hover td:not(:first-child):not(.highlight-range):not(.dimmed-range) {
+  background-color: rgba(15, 23, 42, 0.4);
+}
+
+/* ========== Circles & labels ========== */
+.bubble-svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  margin: 0 auto;
+}
+
+.bubble-circle {
+  stroke: #000;
+  stroke-width: 1.2;
+  transition:
+    r 0.25s ease,
+    filter 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.value-cell:hover .bubble-circle {
+  filter:
+    drop-shadow(0 0 3px rgba(147, 197, 253, 0.45))
+    drop-shadow(0 0 6px rgba(96, 165, 250, 0.35))
+    drop-shadow(0 0 9px rgba(37, 99, 235, 0.25));
+  opacity: 1;
+}
+
+.bubble-label {
+  position: absolute;
+  font-size: 7px;
+  top: 2px;
+  left: 3px;
+  color: #67e8f9;
+  opacity: 0.95;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+  transform-origin: top left;
+  transition: transform 0.15s ease;
+}
+
+.value-cell:hover .bubble-label {
+  transform: scale(1.45);
+}
+
+/* ========== Value cell + hover outline ========== */
+.value-cell {
+  position: relative;
+  overflow: visible;
+}
+
+/* Static outline on cell hover */
+.value-cell.hover-outline::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: transparent;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ========== Tooltip ========== */
+.value-cell-tooltip {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 6px;
+  font-size: 9px;
+  line-height: 1.3;
+  opacity: 0;
+  transform: scale(0.9);
+  transform-origin: center center;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 9999;
+  box-sizing: border-box;
+}
+
+/* Cycling gradient outline on tooltip shell */
+.value-cell-tooltip::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    rgba(34, 211, 238, 0.9),
+    rgba(168, 85, 247, 0.95),
+    rgba(34, 211, 238, 0.9)
+  );
+  background-size: 200% 200%;
+  animation: cellOutlineGradient 1.2s linear infinite;
+  z-index: -1;
+}
+
+@keyframes cellOutlineGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Inner panel: sits in front of gradient for contrast */
+.value-cell-tooltip .tooltip-inner {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at top, #020617 0, #020617 60%, #000000 100%);
+  border-radius: 4px;
+  padding: 2px 5px;
+  display: flex;
+  flex-direction: column;        /* column: top row (score+chevron), bottom row (meta) */
+  justify-content: space-between;
+  box-sizing: border-box;
+  white-space: nowrap;
+  box-shadow:
+    0 0 6px rgba(56, 189, 248, 0.6),
+    0 0 14px rgba(15, 23, 42, 0.9);
+}
+
+/* Top row: score (left) + chevron (right) */
+.tooltip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* left/right */
+  gap: 4px;
+}
+
+/* Bottom row: meta, centered */
+.tooltip-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  text-align: center;
+}
+
+.value-cell-tooltip.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.value-cell-tooltip .tooltip-score {
+  font-weight: 600;
+  color: #67e8f9;
+}
+
+.value-cell-tooltip .tooltip-meta {
+  color: #9ca3af;
+}
+
+/* ========== Band highlighting ========== */
+.value-cell.highlight-range {
+  background-color: rgba(56, 189, 248, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.value-cell.dimmed-range {
+  opacity: 0.22;
+}
+
+/* Within-band tint levels */
+.value-cell.highlight-level-1 {
+  background-color: rgba(147, 197, 253, 0.25);
+}
+
+.value-cell.highlight-level-2 {
+  background-color: rgba(129, 199, 255, 0.35);
+}
+
+.value-cell.highlight-level-3 {
+  background-color: rgba(96, 165, 250, 0.45);
+}
+
+.value-cell.highlight-level-4 {
+  background-color: rgba(59, 130, 246, 0.6);
+}
+
+.value-cell.highlight-level-5 {
+  background-color: rgba(37, 99, 235, 0.75);
+}
+
+/* ========== Chevron markers in cells ========== */
+.cell-marker {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  opacity: 0.95;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell-marker svg {
+  width: 10px;
+  height: 10px;
+}
+
+.cell-marker-min svg {
+  filter: drop-shadow(0 0 2px rgba(248, 113, 113, 0.7));
+}
+
+.cell-marker-max svg {
+  filter: drop-shadow(0 0 2px rgba(74, 222, 128, 0.7));
+}
+
+.value-cell.dimmed-range .cell-marker {
+  opacity: 0;
+}
+  </style>
+</head>
+
+<body>
+<h3>Bubble Heatmap (Data_2)</h3>
+
+<div class="layout-top">
+  <div class="range-summary" id="rangeSummary">
+    <div class="range-summary-title">Range summary</div>
+    <div>Hover a cell or a legend band to view statistics here.</div>
+  </div>
+
+  <div class="top3-panel" id="top3Panel">
+    <div class="top3-title">Top 3 scores in range</div>
+    <div>No range selected.</div>
+  </div>
+</div>
+
+<div class="responsive-bubble-wrapper" id="heatmapRoot">
+  <div class="inner">
+
+    <div class="meta-block">
+      <!-- Row 1: Filter + bands -->
+      <div class="meta-row">
+        <div class="meta-left">
+          <span class="controls-label">Filter attack:</span>
+          <input type="text" id="filterInput" placeholder="type to filter…">
+        </div>
+        <div class="meta-right">
+          <div class="legend">
+            <span class="legend-title">Bands:</span>
+            <div class="legend-items" id="legendItems"></div>
+            <span class="circle-legend-note">0.0 shows no circle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Sort + secondary legend -->
+      <div class="meta-row">
+        <div class="meta-left">
+          <span class="controls-label">Sort attacks by:</span>
+          <select id="sortSelect">
+            <option value="original">Original order</option>
+            <option value="attack">Attack name (A–Z)</option>
+            <option value="max">Max score</option>
+            <option value="avg">Average score</option>
+          </select>
+        </div>
+        <div class="meta-right">
+          <div class="legend-secondary-row">
+            <span class="legend-secondary-title">Within-band tint:</span>
+            <div class="legend-secondary-items">
+              <div class="legend-secondary-item">
+                <span class="legend-secondary-swatch"
+                      style="background:rgba(147,197,253,0.4);"></span>
+                <span>Lower values</span>
+              </div>
+              <div class="legend-secondary-item">
+                <span class="legend-secondary-swatch"
+                      style="background:rgba(37,99,235,0.75);"></span>
+                <span>Higher values</span>
+              </div>
+              <span class="legend-secondary-note">
+                <span class="legend-chevron legend-chevron-min">▼</span> min
+                <span class="legend-chevron legend-chevron-max">▲</span> max
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Size legend -->
+      <div class="meta-row">
+        <div class="meta-left"></div>
+        <div class="meta-right">
+          <div class="legend-size-row">
+            <span class="legend-size-title">Circle size:</span>
+            <svg width="70" height="18">
+              <circle cx="12" cy="9" r="3" fill="#60a5fa" opacity="0.9"></circle>
+              <circle cx="35" cy="9" r="5" fill="#60a5fa" opacity="0.9"></circle>
+              <circle cx="60" cy="9" r="7" fill="#60a5fa" opacity="0.9"></circle>
+            </svg>
+            <span class="legend-size-note">Higher scores → larger circles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table id="bubbleTable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>ERM</th>
+          <th>DA</th>
+          <th>PGDT</th>
+          <th>TRADES</th>
+          <th>MART</th>
+          <th>RS</th>
+          <th>IBP</th>
+          <th>PRL</th>
+          <th>TandT</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  </div>
+</div>
+
+<script>
+/* ----------------- Config & data ----------------- */
+
+const DATA_URL = "data_2.json"; // keep this next to the HTML when serving via HTTP
+
+/** Fallback inline data (used if JSON fails to load) */
+const attackDefenseDataFallback = [
+  ["No Attack",94.85,94.21,84.38,80.42,81.54,89.45,48.40,93.82,94.23],
+  ["TIFGSM",35.10,33.00,65.70,62.90,69.10,45.40,40.20,34.00,92.80],
+  ["MIFGSM",0.00,0.00,50.90,51.90,50.50,5.80,38.10,0.00,92.80],
+  ["DIFGSM",1.00,0.00,51.75,50.50,53.60,4.10,38.10,3.10,92.80],
+  ["VMIFGSM",0.00,0.00,51.10,50.90,51.90,4.10,38.10,0.00,93.90],
+  ["TPGD",38.10,39.20,69.30,69.10,70.10,48.50,50.00,28.90,91.80],
+  ["FGSM",29.90,25.80,57.95,54.60,61.90,28.90,38.10,25.80,93.80],
+  ["RFGSM",0.00,0.00,49.15,50.40,48.50,3.70,38.10,0.00,90.00],
+  ["BIM",0.00,0.00,52.00,57.20,47.40,2.10,38.10,0.00,90.70],
+  ["FAB",1.00,2.10,43.00,46.40,40.20,5.30,38.10,4.10,90.10],
+  ["CW",0.00,0.00,32.20,35.10,29.90,1.00,40.20,1.00,92.90],
+  ["UPGD",0.00,0.00,49.85,50.50,49.80,5.10,38.10,0.00,93.80],
+  ["FFGSM",19.60,23.70,60.55,55.70,66.00,33.00,42.30,29.90,92.80],
+  ["Jitter",11.30,12.40,48.15,47.40,49.50,34.00,39.20,24.70,90.70],
+  ["PGD",0.00,0.00,57.40,54.60,60.80,7.20,40.20,0.00,91.80],
+  ["EOTPGD",0.00,0.00,50.10,50.30,50.50,3.00,38.10,0.00,90.70],
+  ["APGD",0.00,0.00,48.40,51.00,46.40,1.00,38.10,0.00,90.70],
+  ["NIFGSM",0.00,0.00,57.95,59.80,59.80,7.20,38.10,1.00,92.80],
+  ["SiniFGSM",4.10,1.00,59.00,56.70,61.90,23.70,38.10,12.40,93.70],
+  ["VNIFGSM",0.00,0.00,50.45,53.00,48.50,5.10,38.10,0.00,92.90],
+  ["APGDT",0.00,0.00,40.90,44.30,38.10,0.00,38.10,0.00,88.70],
+  ["Square",0.00,1.00,50.40,54.00,47.40,3.10,38.10,2.10,88.08],
+  ["Add Gaussian Noise",25.80,43.30,79.10,78.40,80.40,74.20,42.30,45.40,87.60],
+  ["OnePixel",79.40,83.50,78.05,74.20,82.50,83.50,42.50,80.40,89.70],
+  ["Pixle",0.00,0.00,12.55,11.30,14.40,1.00,10.30,0.00,17.50],
+  ["PGDL2",1.00,0.00,35.80,36.10,36.10,5.20,36.10,0.00,92.90]
+];
+
+let attackDefenseData = []; // will be set from JSON or fallback
+
+const defenses = ["ERM","DA","PGDT","TRADES","MART","RS","IBP","PRL","TandT"];
+
+const colorStops = [
+  { min: 0,  max: 20,  color: "#60a5fa" },
+  { min: 20, max: 40,  color: "#60a5fa" },
+  { min: 40, max: 60,  color: "#60a5fa" },
+  { min: 60, max: 80,  color: "#60a5fa" },
+  { min: 80, max: 101, color: "#60a5fa" }
+];
+
+const HIGHLIGHT_LEVEL_CLASSES = [
+  "highlight-level-1",
+  "highlight-level-2",
+  "highlight-level-3",
+  "highlight-level-4",
+  "highlight-level-5"
+];
+
+let currentData = [];
+let activeBand = null;
+let tooltipDiv = null;
+
+/* Short labels for tooltips */
+function getShortAttackName(name) {
+  const aliases = {
+    "Add Gaussian Noise": "Add Gaussian Noise",
+    "No Attack": "No Attack"
+  };
+  return aliases[name] || name;
+}
+
+function ensureTooltip() {
+  if (!tooltipDiv) {
+    tooltipDiv = document.createElement("div");
+    tooltipDiv.className = "value-cell-tooltip";
+    document.body.appendChild(tooltipDiv);
+  }
+}
+
+/** Build attackDefenseData-style array from the JSON object */
+function buildArrayFromJson(jsonData) {
+  const rows = [];
+  for (const attack of Object.keys(jsonData)) {
+    const row = [attack];
+    defenses.forEach(def => {
+      row.push(jsonData[attack][def]);
+    });
+    rows.push(row);
+  }
+  return rows;
+}
+
+/** Load JSON from file; fall back to inline data if it fails */
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL);
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
+    const jsonData = await res.json();
+    attackDefenseData = buildArrayFromJson(jsonData);
+    console.log("Loaded data from", DATA_URL);
+  } catch (err) {
+    console.warn("Failed to load", DATA_URL, "– using inline fallback.", err);
+    attackDefenseData = attackDefenseDataFallback.slice();
+    const rs = document.getElementById("rangeSummary");
+    if (rs) {
+      rs.innerHTML =
+        `<div class="range-summary-title">Range summary (fallback data)</div>
+         <div>Could not load <code>${DATA_URL}</code>. Using embedded data instead.</div>`;
+    }
+  }
+  currentData = attackDefenseData.slice();
+}
+
+/* ----------------- Helpers ----------------- */
+
+function levelIndex(value) {
+  return colorStops.findIndex(s => value >= s.min && value < s.max);
+}
+
+function bandForValue(value) {
+  const idx = levelIndex(value);
+  const band = colorStops[idx];
+  const displayMax = band.max === 101 ? 100 : band.max;
+  const label = idx === 0 ? `0–${displayMax}` : `${band.min}–${displayMax}`;
+  return { ...band, label };
+}
+
+function heatColor(value) {
+  return colorStops[levelIndex(value)].color;
+}
+
+function circleRadius(value, svgSize) {
+  const idx = levelIndex(value);
+  const minR = 2.5;
+  const maxR = svgSize / 2 - 2.5;
+  return minR + idx * ((maxR - minR) / 4);
+}
+
+/* ----------------- Summary & Top3 ----------------- */
+
+function resetSummaryPanels() {
+  document.getElementById("rangeSummary").innerHTML =
+    `<div class="range-summary-title">Range summary</div>
+     <div>Hover a cell or a legend band to view statistics here.</div>`;
+
+  document.getElementById("top3Panel").innerHTML =
+    `<div class="top3-title">Top 3 scores in range</div>
+     <div>No range selected.</div>`;
+}
+
+function computeBandCells(min, max) {
+  const allCells = [];
+  const bestPerAttack = new Map();
+
+  currentData.forEach(row => {
+    const attack = row[0];
+    row.slice(1).forEach((v, j) => {
+      if (v >= min && v < max) {
+        const defense = defenses[j];
+        const cell = { attack, defense, value: v };
+        allCells.push(cell);
+
+        const existing = bestPerAttack.get(attack);
+        if (!existing || v > existing.value) {
+          bestPerAttack.set(attack, cell);
+        }
+      }
+    });
+  });
+
+  return { allCells, bestPerAttack };
+}
+
+function updateSummaryAndTop3(min, max) {
+  const displayMax = max === 101 ? 100 : max;
+  const rangeSummary = document.getElementById("rangeSummary");
+  const top3Panel = document.getElementById("top3Panel");
+  const { allCells, bestPerAttack } = computeBandCells(min, max);
+
+  if (!allCells.length) {
+    rangeSummary.innerHTML =
+      `<div class="range-summary-title">Range ${min}-${displayMax}</div>
+       <div>No values in this range (with current filter).</div>`;
+    top3Panel.innerHTML =
+      `<div class="top3-title">Top 3 scores in ${min}-${displayMax}</div>
+       <div>No entries.</div>`;
+    return;
+  }
+
+  const vals = allCells.map(c => c.value);
+  const minVal = Math.min(...vals);
+  const maxVal = Math.max(...vals);
+  const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
+
+  rangeSummary.innerHTML =
+    `<div class="range-summary-title">Range ${min}-${displayMax} (${vals.length} values)</div>
+     <div>Min: ${minVal.toFixed(1)} | Avg: ${avgVal.toFixed(1)} | Max: ${maxVal.toFixed(1)}</div>
+     <div class="range-legend-note">
+       Within this band: lighter blue ≈ lower, darker blue ≈ higher.
+       Min = red ▼, Max = green ▲.
+     </div>`;
+
+  const top3 = Array.from(bestPerAttack.values())
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 3);
+
+  top3Panel.innerHTML =
+    `<div class="top3-title">Top 3 scores in ${min}-${displayMax}</div>
+     <div class="top3-row">
+       ${top3.map((t, i) =>
+         `<div class="top3-box">
+            <strong>${i + 1})</strong> ${t.attack} • ${t.defense}<br>
+            ${t.value.toFixed(1)}
+          </div>`
+       ).join("")}
+     </div>`;
+}
+
+/* ----------------- Highlighting ----------------- */
+
+function clearHighlights() {
+  document.querySelectorAll(".value-cell").forEach(td => {
+    td.classList.remove(
+      "highlight-range",
+      "dimmed-range",
+      ...HIGHLIGHT_LEVEL_CLASSES
+    );
+    const marker = td.querySelector(".cell-marker");
+    if (marker) marker.remove();
+  });
+  resetSummaryPanels();
+}
+
+function highlightRange(min, max) {
+  const cells = document.querySelectorAll(".value-cell");
+  const bandCells = [];
+
+  cells.forEach(td => {
+    const v = parseFloat(td.dataset.value);
+
+    td.classList.remove(
+      "highlight-range",
+      "dimmed-range",
+      ...HIGHLIGHT_LEVEL_CLASSES
+    );
+    const oldMarker = td.querySelector(".cell-marker");
+    if (oldMarker) oldMarker.remove();
+
+    if (v >= min && v < max) {
+      td.classList.add("highlight-range");
+      bandCells.push({ td, value: v });
+    } else {
+      td.classList.add("dimmed-range");
+    }
+  });
+
+  if (!bandCells.length) {
+    updateSummaryAndTop3(min, max);
+    return;
+  }
+
+  const vals = bandCells.map(c => c.value);
+  const minVal = Math.min(...vals);
+  const maxVal = Math.max(...vals);
+
+  bandCells.forEach(({ td, value }) => {
+    if (value === minVal) {
+      td.classList.add("highlight-level-1");
+      td.insertAdjacentHTML(
+        "beforeend",
+        `<div class="cell-marker cell-marker-min">
+           <svg viewBox="0 0 12 12" aria-hidden="true">
+             <polyline points="2,4 6,8 10,4"
+                       fill="none"
+                       stroke="#f97373"
+                       stroke-width="1.6"
+                       stroke-linecap="round"
+                       stroke-linejoin="round" />
+           </svg>
+         </div>`
+      );
+    } else if (value === maxVal) {
+      td.classList.add("highlight-level-5");
+      td.insertAdjacentHTML(
+        "beforeend",
+        `<div class="cell-marker cell-marker-max">
+           <svg viewBox="0 0 12 12" aria-hidden="true">
+             <polyline points="2,8 6,4 10,8"
+                       fill="none"
+                       stroke="#4ade80"
+                       stroke-width="1.6"
+                       stroke-linecap="round"
+                       stroke-linejoin="round" />
+           </svg>
+         </div>`
+      );
+    } else {
+      const ratio = (value - minVal) / (maxVal - minVal || 1);
+      let level = Math.floor(ratio * 5);
+      if (level < 1) level = 1;
+      if (level > 5) level = 5;
+      td.classList.add(`highlight-level-${level}`);
+    }
+  });
+
+  updateSummaryAndTop3(min, max);
+}
+
+/* ----------------- Sorting / filtering ----------------- */
+
+function getFilteredSortedData() {
+  const filterText = document.getElementById("filterInput").value
+    .trim()
+    .toLowerCase();
+  const sortMode = document.getElementById("sortSelect").value;
+
+  let data = attackDefenseData
+    .filter(row => row[0].toLowerCase().includes(filterText));
+
+  if (sortMode === "attack") {
+    data.sort((a, b) => a[0].localeCompare(b[0]));
+  } else if (sortMode === "max") {
+    data.sort((a, b) =>
+      Math.max(...b.slice(1)) - Math.max(...a.slice(1))
+    );
+  } else if (sortMode === "avg") {
+    const avg = row => row.slice(1).reduce((s, v) => s + v, 0) / (row.length - 1);
+    data.sort((a, b) => avg(b) - avg(a));
+  }
+
+  return data;
+}
+
+/* ----------------- Rendering ----------------- */
+
+function createValueCell(value, defense, attack, svgSize = 20) {
+  ensureTooltip();
+
+  const td = document.createElement("td");
+  td.className = "value-cell";
+  td.dataset.value = value;
+
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.classList.add("bubble-svg");
+  svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
+
+  if (value !== 0) {
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("cx", svgSize / 2);
+    circle.setAttribute("cy", svgSize / 2);
+    circle.setAttribute("r", circleRadius(value, svgSize));
+    circle.setAttribute("fill", heatColor(value));
+    circle.setAttribute("opacity", "0.92");
+    circle.setAttribute("class", "bubble-circle");
+    svg.appendChild(circle);
+  }
+
+  td.appendChild(svg);
+
+  const label = document.createElement("div");
+  label.className = "bubble-label";
+  label.textContent = value.toFixed(1);
+  td.appendChild(label);
+
+  td.addEventListener("mouseenter", () => {
+    td.classList.add("hover-outline");
+
+    if (tooltipDiv) {
+      const band = activeBand ? activeBand : bandForValue(value);
+      let markerType = null;
+
+      const { allCells } = computeBandCells(band.min, band.max);
+      if (allCells.length > 0) {
+        const vals = allCells.map(c => c.value);
+        const minVal = Math.min(...vals);
+        const maxVal = Math.max(...vals);
+        if (value === minVal) markerType = "min";
+        else if (value === maxVal) markerType = "max";
+      }
+
+      let chevronHTML = "";
+      if (markerType === "min") {
+        chevronHTML =
+          `<span class="legend-chevron legend-chevron-min">▼</span>`;
+      } else if (markerType === "max") {
+        chevronHTML =
+          `<span class="legend-chevron legend-chevron-max">▲</span>`;
+      }
+
+      const shortAttack = getShortAttackName(attack);
+
+      tooltipDiv.innerHTML =
+        `<div class="tooltip-inner">
+           <div class="tooltip-top">
+             <span class="tooltip-score">${value.toFixed(2)}</span>
+             ${chevronHTML}
+           </div>
+           <div class="tooltip-bottom">
+             <span class="tooltip-meta">${shortAttack} • ${defense}</span>
+           </div>
+         </div>`;
+
+      // Tooltip = same size as cell, same position
+      const cellRect = td.getBoundingClientRect();
+      tooltipDiv.style.width = `${cellRect.width}px`;
+      tooltipDiv.style.height = `${cellRect.height}px`;
+      tooltipDiv.style.left = `${cellRect.left}px`;
+      tooltipDiv.style.top = `${cellRect.top}px`;
+
+      tooltipDiv.style.visibility = "visible";
+      tooltipDiv.classList.add("visible");
+    }
+
+    if (!activeBand) {
+      const band = bandForValue(value);
+      highlightRange(band.min, band.max);
+    }
+  });
+
+  td.addEventListener("mouseleave", () => {
+    td.classList.remove("hover-outline");
+
+    if (tooltipDiv) {
+      tooltipDiv.classList.remove("visible");
+      tooltipDiv.style.visibility = "hidden";
+    }
+
+    if (!activeBand) {
+      clearHighlights();
+    } else {
+      highlightRange(activeBand.min, activeBand.max);
+    }
+  });
+
+  return td;
+}
+
+function renderTable(data) {
+  currentData = data.slice();
+  const tbody = document.querySelector("#bubbleTable tbody");
+  tbody.innerHTML = "";
+
+  currentData.forEach(row => {
+    const attack = row[0];
+    const tr = document.createElement("tr");
+
+    const labelCell = document.createElement("td");
+    labelCell.textContent = attack;
+    tr.appendChild(labelCell);
+
+    row.slice(1).forEach((value, j) => {
+      const def = defenses[j];
+      tr.appendChild(createValueCell(value, def, attack));
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function setActiveLegendIndex(activeIndex) {
+  const items = document.querySelectorAll(".legend-item");
+  items.forEach((item, idx) => {
+    if (idx === activeIndex) {
+      item.classList.add("legend-item--active");
+    } else {
+      item.classList.remove("legend-item--active");
+    }
+  });
+}
+
+function renderLegend() {
+  const legendItems = document.getElementById("legendItems");
+  legendItems.innerHTML = "";
+  const svgSize = 14;
+
+  colorStops.forEach((stop, idx) => {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.dataset.bandIndex = idx;
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.classList.add("legend-circle-svg");
+    svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
+
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("cx", svgSize / 2);
+    circle.setAttribute("cy", svgSize / 2);
+    circle.setAttribute("r", svgSize / 2 - 2);
+    circle.setAttribute("fill", stop.color);
+    circle.setAttribute("opacity", "0.92");
+    svg.appendChild(circle);
+
+    const labelSpan = document.createElement("span");
+    const maxVal = stop.max === 101 ? 100 : stop.max;
+    labelSpan.textContent = idx === 0 ? `0–${maxVal}` : `${stop.min}–${maxVal}`;
+
+    item.appendChild(svg);
+    item.appendChild(labelSpan);
+    legendItems.appendChild(item);
+
+    item.addEventListener("mouseenter", () => {
+      if (activeBand) return;
+      highlightRange(stop.min, stop.max);
+    });
+
+    item.addEventListener("mouseleave", () => {
+      if (!activeBand) {
+        clearHighlights();
+      } else {
+        highlightRange(activeBand.min, activeBand.max);
+      }
+    });
+
+    item.addEventListener("click", () => {
+      const isSameActive =
+        activeBand &&
+        activeBand.min === stop.min &&
+        activeBand.max === stop.max;
+
+      if (isSameActive) {
+        activeBand = null;
+        setActiveLegendIndex(-1);
+        clearHighlights();
+      } else {
+        activeBand = { min: stop.min, max: stop.max };
+        setActiveLegendIndex(idx);
+        highlightRange(stop.min, stop.max);
+      }
+    });
+  });
+}
+
+/* ----------------- Init ----------------- */
+
+function bindControls() {
+  document.getElementById("sortSelect").addEventListener("change", () => {
+    renderTable(getFilteredSortedData());
+    if (activeBand) {
+      highlightRange(activeBand.min, activeBand.max);
+    } else {
+      clearHighlights();
+    }
+  });
+
+  document.getElementById("filterInput").addEventListener("input", () => {
+    renderTable(getFilteredSortedData());
+    if (activeBand) {
+      highlightRange(activeBand.min, activeBand.max);
+    } else {
+      clearHighlights();
+    }
+  });
+}
+
+async function init() {
+  await loadData();
+  renderTable(getFilteredSortedData());
+  renderLegend();
+  if (!attackDefenseData.length) {
+    resetSummaryPanels();
+  }
+  bindControls();
+}
+
+init();
+</script>
+</body>
+</html>
