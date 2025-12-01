@@ -898,17 +898,32 @@
       </td>
     </tr>
 
-    <!-- Layout 4 with your content area -->
+    <!-- Layout 4 with embedded provided file -->
     <tr>
       <td>
-        <div class="layout-label">4 – Custom Layout</div>
+        <div class="layout-label">4 – Custom Layout (Embedded file)</div>
         <div class="layout layout-4">
-          <header>Layout 4</header>
+          <header>Layout 4 – Embedded Content</header>
 
           <main class="layout-4-main">
-            <h2>Layout 4 Content</h2>
-            <p>Placeholder</p>
-            <!-- Keep adding whatever “content you have given” into this main block -->
+            <h2>Attack–Defense Accuracy (Embedded)</h2>
+            <p style="margin-bottom: 0.75rem; font-size: 0.85rem;">
+              The visualization below is loaded from the provided file.
+            </p>
+
+            <!-- 👇 This is where your provided file is embedded -->
+            <iframe
+              src="layout4-content.html"
+              title="Attack-Defense Accuracy (Data_1 &amp; Data_2)"
+              style="
+                width: 100%;
+                height: 520px;
+                border: none;
+                border-radius: 0.75rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                overflow: hidden;
+              "
+            ></iframe>
           </main>
 
           <footer>© 2025 Layout 4</footer>
@@ -925,7 +940,7 @@
     const $  = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from((r || document).querySelectorAll(s));
 
-    /* ROW 2: nodes A..G interactions (refactored) */
+    /* ROW 2: nodes A..G interactions */
     (() => {
       const svg = document.getElementById('nodesSVG');
       if (!svg) return;
@@ -1126,7 +1141,7 @@
       });
     })();
 
-    /* Row 5 bars: CSS-only animation (no JS needed) */
+    /* Row 5 bars: CSS-only animation */
   </script>
 </body>
 </html>
