@@ -1,8 +1,8 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>5 Layouts in One Table</title>
+  <title>Combined Assignment Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     /* Global reset / base */
@@ -354,6 +354,22 @@
     .conn { stroke: #ff6b00; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 300; stroke-dashoffset: 300; transition: stroke-dashoffset 520ms linear, opacity 220ms; opacity: 0; pointer-events: none; }
     .conn.show { stroke-dashoffset: 0; opacity: 1; }
 
+    /* Diagram 2: active node style */
+    .layout-3 .node {
+      fill: #e8f3fb;
+      stroke: #0a58a3;
+      stroke-width: 2;
+      cursor: pointer;
+      transition: transform 0.12s ease, fill 0.12s;
+      transform-origin: center center;
+      transform-box: fill-box;
+    }
+
+    .layout-3 .active .node {
+      fill: #ffefdc;
+      transform: scale(1.06);
+    }
+
     /* Row 3 bimodal */
     .curve { fill: none; stroke: #0a58a3; stroke-width: 2.4; }
     .pt { fill: #012; stroke: #fff; stroke-width: 0.8; }
@@ -500,99 +516,98 @@
         <div class="layout layout-2">
           <header>IDV-assignment2</header>
 
-            <main>
-              <h2>IDV-assignment2</h2>
+          <main>
+            <h2>IDV-assignment2</h2>
 
-              <div class="table-responsive">
-                <table class="idv-table">
-                  <thead>
-                    <tr class="table-title-row">
-                      <th colspan="5">IDV-assignment2</th>
-                    </tr>
-                    <tr>
-                      <th>Original</th>
-                      <th>Mirror</th>
-                      <th>Rotate 180°</th>
-                      <th>Squeeze Y</th>
-                      <th>Grayscale</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="cell"><img src="svg/01.svg" class="img original" alt="original 01.svg" /></td>
-                      <td class="cell"><img src="svg/01.svg" class="img mirror" alt="mirror 01.svg" /></td>
-                      <td class="cell"><img src="svg/01.svg" class="img rotate180" alt="rotate180 01.svg" /></td>
-                      <td class="cell"><img src="svg/01.svg" class="img squeezeY" alt="squeezeY 01.svg" /></td>
-                      <td class="cell"><img src="svg/01.svg" class="img grayscale" alt="grayscale 01.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/02.svg" class="img original" alt="original 02.svg" /></td>
-                      <td class="cell"><img src="svg/02.svg" class="img mirror" alt="mirror 02.svg" /></td>
-                      <td class="cell"><img src="svg/02.svg" class="img rotate180" alt="rotate180 02.svg" /></td>
-                      <td class="cell"><img src="svg/02.svg" class="img squeezeY" alt="squeezeY 02.svg" /></td>
-                      <td class="cell"><img src="svg/02.svg" class="img grayscale" alt="grayscale 02.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/03.svg" class="img original" alt="original 03.svg" /></td>
-                      <td class="cell"><img src="svg/03.svg" class="img mirror" alt="mirror 03.svg" /></td>
-                      <td class="cell"><img src="svg/03.svg" class="img rotate180" alt="rotate180 03.svg" /></td>
-                      <td class="cell"><img src="svg/03.svg" class="img squeezeY" alt="squeezeY 03.svg" /></td>
-                      <td class="cell"><img src="svg/03.svg" class="img grayscale" alt="grayscale 03.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/04.svg" class="img original" alt="original 04.svg" /></td>
-                      <td class="cell"><img src="svg/04.svg" class="img mirror" alt="mirror 04.svg" /></td>
-                      <td class="cell"><img src="svg/04.svg" class="img rotate180" alt="rotate180 04.svg" /></td>
-                      <td class="cell"><img src="svg/04.svg" class="img squeezeY" alt="squeezeY 04.svg" /></td>
-                      <td class="cell"><img src="svg/04.svg" class="img grayscale" alt="grayscale 04.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/05.svg" class="img original" alt="original 05.svg" /></td>
-                      <td class="cell"><img src="svg/05.svg" class="img mirror" alt="mirror 05.svg" /></td>
-                      <td class="cell"><img src="svg/05.svg" class="img rotate180" alt="rotate180 05.svg" /></td>
-                      <td class="cell"><img src="svg/05.svg" class="img squeezeY" alt="squeezeY 05.svg" /></td>
-                      <td class="cell"><img src="svg/05.svg" class="img grayscale" alt="grayscale 05.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/06.svg" class="img original" alt="original 06.svg" /></td>
-                      <td class="cell"><img src="svg/06.svg" class="img mirror" alt="mirror 06.svg" /></td>
-                      <td class="cell"><img src="svg/06.svg" class="img rotate180" alt="rotate180 06.svg" /></td>
-                      <td class="cell"><img src="svg/06.svg" class="img squeezeY" alt="squeezeY 06.svg" /></td>
-                      <td class="cell"><img src="svg/06.svg" class="img grayscale" alt="grayscale 06.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/07.svg" class="img original" alt="original 07.svg" /></td>
-                      <td class="cell"><img src="svg/07.svg" class="img mirror" alt="mirror 07.svg" /></td>
-                      <td class="cell"><img src="svg/07.svg" class="img rotate180" alt="rotate180 07.svg" /></td>
-                      <td class="cell"><img src="svg/07.svg" class="img squeezeY" alt="squeezeY 07.svg" /></td>
-                      <td class="cell"><img src="svg/07.svg" class="img grayscale" alt="grayscale 07.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/08.svg" class="img original" alt="original 08.svg" /></td>
-                      <td class="cell"><img src="svg/08.svg" class="img mirror" alt="mirror 08.svg" /></td>
-                      <td class="cell"><img src="svg/08.svg" class="img rotate180" alt="rotate180 08.svg" /></td>
-                      <td class="cell"><img src="svg/08.svg" class="img squeezeY" alt="squeezeY 08.svg" /></td>
-                      <td class="cell"><img src="svg/08.svg" class="img grayscale" alt="grayscale 08.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/09.svg" class="img original" alt="original 09.svg" /></td>
-                      <td class="cell"><img src="svg/09.svg" class="img mirror" alt="mirror 09.svg" /></td>
-                      <td class="cell"><img src="svg/09.svg" class="img rotate180" alt="rotate180 09.svg" /></td>
-                      <td class="cell"><img src="svg/09.svg" class="img squeezeY" alt="squeezeY 09.svg" /></td>
-                      <td class="cell"><img src="svg/09.svg" class="img grayscale" alt="grayscale 09.svg" /></td>
-                    </tr>
-                    <tr>
-                      <td class="cell"><img src="svg/10.svg" class="img original" alt="original 10.svg" /></td>
-                      <td class="cell"><img src="svg/10.svg" class="img mirror" alt="mirror 10.svg" /></td>
-                      <td class="cell"><img src="svg/10.svg" class="img rotate180" alt="rotate180 10.svg" /></td>
-                      <td class="cell"><img src="svg/10.svg" class="img squeezeY" alt="squeezeY 10.svg" /></td>
-                      <td class="cell"><img src="svg/10.svg" class="img grayscale" alt="grayscale 10.svg" /></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </main>
-          </div>
+            <div class="table-responsive">
+              <table class="idv-table">
+                <thead>
+                  <tr class="table-title-row">
+                    <th colspan="5">IDV-assignment2</th>
+                  </tr>
+                  <tr>
+                    <th>Original</th>
+                    <th>Mirror</th>
+                    <th>Rotate 180°</th>
+                    <th>Squeeze Y</th>
+                    <th>Grayscale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="cell"><img src="svg/01.svg" class="img original" alt="original 01.svg" /></td>
+                    <td class="cell"><img src="svg/01.svg" class="img mirror" alt="mirror 01.svg" /></td>
+                    <td class="cell"><img src="svg/01.svg" class="img rotate180" alt="rotate180 01.svg" /></td>
+                    <td class="cell"><img src="svg/01.svg" class="img squeezeY" alt="squeezeY 01.svg" /></td>
+                    <td class="cell"><img src="svg/01.svg" class="img grayscale" alt="grayscale 01.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/02.svg" class="img original" alt="original 02.svg" /></td>
+                    <td class="cell"><img src="svg/02.svg" class="img mirror" alt="mirror 02.svg" /></td>
+                    <td class="cell"><img src="svg/02.svg" class="img rotate180" alt="rotate180 02.svg" /></td>
+                    <td class="cell"><img src="svg/02.svg" class="img squeezeY" alt="squeezeY 02.svg" /></td>
+                    <td class="cell"><img src="svg/02.svg" class="img grayscale" alt="grayscale 02.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/03.svg" class="img original" alt="original 03.svg" /></td>
+                    <td class="cell"><img src="svg/03.svg" class="img mirror" alt="mirror 03.svg" /></td>
+                    <td class="cell"><img src="svg/03.svg" class="img rotate180" alt="rotate180 03.svg" /></td>
+                    <td class="cell"><img src="svg/03.svg" class="img squeezeY" alt="squeezeY 03.svg" /></td>
+                    <td class="cell"><img src="svg/03.svg" class="img grayscale" alt="grayscale 03.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/04.svg" class="img original" alt="original 04.svg" /></td>
+                    <td class="cell"><img src="svg/04.svg" class="img mirror" alt="mirror 04.svg" /></td>
+                    <td class="cell"><img src="svg/04.svg" class="img rotate180" alt="rotate180 04.svg" /></td>
+                    <td class="cell"><img src="svg/04.svg" class="img squeezeY" alt="squeezeY 04.svg" /></td>
+                    <td class="cell"><img src="svg/04.svg" class="img grayscale" alt="grayscale 04.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/05.svg" class="img original" alt="original 05.svg" /></td>
+                    <td class="cell"><img src="svg/05.svg" class="img mirror" alt="mirror 05.svg" /></td>
+                    <td class="cell"><img src="svg/05.svg" class="img rotate180" alt="rotate180 05.svg" /></td>
+                    <td class="cell"><img src="svg/05.svg" class="img squeezeY" alt="squeezeY 05.svg" /></td>
+                    <td class="cell"><img src="svg/05.svg" class="img grayscale" alt="grayscale 05.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/06.svg" class="img original" alt="original 06.svg" /></td>
+                    <td class="cell"><img src="svg/06.svg" class="img mirror" alt="mirror 06.svg" /></td>
+                    <td class="cell"><img src="svg/06.svg" class="img rotate180" alt="rotate180 06.svg" /></td>
+                    <td class="cell"><img src="svg/06.svg" class="img squeezeY" alt="squeezeY 06.svg" /></td>
+                    <td class="cell"><img src="svg/06.svg" class="img grayscale" alt="grayscale 06.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/07.svg" class="img original" alt="original 07.svg" /></td>
+                    <td class="cell"><img src="svg/07.svg" class="img mirror" alt="mirror 07.svg" /></td>
+                    <td class="cell"><img src="svg/07.svg" class="img rotate180" alt="rotate180 07.svg" /></td>
+                    <td class="cell"><img src="svg/07.svg" class="img squeezeY" alt="squeezeY 07.svg" /></td>
+                    <td class="cell"><img src="svg/07.svg" class="img grayscale" alt="grayscale 07.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/08.svg" class="img original" alt="original 08.svg" /></td>
+                    <td class="cell"><img src="svg/08.svg" class="img mirror" alt="mirror 08.svg" /></td>
+                    <td class="cell"><img src="svg/08.svg" class="img rotate180" alt="rotate180 08.svg" /></td>
+                    <td class="cell"><img src="svg/08.svg" class="img squeezeY" alt="squeezeY 08.svg" /></td>
+                    <td class="cell"><img src="svg/08.svg" class="img grayscale" alt="grayscale 08.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/09.svg" class="img original" alt="original 09.svg" /></td>
+                    <td class="cell"><img src="svg/09.svg" class="img mirror" alt="mirror 09.svg" /></td>
+                    <td class="cell"><img src="svg/09.svg" class="img rotate180" alt="rotate180 09.svg" /></td>
+                    <td class="cell"><img src="svg/09.svg" class="img squeezeY" alt="squeezeY 09.svg" /></td>
+                    <td class="cell"><img src="svg/09.svg" class="img grayscale" alt="grayscale 09.svg" /></td>
+                  </tr>
+                  <tr>
+                    <td class="cell"><img src="svg/10.svg" class="img original" alt="original 10.svg" /></td>
+                    <td class="cell"><img src="svg/10.svg" class="img mirror" alt="mirror 10.svg" /></td>
+                    <td class="cell"><img src="svg/10.svg" class="img rotate180" alt="rotate180 10.svg" /></td>
+                    <td class="cell"><img src="svg/10.svg" class="img squeezeY" alt="squeezeY 10.svg" /></td>
+                    <td class="cell"><img src="svg/10.svg" class="img grayscale" alt="grayscale 10.svg" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </main>
         </div>
       </td>
     </tr>
@@ -865,49 +880,57 @@
     const $  = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from((r || document).querySelectorAll(s));
 
-    /* ROW 2: nodes A..G interactions */
+    /* ROW 2: nodes A..G interactions (refactored) */
     (() => {
-      const svg = $('#nodesSVG');
+      const svg = document.getElementById('nodesSVG');
       if (!svg) return;
-      const conn = $('#conn', svg);
-      const A = $('#node-A', svg);
 
-      function getCenter(g) {
+      const conn = svg.querySelector('#conn');
+      const nodeA = svg.querySelector('#node-A');
+      if (!conn || !nodeA) return;
+
+      const getCenter = (g) => {
         const t = g.getAttribute('transform') || '';
-        const m = /translate\(\s*([\-\\d.]+)[ ,]+([\-\\d.]+)\s*\)/.exec(t);
+        const m = /translate\(\s*([-\d.]+)[ ,]+([-\d.]+)\s*\)/.exec(t);
         if (m) return { x: +m[1], y: +m[2] };
-        const c = g.querySelector('circle').getBBox();
-        return { x: c.x + c.width / 2, y: c.y + c.height / 2 };
-      }
 
-      const aCenter = getCenter(A);
+        const circle = g.querySelector('circle');
+        const box = circle.getBBox();
+        return {
+          x: box.x + box.width / 2,
+          y: box.y + box.height / 2
+        };
+      };
+
+      const aCenter = getCenter(nodeA);
       const nodeIds = ['node-B', 'node-C', 'node-D', 'node-E', 'node-F', 'node-G'];
 
-      nodeIds.forEach(id => {
-        const g = document.getElementById(id);
+      const setupNodeHover = (nodeId) => {
+        const g = document.getElementById(nodeId);
         if (!g) return;
-        const circle = g.querySelector('circle');
 
-        g.addEventListener('mouseenter', () => {
+        const onEnter = () => {
           const c = getCenter(g);
           const mx = (aCenter.x + c.x) / 2;
           const cpY = Math.min(aCenter.y, c.y) - 20;
           const d = `M ${aCenter.x} ${aCenter.y} Q ${mx} ${cpY} ${c.x} ${c.y}`;
           conn.setAttribute('d', d);
           conn.classList.add('show');
-          circle.setAttribute('fill', '#ffefdc');
-          circle.setAttribute('transform', 'scale(1.06)');
-        });
+          g.classList.add('active');
+        };
 
-        g.addEventListener('mouseleave', () => {
+        const onLeave = () => {
           conn.classList.remove('show');
-          circle.setAttribute('fill', '#e8f3fb');
-          circle.removeAttribute('transform');
-        });
+          g.classList.remove('active');
+        };
 
-        g.addEventListener('focus', () => g.dispatchEvent(new Event('mouseenter')));
-        g.addEventListener('blur',  () => g.dispatchEvent(new Event('mouseleave')));
-      });
+        g.addEventListener('mouseenter', onEnter);
+        g.addEventListener('mouseleave', onLeave);
+        g.addEventListener('focus', onEnter);
+        g.addEventListener('blur', onLeave);
+      };
+
+      nodeIds.forEach(setupNodeHover);
     })();
 
     /* ROW 3: sample points and tangent lines */
