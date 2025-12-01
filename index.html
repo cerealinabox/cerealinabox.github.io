@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Combined Assignment Table</title>
+  <title>5 Layouts in One Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     /* Global reset / base */
@@ -150,7 +150,6 @@
 
     /* -------------------------
        LAYOUT 2: IDV Assignment
-       Header + Left Sidebar
        ------------------------- */
     .layout-2 header {
       background: #047857;
@@ -349,13 +348,7 @@
     @keyframes r1dash { to { stroke-dashoffset: 0; } }
 
     /* Row 2 nodes */
-    .node { fill: #e8f3fb; stroke: #0a58a3; stroke-width: 2; cursor: pointer; transition: transform 0.12s ease, fill 0.12s; }
-    .node-label { font-size: 12px; fill: #05345a; font-weight: 700; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
-    .conn { stroke: #ff6b00; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 300; stroke-dashoffset: 300; transition: stroke-dashoffset 520ms linear, opacity 220ms; opacity: 0; pointer-events: none; }
-    .conn.show { stroke-dashoffset: 0; opacity: 1; }
-
-    /* Diagram 2: active node style */
-    .layout-3 .node {
+    .node {
       fill: #e8f3fb;
       stroke: #0a58a3;
       stroke-width: 2;
@@ -363,6 +356,33 @@
       transition: transform 0.12s ease, fill 0.12s;
       transform-origin: center center;
       transform-box: fill-box;
+    }
+
+    .node-label {
+      font-size: 12px;
+      fill: #05345a;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    .conn {
+      stroke: #ff6b00;
+      stroke-width: 3.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 300;
+      stroke-dashoffset: 300;
+      transition: stroke-dashoffset 520ms linear, opacity 220ms;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .conn.show {
+      stroke-dashoffset: 0;
+      opacity: 1;
     }
 
     .layout-3 .active .node {
@@ -393,11 +413,14 @@
       transform: scaleY(0.06);
       transition: transform 600ms cubic-bezier(.2, .9, .2, 1), fill 220ms;
     }
+
     .bar[data-s="0.95"] { --s: 0.95; }
     .bar[data-s="0.7"]  { --s: 0.7; }
     .bar[data-s="0.45"] { --s: 0.45; }
 
-    .bars svg:hover .bar { transform: scaleY(var(--s)); }
+    .bars svg:hover .bar {
+      transform: scaleY(var(--s));
+    }
 
     .bars svg .bar:hover {
       fill: #2b6f95;
@@ -410,10 +433,25 @@
     }
 
     /* -------------------------
-       LAYOUT 4: placeholder
+       LAYOUT 4: custom content
        ------------------------- */
     .layout-4 header {
       background: #be123c;
+    }
+
+    .layout-4-main {
+      padding: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .layout-4-main h2 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .layout-4-main p {
+      margin-bottom: 0.5rem;
     }
 
     .layout-4 footer {
@@ -422,7 +460,6 @@
 
     /* -------------------------
        LAYOUT 5: Cards layout
-       (if you add it later)
        ------------------------- */
     .layout-5 header {
       background: #6b21a8;
@@ -534,6 +571,7 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <!-- Your 10 SVG rows unchanged -->
                   <tr>
                     <td class="cell"><img src="svg/01.svg" class="img original" alt="original 01.svg" /></td>
                     <td class="cell"><img src="svg/01.svg" class="img mirror" alt="mirror 01.svg" /></td>
@@ -860,12 +898,19 @@
       </td>
     </tr>
 
-    <!-- Layout 4 (placeholder for now) -->
+    <!-- Layout 4 with your content area -->
     <tr>
       <td>
-        <div class="layout-label">4 – Placeholder Layout</div>
+        <div class="layout-label">4 – Custom Layout</div>
         <div class="layout layout-4">
           <header>Layout 4</header>
+
+          <main class="layout-4-main">
+            <h2>Layout 4 Content</h2>
+            <p>Placeholder</p>
+            <!-- Keep adding whatever “content you have given” into this main block -->
+          </main>
+
           <footer>© 2025 Layout 4</footer>
         </div>
       </td>
