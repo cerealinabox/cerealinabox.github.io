@@ -1210,7 +1210,7 @@
     <tr>
       <td>
         <div class="layout-label">Assignment 1</div>
-        <div class="layout layout-1">
+        <div class="layout layout-1" id="assignment-1">
           <header>Item 1 (Singapore PSI Dashboard)</header>
 
           <main>
@@ -1251,7 +1251,7 @@
     <tr>
       <td>
         <div class="layout-label">Assignment 2</div>
-        <div class="layout layout-2">
+        <div class="layout layout-2" id="assignment-2">
           <header>Item 2 (SVG Table)</header>
 
           <main>
@@ -1357,7 +1357,7 @@
     <tr>
       <td>
         <div class="layout-label">Assignment 3</div>
-        <div class="layout layout-3">
+        <div class="layout layout-3" id="assignment-3">
           <header>Item 3 (Interactive SVG Diagrams)</header>
 
           <main class="layout-3-main">
@@ -1606,7 +1606,7 @@
     <tr>
       <td>
         <div class="layout-label">Assignment 4</div>
-        <div class="layout layout-4">
+        <div class="layout layout-4" id="assignment-4">
           <header>Item 4 (Interactive Table)</header>
 
           <main class="layout-4-main">
@@ -1740,8 +1740,6 @@
               </div>
             </div>
           </main>
-
-          <footer>© 2025 Layout 4</footer>
         </div>
       </td>
     </tr>
@@ -1750,37 +1748,46 @@
     <tr>
       <td>
         <div class="layout-label">5 – Cards Layout</div>
-        <div class="layout layout-5">
+        <div class="layout layout-5" id="assignment-5">
           <header>Cards Overview</header>
-          <main>
-            <div class="card-grid">
-              <div class="card">
-                <strong>Layout 1 – PSI</strong>
-                <p>Simple PSI table pulling data via a JavaScript function.</p>
+          
+            <main>
+              <div class="card-grid">
+                <div class="card">
+                  <a href="#assignment-1" class="card-link">
+                    <strong>Assignment 1</strong>
+                    <span class="card-cta"></span>
+                  </a>
+                </div>
+
+                <div class="card">
+                  <a href="#assignment-2" class="card-link">
+                    <strong>Assignment 2</strong>
+                    <span class="card-cta"></span>
+                  </a>
+                </div>
+
+                <div class="card">
+                  <a href="#assignment-3" class="card-link">
+                    <strong>Assignment 3</strong>
+                    <span class="card-cta"></span>
+                  </a>
+                </div>
+
+                <div class="card">
+                  <a href="#assignment-4" class="card-link">
+                    <strong>Assignment 4</strong>
+                    <span class="card-cta"></span>
+                  </a>
+                </div>
+
+                <div class="card">
+                  <a href="#assignment-1" class="card-link">
+                    <strong>Back to Top</strong>
+                  </a>
+                </div>
               </div>
-              <div class="card">
-                <strong>Layout 2 – IDV</strong>
-                <p>Image transformations: mirror, rotate, squeeze, grayscale.</p>
-              </div>
-              <div class="card">
-                <strong>Layout 3 – SVG</strong>
-                <p>Interactive SVG shapes, paths, and area charts.</p>
-              </div>
-              <div class="card">
-                <strong>Layout 4 – Heatmap</strong>
-                <p>Attack–Defense accuracy bubble heatmap with bands + modal.</p>
-              </div>
-              <div class="card">
-                <strong>Layout 5 – Cards</strong>
-                <p>Summary cards tying the entire page together.</p>
-              </div>
-              <div class="card">
-                <strong>Responsive</strong>
-                <p>Layouts adjust using simple media queries for smaller screens.</p>
-              </div>
-            </div>
-          </main>
-          <footer>© 2025 Layout 5</footer>
+            </main>
         </div>
       </td>
     </tr>
