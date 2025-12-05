@@ -78,22 +78,6 @@
       background: #1f2937;
     }
 
-    .layout-1 nav {
-      background: #111827;
-      color: #e5e7eb;
-    }
-
-    .layout-1 nav a {
-      margin-right: 0.75rem;
-      color: inherit;
-      text-decoration: none;
-      font-size: 0.85rem;
-    }
-
-    .layout-1 nav a:hover {
-      text-decoration: underline;
-    }
-
     .layout-1 main {
       padding-top: 1rem;
       padding-bottom: 1rem;
@@ -153,26 +137,6 @@
        ------------------------- */
     .layout-2 header {
       background: #047857;
-    }
-
-    .layout-2 .body {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-    }
-
-    .layout-2 aside {
-      background: #ecfdf5;
-      border-right: 1px solid #d1fae5;
-    }
-
-    .layout-2 aside strong {
-      display: block;
-      margin-bottom: 0.4rem;
-    }
-
-    .layout-2 aside p {
-      font-size: 0.8rem;
-      line-height: 1.4;
     }
 
     .layout-2 main {
@@ -433,7 +397,7 @@
     }
 
     /* -------------------------
-       LAYOUT 4: custom content
+       LAYOUT 4: Heatmap container
        ------------------------- */
     .layout-4 header {
       background: #be123c;
@@ -445,18 +409,756 @@
       line-height: 1.5;
     }
 
-    .layout-4-main h2 {
-      margin-bottom: 0.5rem;
-      font-size: 1rem;
-    }
-
-    .layout-4-main p {
-      margin-bottom: 0.5rem;
-    }
-
     .layout-4 footer {
       background: #fee2e2;
     }
+
+    /* Heatmap root styling (scoped) */
+    .layout-4-heatmap {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000000 100%);
+      color: #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 0.5rem 0.75rem 0.75rem;
+      box-shadow: 0 0 18px rgba(15, 23, 42, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .layout-4-heatmap h3 {
+      margin: 4px 8px 2px 8px;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      color: #e0f2fe;
+    }
+
+    .layout-4-heatmap .layout-top {
+      display: flex;
+      width: 100%;
+      gap: 6px;
+      margin: 0 8px 4px 8px;
+    }
+
+    .layout-4-heatmap .range-summary,
+    .layout-4-heatmap .top3-panel {
+      flex: 1;
+      height: 60px;
+      font-size: 10px;
+      line-height: 1.3;
+      color: #e5e7eb;
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 65%);
+      border-radius: 8px;
+      padding: 5px 7px;
+      border: 1px solid #111827;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    .layout-4-heatmap .range-summary-title,
+    .layout-4-heatmap .top3-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: #a5b4fc;
+      font-size: 10px;
+    }
+
+    .layout-4-heatmap .range-legend-note {
+      margin-top: 1px;
+      font-size: 9px;
+      color: #9ca3af;
+    }
+
+    .layout-4-heatmap .top3-row {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      margin-top: 3px;
+    }
+
+    .layout-4-heatmap .top3-box {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 6px;
+      padding: 3px 5px;
+      font-size: 9px;
+      color: #e5e7eb;
+      text-align: left;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.12);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Defense summary modal (scoped) */
+    .layout-4-heatmap .defense-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .layout-4-heatmap .defense-modal.open {
+      display: flex;
+    }
+
+    .layout-4-heatmap .defense-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.85), rgba(0,0,0,0.95));
+      backdrop-filter: blur(3px);
+    }
+
+    .layout-4-heatmap .defense-modal-panel {
+      position: relative;
+      z-index: 1;
+      width: min(440px, 96vw);
+      max-height: 78vh;
+      background: radial-gradient(circle at top, #020617 0, #020617 60%, #000000 100%);
+      border-radius: 10px;
+      padding: 8px 10px 8px 10px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      box-shadow:
+        0 0 20px rgba(56, 189, 248, 0.4),
+        0 18px 35px rgba(15, 23, 42, 0.95);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .layout-4-heatmap .defense-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .layout-4-heatmap .defense-modal-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #e0f2fe;
+    }
+
+    .layout-4-heatmap .defense-modal-subtitle {
+      font-size: 9px;
+      color: #9ca3af;
+    }
+
+    .layout-4-heatmap .defense-modal-close {
+      background: rgba(15,23,42,0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #e5e7eb;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+    }
+
+    .layout-4-heatmap .defense-modal-close:hover {
+      background: rgba(30,64,175,0.9);
+      border-color: #38bdf8;
+      transform: translateY(-0.5px);
+    }
+
+    .layout-4-heatmap .defense-summary-badge {
+      display: inline-block;
+      padding: 1px 4px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      font-size: 8px;
+      color: #e5e7eb;
+      margin-right: 4px;
+    }
+
+    .layout-4-heatmap .defense-modal-body {
+      font-size: 9px;
+      color: #e5e7eb;
+      overflow-y: auto;
+    }
+
+    .layout-4-heatmap .defense-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3px;
+      font-size: 9px;
+    }
+
+    .layout-4-heatmap .defense-summary-table th,
+    .layout-4-heatmap .defense-summary-table td {
+      padding: 2px 4px;
+      text-align: right;
+    }
+
+    .layout-4-heatmap .defense-summary-table th:first-child,
+    .layout-4-heatmap .defense-summary-table td:first-child {
+      text-align: left;
+    }
+
+    .layout-4-heatmap .defense-charts {
+      margin-top: 4px;
+      border-top: 1px dashed rgba(55,65,81,0.8);
+      padding-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .layout-4-heatmap .defense-chart-block {
+      width: 100%;
+    }
+
+    .layout-4-heatmap .defense-chart-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .layout-4-heatmap .defense-bar {
+      transition:
+        opacity 0.15s ease,
+        transform 0.15s ease,
+        stroke-width 0.15s ease,
+        stroke 0.15s ease;
+      cursor: pointer;
+    }
+
+    .layout-4-heatmap .defense-bar:hover {
+      opacity: 1;
+      stroke: #e5e7eb;
+      stroke-width: 0.7;
+      transform: translateY(-0.5px);
+    }
+
+    .layout-4-heatmap .defense-chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 3px;
+      font-size: 8px;
+    }
+
+    .layout-4-heatmap .defense-chart-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 4px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+
+    .layout-4-heatmap .defense-chart-legend-swatch {
+      width: 10px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    /* Heatmap main wrapper */
+    .layout-4-heatmap .responsive-bubble-wrapper {
+      width: 100%;
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #000000 100%);
+      border-top: 1px solid #1f2937;
+      box-shadow: 0 0 18px rgba(15, 23, 42, 0.8);
+    }
+
+    .layout-4-heatmap .inner {
+      margin: 4px 8px 6px 8px;
+    }
+
+    .layout-4-heatmap .meta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 4px;
+      font-size: 9px;
+    }
+
+    .layout-4-heatmap .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .layout-4-heatmap .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .layout-4-heatmap .meta-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    .layout-4-heatmap .controls-label {
+      color: #9ca3af;
+      font-size: 9px;
+    }
+
+    .layout-4-heatmap select,
+    .layout-4-heatmap input[type='text'] {
+      background: #020617;
+      border: 1px solid #1f2937;
+      color: #e5e7eb;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 9px;
+      outline: none;
+      box-shadow: 0 0 4px rgba(15, 23, 42, 0.6);
+    }
+
+    .layout-4-heatmap select:focus,
+    .layout-4-heatmap input[type='text']:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+    }
+
+    .layout-4-heatmap .legend {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-size: 9px;
+      color: #cbd5f5;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
+    .layout-4-heatmap .legend-title {
+      font-weight: 600;
+      margin-right: 2px;
+      color: #9ca3af;
+      font-size: 9px;
+    }
+
+    .layout-4-heatmap .legend-items {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .layout-4-heatmap .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid transparent;
+      transition:
+        border-color 0.12s ease,
+        background-color 0.12s ease,
+        color 0.12s ease,
+        box-shadow 0.12s ease,
+        transform 0.12s ease;
+    }
+
+    .layout-4-heatmap .legend-item:hover {
+      background: rgba(249, 250, 251, 0.08);
+      border-color: rgba(229, 231, 235, 0.4);
+      color: #e5e7eb;
+      box-shadow: 0 0 4px rgba(148, 163, 184, 0.4);
+    }
+
+    .layout-4-heatmap .legend-item--active {
+      background: radial-gradient(circle at top, rgba(34, 211, 238, 0.35), #0f172a);
+      border-color: #22d3ee;
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+      transform: translateY(-0.5px);
+      color: #e0f2fe;
+    }
+
+    .layout-4-heatmap .legend-circle-svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .layout-4-heatmap .legend-item:hover .legend-circle-svg circle,
+    .layout-4-heatmap .legend-item--active .legend-circle-svg circle {
+      opacity: 1;
+    }
+
+    .layout-4-heatmap .circle-legend-note {
+      font-size: 9px;
+      color: #9ca3af;
+      margin-left: 4px;
+    }
+
+    .layout-4-heatmap .legend-secondary-row {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      font-size: 9px;
+      color: #e5e7eb;
+      width: 100%;
+    }
+
+    .layout-4-heatmap .legend-secondary-title {
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    .layout-4-heatmap .legend-secondary-items {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .layout-4-heatmap .legend-secondary-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 4px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .layout-4-heatmap .legend-secondary-swatch {
+      width: 12px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .layout-4-heatmap .legend-secondary-note {
+      color: #9ca3af;
+      font-size: 9px;
+      margin-left: 4px;
+    }
+
+    .layout-4-heatmap .legend-chevron {
+      font-size: 10px;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 2px;
+    }
+
+    .layout-4-heatmap .legend-chevron-min {
+      color: #f97373;
+    }
+
+    .layout-4-heatmap .legend-chevron-max {
+      color: #4ade80;
+    }
+
+    .layout-4-heatmap .legend-size-row {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-size: 9px;
+      color: #e5e7eb;
+      width: 100%;
+    }
+
+    .layout-4-heatmap .legend-size-title {
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    .layout-4-heatmap .legend-size-note {
+      color: #9ca3af;
+    }
+
+    .layout-4-heatmap table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      table-layout: fixed;
+      font-size: 10px;
+      background: #020617;
+      margin-bottom: 1em;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .layout-4-heatmap th,
+    .layout-4-heatmap td {
+      padding: 3px 3px;
+      text-align: center;
+      position: relative;
+      white-space: nowrap;
+      box-sizing: border-box;
+      color: #e5e7eb;
+      transition: background-color 0.25s ease, opacity 0.25s ease;
+      border: none;
+    }
+
+    .layout-4-heatmap th {
+      background: linear-gradient(to bottom, #111827, #020617);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      color: #bfdbfe;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 9px;
+    }
+
+    .layout-4-heatmap th.defense-header {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .layout-4-heatmap th.defense-header:hover {
+      background: radial-gradient(circle at top, #1d4ed8, #020617 65%);
+    }
+
+    .layout-4-heatmap td:first-child {
+      background: #020617;
+      font-weight: 500;
+      text-align: right;
+      padding-right: 6px;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #e5e7eb;
+      font-size: 9px;
+    }
+
+    .layout-4-heatmap tbody tr:hover td:not(:first-child):not(.highlight-range):not(.dimmed-range) {
+      background-color: rgba(15, 23, 42, 0.4);
+    }
+
+    .layout-4-heatmap .bubble-svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .layout-4-heatmap .bubble-circle {
+      stroke: #000;
+      stroke-width: 1.2;
+      transition:
+        r 0.25s ease,
+        filter 0.25s ease,
+        opacity 0.25s ease;
+    }
+
+    .layout-4-heatmap .value-cell:hover .bubble-circle {
+      filter:
+        drop-shadow(0 0 3px rgba(147, 197, 253, 0.45))
+        drop-shadow(0 0 6px rgba(96, 165, 250, 0.35))
+        drop-shadow(0 0 9px rgba(37, 99, 235, 0.25));
+      opacity: 1;
+    }
+
+    .layout-4-heatmap .bubble-label {
+      position: absolute;
+      font-size: 7px;
+      top: 2px;
+      left: 3px;
+      color: #67e8f9;
+      opacity: 0.95;
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+      transform-origin: top left;
+      transition: transform 0.15s ease;
+    }
+
+    .layout-4-heatmap .value-cell:hover .bubble-label {
+      transform: scale(1.45);
+    }
+
+    .layout-4-heatmap .value-cell {
+      position: relative;
+      overflow: visible;
+    }
+
+    .layout-4-heatmap .value-cell.hover-outline::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .layout-4-heatmap .value-cell-tooltip {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 6px;
+      font-size: 9px;
+      line-height: 1.3;
+      opacity: 0;
+      transform: scale(0.9);
+      transform-origin: center center;
+      transition: opacity 0.12s ease, transform 0.12s ease;
+      z-index: 9999;
+      box-sizing: border-box;
+    }
+
+    .layout-4-heatmap .value-cell-tooltip::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(
+        120deg,
+        rgba(34, 211, 238, 0.9),
+        rgba(168, 85, 247, 0.95),
+        rgba(34, 211, 238, 0.9)
+      );
+      background-size: 200% 200%;
+      animation: cellOutlineGradient 1.2s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes cellOutlineGradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 200% 50%;
+      }
+    }
+
+    .layout-4-heatmap .value-cell-tooltip .tooltip-inner {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top, #020617 0, #020617 60%, #000000 100%);
+      border-radius: 4px;
+      padding: 2px 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      white-space: nowrap;
+      box-shadow:
+        0 0 6px rgba(56, 189, 248, 0.6),
+        0 0 14px rgba(15, 23, 42, 0.9);
+    }
+
+    .layout-4-heatmap .tooltip-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .layout-4-heatmap .tooltip-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      text-align: center;
+    }
+
+    .layout-4-heatmap .value-cell-tooltip.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .layout-4-heatmap .value-cell-tooltip .tooltip-score {
+      font-weight: 600;
+      color: #67e8f9;
+    }
+
+    .layout-4-heatmap .value-cell-tooltip .tooltip-meta {
+      color: #9ca3af;
+    }
+
+    .layout-4-heatmap .value-cell.highlight-range {
+      background-color: rgba(56, 189, 248, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+
+    .layout-4-heatmap .value-cell.dimmed-range {
+      opacity: 0.22;
+    }
+
+    .layout-4-heatmap .value-cell.highlight-level-1 {
+      background-color: rgba(147, 197, 253, 0.25);
+    }
+
+    .layout-4-heatmap .value-cell.highlight-level-2 {
+      background-color: rgba(129, 199, 255, 0.35);
+    }
+
+    .layout-4-heatmap .value-cell.highlight-level-3 {
+      background-color: rgba(96, 165, 250, 0.45);
+    }
+
+    .layout-4-heatmap .value-cell.highlight-level-4 {
+      background-color: rgba(59, 130, 246, 0.6);
+    }
+
+    .layout-4-heatmap .value-cell.highlight-level-5 {
+      background-color: rgba(37, 99, 235, 0.75);
+    }
+
+    .layout-4-heatmap .cell-marker {
+      position: absolute;
+      top: 2px;
+      right: 3px;
+      opacity: 0.95;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .layout-4-heatmap .cell-marker svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    .layout-4-heatmap .cell-marker-min svg {
+      filter: drop-shadow(0 0 2px rgba(248, 113, 113, 0.7));
+    }
+
+    .layout-4-heatmap .cell-marker-max svg {
+      filter: drop-shadow(0 0 2px rgba(74, 222, 128, 0.7));
+    }
+
+    .layout-4-heatmap .value-cell.dimmed-range .cell-marker {
+      opacity: 0;
+    }
+
+    /* --- FULL-WIDTH + RESPONSIVE FIX FOR LAYOUT 4 --- */
+    .layout-4 {
+      max-width: none;     /* allow full width */
+      width: 100%;         /* stretch across table */
+    }
+
+    .layout-4-main {
+      overflow-x: auto;    /* prevents squeezing; allows horizontal scroll if needed */
+    }
+
+    .layout-4 iframe {
+      width: 100%;         /* fill the widened layout */
+      min-height: 550px;   /* give more breathing room */
+    }
+
 
     /* -------------------------
        LAYOUT 5: Cards layout
@@ -494,10 +1196,6 @@
 
     /* Responsive tweaks */
     @media (max-width: 800px) {
-      .layout-2 .body {
-        grid-template-columns: 1fr;
-      }
-
       .layout-3-grid {
         grid-template-columns: 1fr;
       }
@@ -549,7 +1247,7 @@
     <!-- Layout 2 -->
     <tr>
       <td>
-        <div class="layout-label">2 – Header + Left Sidebar (IDV-assignment2)</div>
+        <div class="layout-label">2 – Header + Table (IDV-assignment2)</div>
         <div class="layout layout-2">
           <header>IDV-assignment2</header>
 
@@ -571,7 +1269,6 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- Your 10 SVG rows unchanged -->
                   <tr>
                     <td class="cell"><img src="svg/01.svg" class="img original" alt="original 01.svg" /></td>
                     <td class="cell"><img src="svg/01.svg" class="img mirror" alt="mirror 01.svg" /></td>
@@ -898,44 +1595,195 @@
       </td>
     </tr>
 
-    <!-- Layout 4 with embedded provided file -->
+    <!-- Layout 4 – will continue in PART 2/2 -->
+        <!-- Layout 4 -->
     <tr>
       <td>
-        <div class="layout-label">4 – Custom Layout (Embedded file)</div>
+        <div class="layout-label">4 – Custom Layout (Attack–Defense Accuracy)</div>
         <div class="layout layout-4">
-          <header>Layout 4 – Embedded Content</header>
+          <header>Layout 4 – Embedded Heatmap</header>
 
           <main class="layout-4-main">
             <h2>Attack–Defense Accuracy (Embedded)</h2>
             <p style="margin-bottom: 0.75rem; font-size: 0.85rem;">
-              The visualization below is loaded from the provided file.
+              The visualization below is the inline interactive Attack–Defense accuracy heatmap.
             </p>
 
-            <!-- 👇 This is where your provided file is embedded -->
-            <iframe
-              src="layout4-content.html"
-              title="Attack-Defense Accuracy (Data_1 &amp; Data_2)"
-              style="
-                width: 100%;
-                height: 520px;
-                border: none;
-                border-radius: 0.75rem;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                overflow: hidden;
-              "
-            ></iframe>
+            <div class="layout-4-heatmap" id="heatmapRoot">
+              <h3>Attack-Defense Accuracy (Data_1 &amp; Data_2)</h3>
+
+              <div class="layout-top">
+                <div class="range-summary" id="rangeSummary">
+                  <div class="range-summary-title">Range summary</div>
+                  <div>Hover a cell or a legend band to view statistics here.</div>
+                </div>
+                <div class="top3-panel" id="top3Panel">
+                  <div class="top3-title">Top 3 scores in range</div>
+                  <div>No range selected.</div>
+                </div>
+              </div>
+
+              <div class="responsive-bubble-wrapper">
+                <div class="inner">
+                  <div class="meta-block">
+                    <!-- Row 1: Filter + bands -->
+                    <div class="meta-row">
+                      <div class="meta-left">
+                        <span class="controls-label">Filter attack:</span>
+                        <input type="text" id="filterInput" placeholder="type to filter…" />
+                      </div>
+                      <div class="meta-right">
+                        <div class="legend">
+                          <span class="legend-title">Bands:</span>
+                          <div class="legend-items" id="legendItems"></div>
+                          <span class="circle-legend-note">0.0 shows no circle</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Row 2: Sort + secondary legend -->
+                    <div class="meta-row">
+                      <div class="meta-left">
+                        <span class="controls-label">Sort attacks by:</span>
+                        <select id="sortSelect">
+                          <option value="original">Original order</option>
+                          <option value="attack">Attack name (A–Z)</option>
+                          <option value="max">Max score</option>
+                          <option value="avg">Average score</option>
+                        </select>
+                      </div>
+                      <div class="meta-right">
+                        <div class="legend-secondary-row">
+                          <span class="legend-secondary-title">Within-band tint:</span>
+                          <div class="legend-secondary-items">
+                            <div class="legend-secondary-item">
+                              <span class="legend-secondary-swatch" style="background:rgba(147,197,253,0.4);"></span>
+                              <span>Lower values</span>
+                            </div>
+                            <div class="legend-secondary-item">
+                              <span class="legend-secondary-swatch" style="background:rgba(37,99,235,0.75);"></span>
+                              <span>Higher values</span>
+                            </div>
+                            <span class="legend-secondary-note">
+                              <span class="legend-chevron legend-chevron-min">▼</span> min
+                              <span class="legend-chevron legend-chevron-max">▲</span> max
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Row 3: Size legend -->
+                    <div class="meta-row">
+                      <div class="meta-left"></div>
+                      <div class="meta-right">
+                        <div class="legend-size-row">
+                          <span class="legend-size-title">Circle size:</span>
+                          <svg width="70" height="18">
+                            <circle cx="12" cy="9" r="3" fill="#60a5fa" opacity="0.9"></circle>
+                            <circle cx="35" cy="9" r="5" fill="#60a5fa" opacity="0.9"></circle>
+                            <circle cx="60" cy="9" r="7" fill="#60a5fa" opacity="0.9"></circle>
+                          </svg>
+                          <span class="legend-size-note">Higher scores → larger circles</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <table id="bubbleTable">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th class="defense-header" data-defense="ERM">ERM</th>
+                        <th class="defense-header" data-defense="DA">DA</th>
+                        <th class="defense-header" data-defense="PGDT">PGDT</th>
+                        <th class="defense-header" data-defense="TRADES">TRADES</th>
+                        <th class="defense-header" data-defense="MART">MART</th>
+                        <th class="defense-header" data-defense="RS">RS</th>
+                        <th class="defense-header" data-defense="IBP">IBP</th>
+                        <th class="defense-header" data-defense="PRL">PRL</th>
+                        <th class="defense-header" data-defense="TandT">TandT</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Defense summary modal -->
+              <div class="defense-modal" id="defenseModal" aria-hidden="true">
+                <div class="defense-modal-backdrop" id="defenseModalBackdrop"></div>
+                <div class="defense-modal-panel" role="dialog" aria-modal="true" aria-labelledby="defenseModalTitle">
+                  <div class="defense-modal-header">
+                    <div>
+                      <div class="defense-modal-title" id="defenseModalTitle">Defense summary</div>
+                      <div class="defense-modal-subtitle" id="defenseModalSubtitle">
+                        Std Acc / CRR / CRA for CIFAR100, CIFAR10, SVHN, MNIST
+                      </div>
+                    </div>
+                    <button
+                      class="defense-modal-close"
+                      id="defenseModalClose"
+                      aria-label="Close defense summary"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div class="defense-modal-body" id="defenseModalContent"></div>
+                </div>
+              </div>
+            </div>
           </main>
 
           <footer>© 2025 Layout 4</footer>
         </div>
       </td>
     </tr>
+
+    <!-- Layout 5 -->
+    <tr>
+      <td>
+        <div class="layout-label">5 – Cards Layout</div>
+        <div class="layout layout-5">
+          <header>Cards Overview</header>
+          <main>
+            <div class="card-grid">
+              <div class="card">
+                <strong>Layout 1 – PSI</strong>
+                <p>Simple PSI table pulling data via a JavaScript function.</p>
+              </div>
+              <div class="card">
+                <strong>Layout 2 – IDV</strong>
+                <p>Image transformations: mirror, rotate, squeeze, grayscale.</p>
+              </div>
+              <div class="card">
+                <strong>Layout 3 – SVG</strong>
+                <p>Interactive SVG shapes, paths, and area charts.</p>
+              </div>
+              <div class="card">
+                <strong>Layout 4 – Heatmap</strong>
+                <p>Attack–Defense accuracy bubble heatmap with bands + modal.</p>
+              </div>
+              <div class="card">
+                <strong>Layout 5 – Cards</strong>
+                <p>Summary cards tying the entire page together.</p>
+              </div>
+              <div class="card">
+                <strong>Responsive</strong>
+                <p>Layouts adjust using simple media queries for smaller screens.</p>
+              </div>
+            </div>
+          </main>
+          <footer>© 2025 Layout 5</footer>
+        </div>
+      </td>
+    </tr>
   </table>
 
-  <!-- PSI dashboard script -->
+  <!-- PSI dashboard script (external, as in your original) -->
   <script src="psi_dashboard.js"></script>
 
-  <!-- SVG diagram interactions -->
+  <!-- SVG diagram interactions (Layout 3) -->
   <script>
     const $  = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from((r || document).querySelectorAll(s));
@@ -1140,8 +1988,806 @@
         tip.style.display   = 'none';
       });
     })();
+  </script>
 
-    /* Row 5 bars: CSS-only animation */
+  <!-- Heatmap logic (Layout 4) -->
+  <script>
+    // ----------------- Config & data -----------------
+    const DATA_URL = "data_2.json"; // optional external JSON
+
+    const defenses = ["ERM","DA","PGDT","TRADES","MART","RS","IBP","PRL","TandT"];
+
+    const attackDefenseDataFallback = [
+      ["No Attack",94.85,94.21,84.38,80.42,81.54,89.45,48.40,93.82,94.23],
+      ["TIFGSM",35.10,33.00,65.70,62.90,69.10,45.40,40.20,34.00,92.80],
+      ["MIFGSM",0.00,0.00,50.90,51.90,50.50,5.80,38.10,0.00,92.80],
+      ["DIFGSM",1.00,0.00,51.75,50.50,53.60,4.10,38.10,3.10,92.80],
+      ["VMIFGSM",0.00,0.00,51.10,50.90,51.90,4.10,38.10,0.00,93.90],
+      ["TPGD",38.10,39.20,69.30,69.10,70.10,48.50,50.00,28.90,91.80],
+      ["FGSM",29.90,25.80,57.95,54.60,61.90,28.90,38.10,25.80,93.80],
+      ["RFGSM",0.00,0.00,49.15,50.40,48.50,3.70,38.10,0.00,90.00],
+      ["BIM",0.00,0.00,52.00,57.20,47.40,2.10,38.10,0.00,90.70],
+      ["FAB",1.00,2.10,43.00,46.40,40.20,5.30,38.10,4.10,90.10],
+      ["CW",0.00,0.00,32.20,35.10,29.90,1.00,40.20,1.00,92.90],
+      ["UPGD",0.00,0.00,49.85,50.50,49.80,5.10,38.10,0.00,93.80],
+      ["FFGSM",19.60,23.70,60.55,55.70,66.00,33.00,42.30,29.90,92.80],
+      ["Jitter",11.30,12.40,48.15,47.40,49.50,34.00,39.20,24.70,90.70],
+      ["PGD",0.00,0.00,57.40,54.60,60.80,7.20,40.20,0.00,91.80],
+      ["EOTPGD",0.00,0.00,50.10,50.30,50.50,3.00,38.10,0.00,90.70],
+      ["APGD",0.00,0.00,48.40,51.00,46.40,1.00,38.10,0.00,90.70],
+      ["NIFGSM",0.00,0.00,57.95,59.80,59.80,7.20,38.10,1.00,92.80],
+      ["SiniFGSM",4.10,1.00,59.00,56.70,61.90,23.70,38.10,12.40,93.70],
+      ["VNIFGSM",0.00,0.00,50.45,53.00,48.50,5.10,38.10,0.00,92.90],
+      ["APGDT",0.00,0.00,40.90,44.30,38.10,0.00,38.10,0.00,88.70],
+      ["Square",0.00,1.00,50.40,54.00,47.40,3.10,38.10,2.10,88.08],
+      ["Add Gaussian Noise",25.80,43.30,79.10,78.40,80.40,74.20,42.30,45.40,87.60],
+      ["OnePixel",79.40,83.50,78.05,74.20,82.50,83.50,42.50,80.40,89.70],
+      ["Pixle",0.00,0.00,12.55,11.30,14.40,1.00,10.30,0.00,17.50],
+      ["PGDL2",1.00,0.00,35.80,36.10,36.10,5.20,36.10,0.00,92.90]
+    ];
+
+    const colorStops = [
+      { min: 0,  max: 20,  color: "#60a5fa" },
+      { min: 20, max: 40,  color: "#60a5fa" },
+      { min: 40, max: 60,  color: "#60a5fa" },
+      { min: 60, max: 80,  color: "#60a5fa" },
+      { min: 80, max: 101, color: "#60a5fa" }
+    ];
+
+    const HIGHLIGHT_LEVEL_CLASSES = [
+      "highlight-level-1",
+      "highlight-level-2",
+      "highlight-level-3",
+      "highlight-level-4",
+      "highlight-level-5"
+    ];
+
+    let attackDefenseData = [];
+    let currentData = [];
+    let activeBand = null;
+    let tooltipDiv = null;
+
+    // Defense summary data
+    const defenseSummaryData = {
+      "ERM": {
+        "Std Acc": { "CIFAR100": 81.03, "CIFAR10": 94.85, "SVHN": 94.44, "MNIST": 99.37 },
+        "CRR":     { "CIFAR100": 9.28,  "CIFAR10": 1.25,  "SVHN": 52.72, "MNIST": 26.01 },
+        "CRA":     { "CIFAR100": 4.52,  "CIFAR10": 1.25,  "SVHN": 51.04, "MNIST": 24.96 }
+      },
+      "DA": {
+        "Std Acc": { "CIFAR100": 78.27, "CIFAR10": 94.21, "SVHN": 94.69, "MNIST": 99.42 },
+        "CRR":     { "CIFAR100": 15.04, "CIFAR10": 81.08, "SVHN": 82.08, "MNIST": 85.23 },
+        "CRA":     { "CIFAR100": 6.15,  "CIFAR10": 76.07, "SVHN": 82.01, "MNIST": 84.12 }
+      },
+      "PGDT": {
+        "Std Acc": { "CIFAR100": 64.35, "CIFAR10": 84.38, "SVHN": 91.19, "MNIST": 99.16 },
+        "CRR":     { "CIFAR100": 57.07, "CIFAR10": 87.07, "SVHN": 87.89, "MNIST": 94.65 },
+        "CRA":     { "CIFAR100": 32.93, "CIFAR10": 82.90, "SVHN": 86.68, "MNIST": 94.63 }
+      },
+      "TRADES": {
+        "Std Acc": { "CIFAR100": 62.55, "CIFAR10": 80.42, "SVHN": 86.16, "MNIST": 99.10 },
+        "CRR":     { "CIFAR100": 59.27, "CIFAR10": 88.54, "SVHN": 87.89, "MNIST": 94.76 },
+        "CRA":     { "CIFAR100": 38.85, "CIFAR10": 78.80, "SVHN": 84.76, "MNIST": 94.61 }
+      },
+      "MART": {
+        "Std Acc": { "CIFAR100": 63.68, "CIFAR10": 81.54, "SVHN": 90.20, "MNIST": 98.94 },
+        "CRR":     { "CIFAR100": 58.79, "CIFAR10": 78.90, "SVHN": 85.23, "MNIST": 94.13 },
+        "CRA":     { "CIFAR100": 49.37, "CIFAR10": 72.21, "SVHN": 78.82, "MNIST": 94.09 }
+      },
+      "RS": {
+        "Std Acc": { "CIFAR100": 56.87, "CIFAR10": 89.45, "SVHN": 88.35, "MNIST": 97.16 },
+        "CRR":     { "CIFAR100": 60.38, "CIFAR10": 90.00, "SVHN": 76.29, "MNIST": 87.15 },
+        "CRA":     { "CIFAR100": 47.50, "CIFAR10": 87.98, "SVHN": 70.64, "MNIST": 86.29 }
+      },
+      "IBP": {
+        "Std Acc": { "CIFAR100": 39.45, "CIFAR10": 48.40, "SVHN": 73.09, "MNIST": 97.78 },
+        "CRR":     { "CIFAR100": 49.34, "CIFAR10": 54.70, "SVHN": 61.94, "MNIST": 89.18 },
+        "CRA":     { "CIFAR100": 29.20, "CIFAR10": 40.00, "SVHN": 57.26, "MNIST": 88.51 }
+      },
+      "PRL": {
+        "Std Acc": { "CIFAR100": 64.89, "CIFAR10": 93.82, "SVHN": 92.00, "MNIST": 99.32 },
+        "CRR":     { "CIFAR100": 56.71, "CIFAR10": 90.71, "SVHN": 93.11, "MNIST": 96.03 },
+        "CRA":     { "CIFAR100": 50.77, "CIFAR10": 90.63, "SVHN": 91.07, "MNIST": 95.01 }
+      },
+      "TandT": {
+        "Std Acc": { "CIFAR100": 65.56, "CIFAR10": 94.23, "SVHN": 94.79, "MNIST": 99.32 },
+        "CRR":     { "CIFAR100": 62.05, "CIFAR10": 95.08, "SVHN": 93.15, "MNIST": 97.80 },
+        "CRA":     { "CIFAR100": 52.07, "CIFAR10": 91.75, "SVHN": 92.81, "MNIST": 96.80 }
+      }
+    };
+
+    const DATASETS_ORDER = ["CIFAR100","CIFAR10","SVHN","MNIST"];
+    const METRICS_ORDER  = ["Std Acc","CRR","CRA"];
+    const METRIC_COLORS = {
+      "Std Acc": "#60a5fa",
+      "CRR": "#34d399",
+      "CRA": "#f97316"
+    };
+
+    // Short labels for tooltip
+    function getShortAttackName(name) {
+      const aliases = {
+        "Add Gaussian Noise": "AGN",
+        "No Attack": "No Atk"
+      };
+      return aliases[name] || name;
+    }
+
+    function ensureTooltip() {
+      if (!tooltipDiv) {
+        const root = document.getElementById("heatmapRoot");
+        tooltipDiv = document.createElement("div");
+        tooltipDiv.className = "value-cell-tooltip";
+        (root || document.body).appendChild(tooltipDiv);
+      }
+    }
+
+    function buildArrayFromJson(jsonData) {
+      const rows = [];
+      for (const attack of Object.keys(jsonData)) {
+        const row = [attack];
+        defenses.forEach(def => {
+          row.push(jsonData[attack][def]);
+        });
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(DATA_URL);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const jsonData = await res.json();
+        attackDefenseData = buildArrayFromJson(jsonData);
+      } catch (err) {
+        console.warn("Failed to load", DATA_URL, "– using inline fallback.", err);
+        attackDefenseData = attackDefenseDataFallback.slice();
+        const rs = document.getElementById("rangeSummary");
+        if (rs) {
+          rs.innerHTML = `
+            <div class="range-summary-title">Range summary (fallback data)</div>
+            <div>Could not load <code>${DATA_URL}</code>. Using embedded data instead.</div>
+          `;
+        }
+      }
+      currentData = attackDefenseData.slice();
+    }
+
+    // Helpers
+    function levelIndex(value) {
+      return colorStops.findIndex(s => value >= s.min && value < s.max);
+    }
+
+    function bandForValue(value) {
+      const idx = levelIndex(value);
+      const band = colorStops[idx];
+      const displayMax = band.max === 101 ? 100 : band.max;
+      const label = idx === 0 ? `0–${displayMax}` : `${band.min}–${displayMax}`;
+      return { ...band, label };
+    }
+
+    function heatColor(value) {
+      return colorStops[levelIndex(value)].color;
+    }
+
+    function circleRadius(value, svgSize) {
+      const idx = levelIndex(value);
+      const minR = 2.5;
+      const maxR = svgSize / 2 - 2.5;
+      return minR + idx * ((maxR - minR) / 4);
+    }
+
+    // Summary & Top 3
+    function resetSummaryPanels() {
+      document.getElementById("rangeSummary").innerHTML = `
+        <div class="range-summary-title">Range summary</div>
+        <div>Hover a cell or a legend band to view statistics here.</div>
+      `;
+      document.getElementById("top3Panel").innerHTML = `
+        <div class="top3-title">Top 3 scores in range</div>
+        <div>No range selected.</div>
+      `;
+    }
+
+    function computeBandCells(min, max) {
+      const allCells = [];
+      const bestPerAttack = new Map();
+
+      currentData.forEach(row => {
+        const attack = row[0];
+        row.slice(1).forEach((v, j) => {
+          if (v >= min && v < max) {
+            const defense = defenses[j];
+            const cell = { attack, defense, value: v };
+            allCells.push(cell);
+            const existing = bestPerAttack.get(attack);
+            if (!existing || v > existing.value) {
+              bestPerAttack.set(attack, cell);
+            }
+          }
+        });
+      });
+
+      return { allCells, bestPerAttack };
+    }
+
+    function updateSummaryAndTop3(min, max) {
+      const displayMax = max === 101 ? 100 : max;
+      const rangeSummary = document.getElementById("rangeSummary");
+      const top3Panel = document.getElementById("top3Panel");
+
+      const { allCells, bestPerAttack } = computeBandCells(min, max);
+      if (!allCells.length) {
+        rangeSummary.innerHTML = `
+          <div class="range-summary-title">Range ${min}-${displayMax}</div>
+          <div>No values in this range (with current filter).</div>
+        `;
+        top3Panel.innerHTML = `
+          <div class="top3-title">Top 3 scores in ${min}-${displayMax}</div>
+          <div>No entries.</div>
+        `;
+        return;
+      }
+
+      const vals = allCells.map(c => c.value);
+      const minVal = Math.min(...vals);
+      const maxVal = Math.max(...vals);
+      const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
+
+      rangeSummary.innerHTML = `
+        <div class="range-summary-title">Range ${min}-${displayMax} (${vals.length} values)</div>
+        <div>Min: ${minVal.toFixed(1)} | Avg: ${avgVal.toFixed(1)} | Max: ${maxVal.toFixed(1)}</div>
+        <div class="range-legend-note">
+          Within this band: lighter blue ≈ lower, darker blue ≈ higher.
+          Min = red ▼, Max = green ▲.
+        </div>
+      `;
+
+      const top3 = Array.from(bestPerAttack.values())
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 3);
+
+      top3Panel.innerHTML = `
+        <div class="top3-title">Top 3 scores in ${min}-${displayMax}</div>
+        <div class="top3-row">
+          ${top3.map((t, i) => `
+            <div class="top3-box">
+              <strong>${i + 1})</strong> ${t.attack} • ${t.defense}<br />
+              ${t.value.toFixed(1)}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    // Defense summary modal + grouped chart
+    function createDefenseChartsHTML(summary) {
+      let maxVal = 0;
+      DATASETS_ORDER.forEach(ds => {
+        METRICS_ORDER.forEach(metric => {
+          const v = summary[metric]?.[ds] ?? 0;
+          if (v > maxVal) maxVal = v;
+        });
+      });
+      if (maxVal <= 0) maxVal = 1;
+
+      const width = 380;
+      const height = 130;
+      const marginLeft = 30;
+      const marginRight = 10;
+      const marginTop = 20;
+      const marginBottom = 22;
+      const chartWidth = width - marginLeft - marginRight;
+      const chartHeight = height - marginTop - marginBottom;
+      const groupWidth = chartWidth / DATASETS_ORDER.length;
+      const barGroupTotalWidth = groupWidth * 0.7;
+      const barWidth = barGroupTotalWidth / METRICS_ORDER.length;
+      const groupOffset = (groupWidth - barGroupTotalWidth) / 2;
+      const axisY = height - marginBottom;
+      const ticks = [0, maxVal];
+
+      const legendHtml = `
+        <div class="defense-chart-legend">
+          ${METRICS_ORDER.map(metric => `
+            <div class="defense-chart-legend-item">
+              <span class="defense-chart-legend-swatch" style="background:${METRIC_COLORS[metric]};"></span>
+              <span>${metric}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      let svg = `<svg class="defense-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
+
+      ticks.forEach(t => {
+        const y = axisY - (t / maxVal) * chartHeight;
+        const label = t.toFixed(0);
+        svg += `
+          <line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}"
+                stroke="#1f2933" stroke-width="0.6"
+                stroke-dasharray="${t === 0 ? "0" : "2,2"}"></line>
+          <text x="${marginLeft - 4}" y="${y + 2}" text-anchor="end"
+                font-size="7" fill="#6b7280">${label}</text>
+        `;
+      });
+
+      svg += `<line x1="${marginLeft}" y1="${axisY}" x2="${width - marginRight}" y2="${axisY}" stroke="#4b5563" stroke-width="0.8"></line>`;
+
+      DATASETS_ORDER.forEach((ds, i) => {
+        const xGroupStart = marginLeft + i * groupWidth + groupOffset;
+        const shortLabel = ds.replace("CIFAR", "C");
+        METRICS_ORDER.forEach((metric, mIndex) => {
+          const v = summary[metric]?.[ds] ?? 0;
+          const barHeight = (v / maxVal) * chartHeight;
+          const x = xGroupStart + mIndex * barWidth;
+          const y = axisY - barHeight;
+          const color = METRIC_COLORS[metric];
+          const xCenter = x + barWidth / 2;
+          const labelY = y - 2;
+
+          svg += `
+            <rect class="defense-bar"
+                  x="${x.toFixed(1)}"
+                  y="${y.toFixed(1)}"
+                  width="${barWidth.toFixed(1)}"
+                  height="${Math.max(barHeight, 0.5).toFixed(1)}"
+                  fill="${color}" opacity="0.9" rx="2" ry="2">
+              <title>${metric} – ${ds}: ${v.toFixed(2)}</title>
+            </rect>
+            <text x="${xCenter.toFixed(1)}" y="${labelY.toFixed(1)}"
+                  text-anchor="middle" font-size="7" fill="#e5e7eb">
+              ${v.toFixed(2)}
+            </text>
+          `;
+        });
+
+        svg += `
+          <text x="${(xGroupStart + barGroupTotalWidth / 2).toFixed(1)}"
+                y="${height - 5}"
+                text-anchor="middle"
+                font-size="7"
+                fill="#9ca3af">
+            ${shortLabel}
+          </text>
+        `;
+      });
+
+      svg += `
+        <text x="${marginLeft}" y="${marginTop - 6}"
+              text-anchor="start" font-size="8" fill="#9ca3af">
+          Datasets vs. metrics
+        </text>
+      `;
+      svg += `</svg>`;
+
+      return `
+        <div class="defense-charts">
+          <div class="defense-chart-block">
+            ${legendHtml}
+            ${svg}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDefenseSummary(defenseKey) {
+      const modal = document.getElementById("defenseModal");
+      const title = document.getElementById("defenseModalTitle");
+      const subtitle = document.getElementById("defenseModalSubtitle");
+      const content = document.getElementById("defenseModalContent");
+
+      title.textContent = `Defense summary: ${defenseKey}`;
+      subtitle.textContent = "Std Acc / CRR / CRA for CIFAR100, CIFAR10, SVHN, MNIST";
+
+      const summary = defenseSummaryData[defenseKey];
+
+      if (!summary) {
+        content.innerHTML = `<p>No summary data found for <strong>${defenseKey}</strong>.</p>`;
+      } else {
+        const badges = METRICS_ORDER.map(metric =>
+          `<span class="defense-summary-badge">${metric}</span>`
+        ).join(" ");
+
+        const rowsHtml = DATASETS_ORDER.map(ds => {
+          const cells = METRICS_ORDER.map(metric => {
+            const v = summary[metric][ds];
+            return `<td>${v.toFixed(2)}</td>`;
+          }).join("");
+          return `<tr><td>${ds}</td>${cells}</tr>`;
+        }).join("");
+
+        const chartsHtml = createDefenseChartsHTML(summary);
+
+        content.innerHTML = `
+          <div>${badges}</div>
+          <table class="defense-summary-table">
+            <thead>
+              <tr>
+                <th>Dataset</th>
+                <th>Std Acc</th>
+                <th>CRR</th>
+                <th>CRA</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+          ${chartsHtml}
+        `;
+      }
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function hideDefenseModal() {
+      const modal = document.getElementById("defenseModal");
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    // Highlighting
+    function clearHighlights() {
+      document.querySelectorAll(".value-cell").forEach(td => {
+        td.classList.remove(
+          "highlight-range",
+          "dimmed-range",
+          ...HIGHLIGHT_LEVEL_CLASSES
+        );
+        const marker = td.querySelector(".cell-marker");
+        if (marker) marker.remove();
+      });
+      resetSummaryPanels();
+    }
+
+    function highlightRange(min, max) {
+      const cells = document.querySelectorAll(".value-cell");
+      const bandCells = [];
+
+      cells.forEach(td => {
+        const v = parseFloat(td.dataset.value);
+        td.classList.remove(
+          "highlight-range",
+          "dimmed-range",
+          ...HIGHLIGHT_LEVEL_CLASSES
+        );
+        const oldMarker = td.querySelector(".cell-marker");
+        if (oldMarker) oldMarker.remove();
+
+        if (v >= min && v < max) {
+          td.classList.add("highlight-range");
+          bandCells.push({ td, value: v });
+        } else {
+          td.classList.add("dimmed-range");
+        }
+      });
+
+      if (!bandCells.length) {
+        updateSummaryAndTop3(min, max);
+        return;
+      }
+
+      const vals = bandCells.map(c => c.value);
+      const minVal = Math.min(...vals);
+      const maxVal = Math.max(...vals);
+
+      bandCells.forEach(({ td, value }) => {
+        if (value === minVal) {
+          td.classList.add("highlight-level-1");
+          td.insertAdjacentHTML("beforeend", `
+            <div class="cell-marker cell-marker-min">
+              <svg viewBox="0 0 12 12" aria-hidden="true">
+                <polyline points="2,4 6,8 10,4"
+                          fill="none" stroke="#f97373"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" />
+              </svg>
+            </div>
+          `);
+        } else if (value === maxVal) {
+          td.classList.add("highlight-level-5");
+          td.insertAdjacentHTML("beforeend", `
+            <div class="cell-marker cell-marker-max">
+              <svg viewBox="0 0 12 12" aria-hidden="true">
+                <polyline points="2,8 6,4 10,8"
+                          fill="none" stroke="#4ade80"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" />
+              </svg>
+            </div>
+          `);
+        } else {
+          const ratio = (value - minVal) / (maxVal - minVal || 1);
+          let level = Math.floor(ratio * 5);
+          if (level < 1) level = 1;
+          if (level > 5) level = 5;
+          td.classList.add(`highlight-level-${level}`);
+        }
+      });
+
+      updateSummaryAndTop3(min, max);
+    }
+
+    // Sorting & filtering
+    function getFilteredSortedData() {
+      const filterText = (document.getElementById("filterInput").value || "")
+        .trim()
+        .toLowerCase();
+      const sortMode = document.getElementById("sortSelect").value;
+
+      let data = attackDefenseData
+        .filter(row => row[0].toLowerCase().includes(filterText));
+
+      if (sortMode === "attack") {
+        data.sort((a, b) => a[0].localeCompare(b[0]));
+      } else if (sortMode === "max") {
+        data.sort((a, b) =>
+          Math.max(...b.slice(1)) - Math.max(...a.slice(1))
+        );
+      } else if (sortMode === "avg") {
+        const avg = row => row.slice(1).reduce((s, v) => s + v, 0) / (row.length - 1);
+        data.sort((a, b) => avg(b) - avg(a));
+      }
+      return data;
+    }
+
+    // Rendering cells / table / legend
+    function createValueCell(value, defense, attack, svgSize = 20) {
+      ensureTooltip();
+      const td = document.createElement("td");
+      td.className = "value-cell";
+      td.dataset.value = value;
+
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.classList.add("bubble-svg");
+      svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
+
+      if (value !== 0) {
+        const circle = document.createElementNS(svgNS, "circle");
+        circle.setAttribute("cx", svgSize / 2);
+        circle.setAttribute("cy", svgSize / 2);
+        circle.setAttribute("r", circleRadius(value, svgSize));
+        circle.setAttribute("fill", heatColor(value));
+        circle.setAttribute("opacity", "0.92");
+        circle.setAttribute("class", "bubble-circle");
+        svg.appendChild(circle);
+      }
+      td.appendChild(svg);
+
+      const label = document.createElement("div");
+      label.className = "bubble-label";
+      label.textContent = value.toFixed(1);
+      td.appendChild(label);
+
+      td.addEventListener("mouseenter", () => {
+        td.classList.add("hover-outline");
+        if (tooltipDiv) {
+          const band = activeBand ? activeBand : bandForValue(value);
+          let markerType = null;
+          const { allCells } = computeBandCells(band.min, band.max);
+          if (allCells.length > 0) {
+            const vals = allCells.map(c => c.value);
+            const minVal = Math.min(...vals);
+            const maxVal = Math.max(...vals);
+            if (value === minVal) markerType = "min";
+            else if (value === maxVal) markerType = "max";
+          }
+
+          let chevronHTML = "";
+          if (markerType === "min") {
+            chevronHTML = `<span class="legend-chevron legend-chevron-min">▼</span>`;
+          } else if (markerType === "max") {
+            chevronHTML = `<span class="legend-chevron legend-chevron-max">▲</span>`;
+          }
+
+          const shortAttack = getShortAttackName(attack);
+          tooltipDiv.innerHTML = `
+            <div class="tooltip-inner">
+              <div class="tooltip-top">
+                <span class="tooltip-score">${value.toFixed(2)}</span>
+                ${chevronHTML}
+              </div>
+              <div class="tooltip-bottom">
+                <span class="tooltip-meta">${shortAttack} • ${defense}</span>
+              </div>
+            </div>
+          `;
+
+          const cellRect = td.getBoundingClientRect();
+          tooltipDiv.style.width = `${cellRect.width}px`;
+          tooltipDiv.style.height = `${cellRect.height}px`;
+          tooltipDiv.style.left = `${cellRect.left}px`;
+          tooltipDiv.style.top = `${cellRect.top}px`;
+          tooltipDiv.style.visibility = "visible";
+          tooltipDiv.classList.add("visible");
+        }
+
+        if (!activeBand) {
+          const band = bandForValue(value);
+          highlightRange(band.min, band.max);
+        }
+      });
+
+      td.addEventListener("mouseleave", () => {
+        td.classList.remove("hover-outline");
+        if (tooltipDiv) {
+          tooltipDiv.classList.remove("visible");
+          tooltipDiv.style.visibility = "hidden";
+        }
+        if (!activeBand) {
+          clearHighlights();
+        } else {
+          highlightRange(activeBand.min, activeBand.max);
+        }
+      });
+
+      return td;
+    }
+
+    function renderTable(data) {
+      currentData = data.slice();
+      const tbody = document.querySelector("#bubbleTable tbody");
+      tbody.innerHTML = "";
+
+      currentData.forEach(row => {
+        const attack = row[0];
+        const tr = document.createElement("tr");
+
+        const labelCell = document.createElement("td");
+        labelCell.textContent = attack;
+        tr.appendChild(labelCell);
+
+        row.slice(1).forEach((value, j) => {
+          const def = defenses[j];
+          tr.appendChild(createValueCell(value, def, attack));
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function setActiveLegendIndex(activeIndex) {
+      const items = document.querySelectorAll(".legend-item");
+      items.forEach((item, idx) => {
+        if (idx === activeIndex) {
+          item.classList.add("legend-item--active");
+        } else {
+          item.classList.remove("legend-item--active");
+        }
+      });
+    }
+
+    function renderLegend() {
+      const legendItems = document.getElementById("legendItems");
+      legendItems.innerHTML = "";
+      const svgSize = 14;
+      const svgNS = "http://www.w3.org/2000/svg";
+
+      colorStops.forEach((stop, idx) => {
+        const item = document.createElement("div");
+        item.className = "legend-item";
+        item.dataset.bandIndex = idx.toString();
+
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.classList.add("legend-circle-svg");
+        svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
+
+        const circle = document.createElementNS(svgNS, "circle");
+        circle.setAttribute("cx", svgSize / 2);
+        circle.setAttribute("cy", svgSize / 2);
+        circle.setAttribute("r", svgSize / 2 - 2);
+        circle.setAttribute("fill", stop.color);
+        circle.setAttribute("opacity", "0.92");
+        svg.appendChild(circle);
+
+        const labelSpan = document.createElement("span");
+        const maxVal = stop.max === 101 ? 100 : stop.max;
+        labelSpan.textContent = idx === 0 ? `0–${maxVal}` : `${stop.min}–${maxVal}`;
+
+        item.appendChild(svg);
+        item.appendChild(labelSpan);
+        legendItems.appendChild(item);
+
+        item.addEventListener("mouseenter", () => {
+          if (activeBand) return;
+          highlightRange(stop.min, stop.max);
+        });
+
+        item.addEventListener("mouseleave", () => {
+          if (!activeBand) {
+            clearHighlights();
+          } else {
+            highlightRange(activeBand.min, activeBand.max);
+          }
+        });
+
+        item.addEventListener("click", () => {
+          const isSameActive = activeBand &&
+            activeBand.min === stop.min &&
+            activeBand.max === stop.max;
+          if (isSameActive) {
+            activeBand = null;
+            setActiveLegendIndex(-1);
+            clearHighlights();
+          } else {
+            activeBand = { min: stop.min, max: stop.max };
+            setActiveLegendIndex(idx);
+            highlightRange(activeBand.min, activeBand.max);
+          }
+        });
+      });
+    }
+
+    // Init controls
+    function bindControls() {
+      const sortSelect = document.getElementById("sortSelect");
+      const filterInput = document.getElementById("filterInput");
+
+      sortSelect.addEventListener("change", () => {
+        renderTable(getFilteredSortedData());
+        if (activeBand) {
+          highlightRange(activeBand.min, activeBand.max);
+        } else {
+          clearHighlights();
+        }
+      });
+
+      filterInput.addEventListener("input", () => {
+        renderTable(getFilteredSortedData());
+        if (activeBand) {
+          highlightRange(activeBand.min, activeBand.max);
+        } else {
+          clearHighlights();
+        }
+      });
+
+      // Defense header -> modal
+      document.querySelectorAll("th.defense-header").forEach(th => {
+        th.addEventListener("click", () => {
+          const def = th.dataset.defense;
+          renderDefenseSummary(def);
+        });
+        th.addEventListener("keypress", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            const def = th.dataset.defense;
+            renderDefenseSummary(def);
+          }
+        });
+        th.setAttribute("tabindex", "0");
+        th.setAttribute("title", "Click to view defense summary");
+      });
+
+      // Modal close
+      document.getElementById("defenseModalClose")
+        .addEventListener("click", hideDefenseModal);
+      document.getElementById("defenseModalBackdrop")
+        .addEventListener("click", hideDefenseModal);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") hideDefenseModal();
+      });
+    }
+
+    async function initHeatmap() {
+      const root = document.getElementById("heatmapRoot");
+      if (!root) return; // safety
+
+      await loadData();
+      renderTable(getFilteredSortedData());
+      renderLegend();
+      if (!attackDefenseData.length) {
+        resetSummaryPanels();
+      }
+      bindControls();
+    }
+
+    // Run on DOM ready (script is at bottom so DOM is already parsed)
+    initHeatmap();
   </script>
 </body>
 </html>
+
