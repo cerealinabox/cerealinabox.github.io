@@ -1,2806 +1,768 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>5 Layouts in One Table</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    /* Global reset / base */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f3f4f6;
-      padding: 1.5rem;
-    }
-
-    h1 {
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    table.layouts {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    table.layouts tr + tr {
-      border-top: 1px solid #d1d5db;
-    }
-
-    table.layouts td {
-      padding: 1rem 0;
-      vertical-align: top;
-    }
-
-    .layout-label {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .layout {
-      border-radius: 0.75rem;
-      overflow: hidden;
-      border: 1px solid #e5e7eb;
-      background: #ffffff;
-      max-width: 900px;
-      margin: 0 auto;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-    }
-
-    .layout header,
-    .layout footer,
-    .layout nav,
-    .layout main,
-    .layout aside {
-      padding: 0.75rem 1rem;
-      font-size: 0.9rem;
-    }
-
-    .layout header {
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .layout footer {
-      font-size: 0.75rem;
-      text-align: center;
-    }
-
-    /* -------------------------
-       LAYOUT 1: PSI Dashboard
-       ------------------------- */
-    .layout-1 header {
-      background: #1f2937;
-    }
-
-    .layout-1 main {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-
-    .layout-1 main h2 {
-      margin-bottom: 8px;
-    }
-
-    #last-updated {
-      color: #555;
-      margin-bottom: 20px;
-    }
-
-    .layout-1 main button {
-      margin-bottom: 20px;
-      padding: 8px 16px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .error {
-      color: #c00;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    #PSItable {
-      border: 2px solid #444;
-      border-collapse: collapse;
-      margin-top: 40px;
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    #PSItable th,
-    #PSItable td {
-      border: 2px solid #444;
-      padding: 8px;
-      font-weight: bold;
-      text-align: center;
-      overflow-wrap: break-word;
-      word-break: break-all;
-    }
-
-    #PSItable th {
-      background-color: #ffb561;
-    }
-
-    #PSItable td:first-child,
-    #PSItable th:first-child {
-      text-align: left;
-    }
-
-    /* -------------------------
-       LAYOUT 2: IDV Assignment
-       ------------------------- */
-    .layout-2 header {
-      background: #047857;
-    }
-
-    .layout-2 main {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-      overflow-x: auto;
-    }
-
-    .layout-2 footer {
-      background: #f9fafb;
-    }
-
-    .layout-2 .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .layout-2 table.idv-table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 480px;
-      background: #ffffff;
-    }
-
-    .layout-2 table.idv-table th,
-    .layout-2 table.idv-table td {
-      border: 1px solid #bfbfbf;
-      vertical-align: middle;
-      text-align: center;
-      background: #ffffff;
-      padding: 8px;
-    }
-
-    .layout-2 .table-title-row th {
-      height: 50px;
-      background-color: #e6dccf;
-      font-weight: bold;
-      font-size: 1.25em;
-      border: 2px solid #bfbfbf;
-    }
-
-    .layout-2 .cell {
-      width: 200px;
-      height: 200px;
-    }
-
-    .layout-2 .img {
-      max-width: 90%;
-      max-height: 90%;
-      display: inline-block;
-      transform-origin: center center;
-      background: #ffffff;
-    }
-
-    .layout-2 .mirror {
-      transform: scaleX(-1);
-    }
-
-    .layout-2 .rotate180 {
-      transform: rotate(180deg);
-    }
-
-    .layout-2 .squeezeY {
-      transform: scaleY(0.5);
-    }
-
-    .layout-2 .grayscale {
-      filter: grayscale(100%);
-    }
-
-    .layout-2 table.idv-table td:hover {
-      outline: 2px solid #e6dccf;
-      outline-offset: -2px;
-    }
-
-    /* -------------------------
-       LAYOUT 3: Interactive SVG Diagrams
-       ------------------------- */
-
-    :root {
-      --svg-size: 220px;
-      --col2-width: 260px;
-      --card-bg: #fff;
-      --soft-shadow: 0 8px 20px rgba(12, 24, 40, 0.06);
-    }
-
-    .layout-3 header {
-      background: #1d4ed8;
-    }
-
-    .layout-3-main {
-      padding: 0 1rem 1rem 1rem;
-    }
-
-    .layout-3-intro {
-      text-align: left;
-      margin-bottom: 0.75rem;
-    }
-
-    .layout-3-intro-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      color: #072034;
-    }
-
-    .layout-3-intro-text {
-      margin: 0;
-      color: #3c5866;
-      font-size: 0.8rem;
-    }
-
-    .layout-3-grid {
-      display: grid;
-      grid-template-columns: 1fr var(--col2-width);
-      gap: 12px;
-      align-items: start;
-    }
-
-    .layout-3-card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 8px;
-      box-shadow: var(--soft-shadow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: var(--svg-size);
-      overflow: visible;
-    }
-
-    .layout-3-caption {
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 10px;
-      box-shadow: var(--soft-shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: var(--svg-size);
-    }
-
-    .layout-3-caption-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-
-    .layout-3-caption-sub {
-      color: #3c5866;
-      font-size: 0.8rem;
-      white-space: pre-line;
-    }
-
-    svg.diagram {
-      width: var(--svg-size);
-      height: var(--svg-size);
-      display: block;
-      overflow: visible;
-    }
-
-    .axis { stroke: #bbb; stroke-width: 1; }
-    .grid-line { stroke: #eee; stroke-width: 0.6; }
-
-    /* Row 1 parallelogram */
-    .r1-shape { fill: rgba(60, 140, 200, 0.18); stroke: #157; stroke-width: 1.4; }
-    .r1-outline { stroke: #d33; stroke-width: 2.2; fill: none; stroke-dasharray: 240; stroke-dashoffset: 240; pointer-events: none; }
-    .r1-dot { fill: #023; }
-    .r1-label { font-size: 9px; font-weight: 700; font-family: Arial, sans-serif; fill: #012; }
-    .label-bg { fill: #fff; opacity: 0.98; rx: 3; ry: 3; }
-
-    #parSVG:hover .r1-outline { animation: r1dash 1.6s linear infinite; }
-    @keyframes r1dash { to { stroke-dashoffset: 0; } }
-
-    /* Row 2 nodes */
-    .node {
-      fill: #e8f3fb;
-      stroke: #0a58a3;
-      stroke-width: 2;
-      cursor: pointer;
-      transition: transform 0.12s ease, fill 0.12s;
-      transform-origin: center center;
-      transform-box: fill-box;
-    }
-
-    .node-label {
-      font-size: 12px;
-      fill: #05345a;
-      font-weight: 700;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      pointer-events: none;
-    }
-
-    .conn {
-      stroke: #ff6b00;
-      stroke-width: 3.5;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-dasharray: 300;
-      stroke-dashoffset: 300;
-      transition: stroke-dashoffset 520ms linear, opacity 220ms;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .conn.show {
-      stroke-dashoffset: 0;
-      opacity: 1;
-    }
-
-    .layout-3 .active .node {
-      fill: #ffefdc;
-      transform: scale(1.06);
-    }
-
-    /* Row 3 bimodal */
-    .curve { fill: none; stroke: #0a58a3; stroke-width: 2.4; }
-    .pt { fill: #012; stroke: #fff; stroke-width: 0.8; }
-    .vec { stroke: #d33; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 60; stroke-dashoffset: 60; transition: stroke-dashoffset 0.9s ease, opacity 0.3s; opacity: 0; }
-    svg.bimodal:hover .vec { stroke-dashoffset: 0; opacity: 1; }
-
-    /* Row 4 area chart */
-    .chart-grid { stroke: #f0ecef; stroke-width: 1; }
-    .area-fill { fill: #e78fb3; opacity: 0.6; transition: opacity 0.2s; }
-    .area-line { fill: none; stroke: #c13b7a; stroke-width: 2; }
-    .hover-line { stroke: #333; stroke-width: 1; stroke-dasharray: 4 2; opacity: 0; transition: opacity 0.12s; }
-    .dot-circle { fill: #fff; stroke: #c13b7a; stroke-width: 2; opacity: 0; transition: opacity 0.12s; }
-    .tooltip-text { fill: #072034; font-size: 12px; opacity: 1; pointer-events: none; }
-    .chart:hover .area-fill { opacity: 0.85; }
-
-    /* Row 5 bars */
-    .bar {
-      fill: #6aa1c9;
-      transform-origin: 50% 100%;
-      transform-box: fill-box;
-      transform: scaleY(0.06);
-      transition: transform 600ms cubic-bezier(.2, .9, .2, 1), fill 220ms;
-    }
-
-    .bar[data-s="0.95"] { --s: 0.95; }
-    .bar[data-s="0.7"]  { --s: 0.7; }
-    .bar[data-s="0.45"] { --s: 0.45; }
-
-    .bars svg:hover .bar {
-      transform: scaleY(var(--s));
-    }
-
-    .bars svg .bar:hover {
-      fill: #2b6f95;
-      transform: scaleY(calc(var(--s) * 1.08));
-      transition: transform 260ms ease;
-    }
-
-    .layout-3 footer {
-      background: #eff6ff;
-    }
-
-    /* -------------------------
-       LAYOUT 4: Heatmap container
-       ------------------------- */
-    .layout-4 header {
-      background: #be123c;
-    }
-
-    .layout-4-main {
-      padding: 1rem;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .layout-4 footer {
-      background: #fee2e2;
-    }
-
-    /* Heatmap root styling (scoped) */
-    .layout-4-heatmap {
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000000 100%);
-      color: #e5e7eb;
-      border-radius: 0.75rem;
-      padding: 0.5rem 0.75rem 0.75rem;
-      box-shadow: 0 0 18px rgba(15, 23, 42, 0.8);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .layout-4-heatmap h3 {
-      margin: 4px 8px 2px 8px;
-      font-size: 13px;
-      letter-spacing: 0.03em;
-      color: #e0f2fe;
-    }
-
-    .layout-4-heatmap .layout-top {
-      display: flex;
-      width: 100%;
-      gap: 6px;
-      margin: 0 8px 4px 8px;
-    }
-
-    .layout-4-heatmap .range-summary,
-    .layout-4-heatmap .top3-panel {
-      flex: 1;
-      height: 60px;
-      font-size: 10px;
-      line-height: 1.3;
-      color: #e5e7eb;
-      background: radial-gradient(circle at top left, #1e293b 0, #020617 65%);
-      border-radius: 8px;
-      padding: 5px 7px;
-      border: 1px solid #111827;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);
-      overflow-y: auto;
-      box-sizing: border-box;
-    }
-
-    .layout-4-heatmap .range-summary-title,
-    .layout-4-heatmap .top3-title {
-      font-weight: 600;
-      margin-bottom: 2px;
-      color: #a5b4fc;
-      font-size: 10px;
-    }
-
-    .layout-4-heatmap .range-legend-note {
-      margin-top: 1px;
-      font-size: 9px;
-      color: #9ca3af;
-    }
-
-    .layout-4-heatmap .top3-row {
-      display: flex;
-      flex-direction: row;
-      gap: 4px;
-      margin-top: 3px;
-    }
-
-    .layout-4-heatmap .top3-box {
-      flex: 1;
-      background: rgba(30, 41, 59, 0.7);
-      border-radius: 6px;
-      padding: 3px 5px;
-      font-size: 9px;
-      color: #e5e7eb;
-      text-align: left;
-      box-shadow: 0 0 6px rgba(56, 189, 248, 0.12);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Defense summary modal (scoped) */
-    .layout-4-heatmap .defense-modal {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .layout-4-heatmap .defense-modal.open {
-      display: flex;
-    }
-
-    .layout-4-heatmap .defense-modal-backdrop {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top, rgba(15,23,42,0.85), rgba(0,0,0,0.95));
-      backdrop-filter: blur(3px);
-    }
-
-    .layout-4-heatmap .defense-modal-panel {
-      position: relative;
-      z-index: 1;
-      width: min(440px, 96vw);
-      max-height: 78vh;
-      background: radial-gradient(circle at top, #020617 0, #020617 60%, #000000 100%);
-      border-radius: 10px;
-      padding: 8px 10px 8px 10px;
-      border: 1px solid rgba(56, 189, 248, 0.6);
-      box-shadow:
-        0 0 20px rgba(56, 189, 248, 0.4),
-        0 18px 35px rgba(15, 23, 42, 0.95);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .layout-4-heatmap .defense-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 2px;
-    }
-
-    .layout-4-heatmap .defense-modal-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #e0f2fe;
-    }
-
-    .layout-4-heatmap .defense-modal-subtitle {
-      font-size: 9px;
-      color: #9ca3af;
-    }
-
-    .layout-4-heatmap .defense-modal-close {
-      background: rgba(15,23,42,0.9);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: #e5e7eb;
-      cursor: pointer;
-      transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
-    }
-
-    .layout-4-heatmap .defense-modal-close:hover {
-      background: rgba(30,64,175,0.9);
-      border-color: #38bdf8;
-      transform: translateY(-0.5px);
-    }
-
-    .layout-4-heatmap .defense-summary-badge {
-      display: inline-block;
-      padding: 1px 4px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      font-size: 8px;
-      color: #e5e7eb;
-      margin-right: 4px;
-    }
-
-    .layout-4-heatmap .defense-modal-body {
-      font-size: 9px;
-      color: #e5e7eb;
-      overflow-y: auto;
-    }
-
-    .layout-4-heatmap .defense-summary-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 3px;
-      font-size: 9px;
-    }
-
-    .layout-4-heatmap .defense-summary-table th,
-    .layout-4-heatmap .defense-summary-table td {
-      padding: 2px 4px;
-      text-align: right;
-    }
-
-    .layout-4-heatmap .defense-summary-table th:first-child,
-    .layout-4-heatmap .defense-summary-table td:first-child {
-      text-align: left;
-    }
-
-    .layout-4-heatmap .defense-charts {
-      margin-top: 4px;
-      border-top: 1px dashed rgba(55,65,81,0.8);
-      padding-top: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .layout-4-heatmap .defense-chart-block {
-      width: 100%;
-    }
-
-    .layout-4-heatmap .defense-chart-svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .layout-4-heatmap .defense-bar {
-      transition:
-        opacity 0.15s ease,
-        transform 0.15s ease,
-        stroke-width 0.15s ease,
-        stroke 0.15s ease;
-      cursor: pointer;
-    }
-
-    .layout-4-heatmap .defense-bar:hover {
-      opacity: 1;
-      stroke: #e5e7eb;
-      stroke-width: 0.7;
-      transform: translateY(-0.5px);
-    }
-
-    .layout-4-heatmap .defense-chart-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      margin-bottom: 3px;
-      font-size: 8px;
-    }
-
-    .layout-4-heatmap .defense-chart-legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 1px 4px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(55, 65, 81, 0.9);
-    }
-
-    .layout-4-heatmap .defense-chart-legend-swatch {
-      width: 10px;
-      height: 7px;
-      border-radius: 999px;
-    }
-
-    /* Heatmap main wrapper */
-    .layout-4-heatmap .responsive-bubble-wrapper {
-      width: 100%;
-      background: radial-gradient(circle at top, #020617 0, #020617 40%, #000000 100%);
-      border-top: 1px solid #1f2937;
-      box-shadow: 0 0 18px rgba(15, 23, 42, 0.8);
-    }
-
-    .layout-4-heatmap .inner {
-      margin: 4px 8px 6px 8px;
-    }
-
-    .layout-4-heatmap .meta-block {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      margin-bottom: 4px;
-      font-size: 9px;
-    }
-
-    .layout-4-heatmap .meta-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .layout-4-heatmap .meta-left {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
-
-    .layout-4-heatmap .meta-right {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      min-width: 0;
-    }
-
-    .layout-4-heatmap .controls-label {
-      color: #9ca3af;
-      font-size: 9px;
-    }
-
-    .layout-4-heatmap select,
-    .layout-4-heatmap input[type='text'] {
-      background: #020617;
-      border: 1px solid #1f2937;
-      color: #e5e7eb;
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-size: 9px;
-      outline: none;
-      box-shadow: 0 0 4px rgba(15, 23, 42, 0.6);
-    }
-
-    .layout-4-heatmap select:focus,
-    .layout-4-heatmap input[type='text']:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
-    }
-
-    .layout-4-heatmap .legend {
-      margin: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      font-size: 9px;
-      color: #cbd5f5;
-      justify-content: flex-end;
-      width: 100%;
-    }
-
-    .layout-4-heatmap .legend-title {
-      font-weight: 600;
-      margin-right: 2px;
-      color: #9ca3af;
-      font-size: 9px;
-    }
-
-    .layout-4-heatmap .legend-items {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .layout-4-heatmap .legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      cursor: pointer;
-      padding: 1px 4px;
-      border-radius: 4px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid transparent;
-      transition:
-        border-color 0.12s ease,
-        background-color 0.12s ease,
-        color 0.12s ease,
-        box-shadow 0.12s ease,
-        transform 0.12s ease;
-    }
-
-    .layout-4-heatmap .legend-item:hover {
-      background: rgba(249, 250, 251, 0.08);
-      border-color: rgba(229, 231, 235, 0.4);
-      color: #e5e7eb;
-      box-shadow: 0 0 4px rgba(148, 163, 184, 0.4);
-    }
-
-    .layout-4-heatmap .legend-item--active {
-      background: radial-gradient(circle at top, rgba(34, 211, 238, 0.35), #0f172a);
-      border-color: #22d3ee;
-      box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
-      transform: translateY(-0.5px);
-      color: #e0f2fe;
-    }
-
-    .layout-4-heatmap .legend-circle-svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .layout-4-heatmap .legend-item:hover .legend-circle-svg circle,
-    .layout-4-heatmap .legend-item--active .legend-circle-svg circle {
-      opacity: 1;
-    }
-
-    .layout-4-heatmap .circle-legend-note {
-      font-size: 9px;
-      color: #9ca3af;
-      margin-left: 4px;
-    }
-
-    .layout-4-heatmap .legend-secondary-row {
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      font-size: 9px;
-      color: #e5e7eb;
-      width: 100%;
-    }
-
-    .layout-4-heatmap .legend-secondary-title {
-      color: #9ca3af;
-      font-weight: 500;
-    }
-
-    .layout-4-heatmap .legend-secondary-items {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .layout-4-heatmap .legend-secondary-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 1px 4px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-    }
-
-    .layout-4-heatmap .legend-secondary-swatch {
-      width: 12px;
-      height: 7px;
-      border-radius: 999px;
-    }
-
-    .layout-4-heatmap .legend-secondary-note {
-      color: #9ca3af;
-      font-size: 9px;
-      margin-left: 4px;
-    }
-
-    .layout-4-heatmap .legend-chevron {
-      font-size: 10px;
-      display: inline-block;
-      vertical-align: middle;
-      margin: 0 2px;
-    }
-
-    .layout-4-heatmap .legend-chevron-min {
-      color: #f97373;
-    }
-
-    .layout-4-heatmap .legend-chevron-max {
-      color: #4ade80;
-    }
-
-    .layout-4-heatmap .legend-size-row {
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 6px;
-      font-size: 9px;
-      color: #e5e7eb;
-      width: 100%;
-    }
-
-    .layout-4-heatmap .legend-size-title {
-      color: #9ca3af;
-      font-weight: 500;
-    }
-
-    .layout-4-heatmap .legend-size-note {
-      color: #9ca3af;
-    }
-
-    .layout-4-heatmap table {
-      border-collapse: separate;
-      border-spacing: 0;
-      width: 100%;
-      table-layout: fixed;
-      font-size: 10px;
-      background: #020617;
-      margin-bottom: 1em;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .layout-4-heatmap th,
-    .layout-4-heatmap td {
-      padding: 3px 3px;
-      text-align: center;
-      position: relative;
-      white-space: nowrap;
-      box-sizing: border-box;
-      color: #e5e7eb;
-      transition: background-color 0.25s ease, opacity 0.25s ease;
-      border: none;
-    }
-
-    .layout-4-heatmap th {
-      background: linear-gradient(to bottom, #111827, #020617);
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      color: #bfdbfe;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      font-size: 9px;
-    }
-
-    .layout-4-heatmap th.defense-header {
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .layout-4-heatmap th.defense-header:hover {
-      background: radial-gradient(circle at top, #1d4ed8, #020617 65%);
-    }
-
-    .layout-4-heatmap td:first-child {
-      background: #020617;
-      font-weight: 500;
-      text-align: right;
-      padding-right: 6px;
-      position: sticky;
-      left: 0;
-      z-index: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #e5e7eb;
-      font-size: 9px;
-    }
-
-    .layout-4-heatmap tbody tr:hover td:not(:first-child):not(.highlight-range):not(.dimmed-range) {
-      background-color: rgba(15, 23, 42, 0.4);
-    }
-
-    .layout-4-heatmap .bubble-svg {
-      width: 20px;
-      height: 20px;
-      display: block;
-      margin: 0 auto;
-    }
-
-    .layout-4-heatmap .bubble-circle {
-      stroke: #000;
-      stroke-width: 1.2;
-      transition:
-        r 0.25s ease,
-        filter 0.25s ease,
-        opacity 0.25s ease;
-    }
-
-    .layout-4-heatmap .value-cell:hover .bubble-circle {
-      filter:
-        drop-shadow(0 0 3px rgba(147, 197, 253, 0.45))
-        drop-shadow(0 0 6px rgba(96, 165, 250, 0.35))
-        drop-shadow(0 0 9px rgba(37, 99, 235, 0.25));
-      opacity: 1;
-    }
-
-    .layout-4-heatmap .bubble-label {
-      position: absolute;
-      font-size: 7px;
-      top: 2px;
-      left: 3px;
-      color: #67e8f9;
-      opacity: 0.95;
-      text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-      transform-origin: top left;
-      transition: transform 0.15s ease;
-    }
-
-    .layout-4-heatmap .value-cell:hover .bubble-label {
-      transform: scale(1.45);
-    }
-
-    .layout-4-heatmap .value-cell {
-      position: relative;
-      overflow: visible;
-    }
-
-    .layout-4-heatmap .value-cell.hover-outline::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: transparent;
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .layout-4-heatmap .value-cell-tooltip {
-      position: fixed;
-      pointer-events: none;
-      border-radius: 6px;
-      font-size: 9px;
-      line-height: 1.3;
-      opacity: 0;
-      transform: scale(0.9);
-      transform-origin: center center;
-      transition: opacity 0.12s ease, transform 0.12s ease;
-      z-index: 9999;
-      box-sizing: border-box;
-    }
-
-    .layout-4-heatmap .value-cell-tooltip::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      background: linear-gradient(
-        120deg,
-        rgba(34, 211, 238, 0.9),
-        rgba(168, 85, 247, 0.95),
-        rgba(34, 211, 238, 0.9)
-      );
-      background-size: 200% 200%;
-      animation: cellOutlineGradient 1.2s linear infinite;
-      z-index: -1;
-    }
-
-    @keyframes cellOutlineGradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      100% {
-        background-position: 200% 50%;
-      }
-    }
-
-    .layout-4-heatmap .value-cell-tooltip .tooltip-inner {
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at top, #020617 0, #020617 60%, #000000 100%);
-      border-radius: 4px;
-      padding: 2px 5px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-sizing: border-box;
-      white-space: nowrap;
-      box-shadow:
-        0 0 6px rgba(56, 189, 248, 0.6),
-        0 0 14px rgba(15, 23, 42, 0.9);
-    }
-
-    .layout-4-heatmap .tooltip-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
-    }
-
-    .layout-4-heatmap .tooltip-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 1px;
-      text-align: center;
-    }
-
-    .layout-4-heatmap .value-cell-tooltip.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    .layout-4-heatmap .value-cell-tooltip .tooltip-score {
-      font-weight: 600;
-      color: #67e8f9;
-    }
-
-    .layout-4-heatmap .value-cell-tooltip .tooltip-meta {
-      color: #9ca3af;
-    }
-
-    .layout-4-heatmap .value-cell.highlight-range {
-      background-color: rgba(56, 189, 248, 0.1);
-      position: relative;
-      z-index: 2;
-    }
-
-    .layout-4-heatmap .value-cell.dimmed-range {
-      opacity: 0.22;
-    }
-
-    .layout-4-heatmap .value-cell.highlight-level-1 {
-      background-color: rgba(147, 197, 253, 0.25);
-    }
-
-    .layout-4-heatmap .value-cell.highlight-level-2 {
-      background-color: rgba(129, 199, 255, 0.35);
-    }
-
-    .layout-4-heatmap .value-cell.highlight-level-3 {
-      background-color: rgba(96, 165, 250, 0.45);
-    }
-
-    .layout-4-heatmap .value-cell.highlight-level-4 {
-      background-color: rgba(59, 130, 246, 0.6);
-    }
-
-    .layout-4-heatmap .value-cell.highlight-level-5 {
-      background-color: rgba(37, 99, 235, 0.75);
-    }
-
-    .layout-4-heatmap .cell-marker {
-      position: absolute;
-      top: 2px;
-      right: 3px;
-      opacity: 0.95;
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .layout-4-heatmap .cell-marker svg {
-      width: 10px;
-      height: 10px;
-    }
-
-    .layout-4-heatmap .cell-marker-min svg {
-      filter: drop-shadow(0 0 2px rgba(248, 113, 113, 0.7));
-    }
-
-    .layout-4-heatmap .cell-marker-max svg {
-      filter: drop-shadow(0 0 2px rgba(74, 222, 128, 0.7));
-    }
-
-    .layout-4-heatmap .value-cell.dimmed-range .cell-marker {
-      opacity: 0;
-    }
-
-    /* --- FULL-WIDTH + RESPONSIVE FIX FOR LAYOUT 4 --- */
-    .layout-4 {
-      max-width: none;     /* allow full width */
-      width: 100%;         /* stretch across table */
-    }
-
-    .layout-4-main {
-      overflow-x: auto;    /* prevents squeezing; allows horizontal scroll if needed */
-    }
-
-    .layout-4 iframe {
-      width: 100%;         /* fill the widened layout */
-      min-height: 550px;   /* give more breathing room */
-    }
-
-
-    /* -------------------------
-       LAYOUT 5: Cards layout
-       ------------------------- */
-    .layout-5 header {
-      background: #6b21a8;
-    }
-
-    .layout-5 main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1.5rem 1rem;
-    }
-
-    .layout-5 .card-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.75rem;
-      width: 100%;
-      max-width: 640px;
-    }
-
-    .layout-5 .card {
-      border-radius: 0.75rem;
-      border: 1px solid #e5e7eb;
-      padding: 0.75rem;
-      background: #faf5ff;
-      font-size: 0.85rem;
-    }
-
-    .layout-5 footer {
-      background: #f5f3ff;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 800px) {
-      .layout-3-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Public Transportation Ridership in Singapore</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  :root{
+    --bg:#0b1020; --fg:#eef2ff; --muted:rgba(255,255,255,.72);
+    --border:rgba(255,255,255,.14);
+    --accent: rgba(92,108,255,.95);
+    --accentSoft: rgba(92,108,255,.22);
+  }
+
+  html, body{ height:100%; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+    /* no-scroll layout */
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  header, footer{
+    max-width:980px;
+    margin:0 auto;
+    padding:12px 18px;
+    text-align:center;
+  }
+  h1{ margin:6px 0 6px; font-size:36px; font-weight:800; }
+  .subtitle{ margin:0; color:var(--muted); font-size:14px; }
+
+  .wrap{
+    max-width:980px;
+    margin:0 auto;
+    padding:10px 18px 12px;
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  /* Tabs at top */
+  .tabs{
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:12px;
+    flex:0 0 auto;
+    backdrop-filter: blur(6px);
+  }
+  .tablist{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; padding:4px; }
+  .tab{
+    appearance:none;
+    border:1px solid rgba(255,255,255,.18);
+    background:transparent;
+    color:var(--fg);
+    padding:10px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:650;
+    font-size:14px;
+  }
+  .tab[aria-selected="true"]{
+    border-color: var(--accent);
+    background: var(--accentSoft);
+  }
+  .panel{
+    margin-top:10px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px 14px;
+    display:none;
+    text-align:left;
+  }
+  .panel.active{ display:block; }
+  .kicker{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; opacity:.7; margin:0 0 6px; }
+  h2{ margin:0 0 8px; font-size:18px; }
+  p{ margin:0; color:var(--muted); line-height:1.45; font-size:13px; }
+
+  /* Chart card fills remaining height */
+  #chart-card{
+    position:relative;
+    width:100%;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:12px;
+    backdrop-filter: blur(6px);
+
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  #chart-title{ font-weight:750; font-size:13px; margin:0; text-align:left; }
+  #chart-subtitle{ font-size:12px; opacity:.78; margin:0; text-align:left; }
+  #chart-hint{ font-size:12px; opacity:.62; margin:0; text-align:left; }
+
+  /* Summary window (top-right) */
+  #summary{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:min(340px, 44vw);
+    background: rgba(0,0,0,.42);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:14px;
+    padding:10px;
+    z-index:25;
+    pointer-events:none;
+  }
+  #summary .ttl{
+    font-size:12px;
+    font-weight:800;
+    opacity:.95;
+    margin:0 0 6px;
+  }
+  #summary .row{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    margin:2px 0;
+    font-size:12px;
+    line-height:1.3;
+    color: rgba(255,255,255,.88);
+  }
+  #summary .dim{ opacity:.72; }
+  #summary .swatch{
+    width:10px; height:10px; border-radius:3px;
+    border:1px solid rgba(255,255,255,.22);
+    flex: 0 0 auto;
+    margin-top:3px;
+  }
+
+  /* Custom legend */
+  #legend{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:4px 0 2px;
+    justify-content:flex-start;
+  }
+  .leg-btn{
+    appearance:none;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.04);
+    color:rgba(255,255,255,.9);
+    padding:6px 10px;
+    border-radius:999px;
+    cursor:pointer;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    user-select:none;
+    transition: transform .08s ease, background .12s ease, border-color .12s ease;
+  }
+  .leg-btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.35); }
+  .leg-btn.active{
+    border-color: var(--accent);
+    background: var(--accentSoft);
+  }
+  .swatch{
+    width:10px; height:10px; border-radius:3px;
+    border:1px solid rgba(255,255,255,.25);
+    display:inline-block;
+  }
+
+  /* make canvas fill height */
+  #chart{
+    flex:1;
+    min-height:0;
+    width:100% !important;
+    height:100% !important;
+    display:block;
+  }
+
+  .timeline{
+    padding:8px 10px;
+    border-radius:14px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+    flex:0 0 auto;
+  }
+  .year-pill{
+    font-size:12px;
+    padding:6px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);
+    min-width:86px;
+    text-align:center;
+  }
+  input[type="range"]{
+    flex:1;
+    min-width:220px;
+    accent-color: rgb(92,108,255);
+  }
+  .mini{ font-size:12px; color:rgba(255,255,255,.65); }
+
+  footer{ font-size:12px; color:rgba(255,255,255,.6); }
+  code{ background:rgba(255,255,255,.08); padding:2px 6px; border-radius:8px; }
+</style>
 </head>
+
 <body>
-  <h1>20251205 Assignment 5</h1>
-
-  <table class="layouts">
-    <!-- Layout 1 -->
-    <tr>
-      <td>
-        <div class="layout-label">Assignment 1</div>
-        <div class="layout layout-1" id="assignment-1">
-          <header>Item 1 (Singapore PSI Dashboard)</header>
-
-          <main>
-            <h3>Singapore PSI Dashboard</h3>
-            <p style="margin-bottom: 0.75rem; font-size: 0.85rem;">
-              The visualization below shows Singapore PSI Data.
-            </p>
-
-            <button onclick="updatePSITable()">Refresh</button>
-            <div id="last-updated"></div>
-
-            <table id="PSItable">
-              <colgroup>
-                <col style="width: 40%;" />
-                <col style="width: 12%;" />
-                <col style="width: 12%;" />
-                <col style="width: 12%;" />
-                <col style="width: 12%;" />
-                <col style="width: 12%;" />
-              </colgroup>
-              <tr>
-                <th>Data ID</th>
-                <th>Central</th>
-                <th>West</th>
-                <th>East</th>
-                <th>North</th>
-                <th>South</th>
-              </tr>
-            </table>
-
-            <div id="error-msg" class="error"></div>
-          </main>
-        </div>
-      </td>
-    </tr>
-
-    <!-- Layout 2 -->
-    <tr>
-      <td>
-        <div class="layout-label">Assignment 2</div>
-        <div class="layout layout-2" id="assignment-2">
-          <header>Item 2 (SVG Table)</header>
-
-          <main>
-            <h3>View SVG Transformatiations</h3>
-            <p style="margin-bottom: 0.75rem; font-size: 0.85rem;">
-              The visualization below SVG with various transformations.
-            </p>
-
-            <div class="table-responsive">
-              <table class="idv-table">
-                <thead>
-                  <tr class="table-title-row">
-                    <th colspan="5">IDV-assignment2</th>
-                  </tr>
-                  <tr>
-                    <th>Original</th>
-                    <th>Mirror</th>
-                    <th>Rotate 180°</th>
-                    <th>Squeeze Y</th>
-                    <th>Grayscale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="cell"><img src="svg/01.svg" class="img original" alt="original 01.svg" /></td>
-                    <td class="cell"><img src="svg/01.svg" class="img mirror" alt="mirror 01.svg" /></td>
-                    <td class="cell"><img src="svg/01.svg" class="img rotate180" alt="rotate180 01.svg" /></td>
-                    <td class="cell"><img src="svg/01.svg" class="img squeezeY" alt="squeezeY 01.svg" /></td>
-                    <td class="cell"><img src="svg/01.svg" class="img grayscale" alt="grayscale 01.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/02.svg" class="img original" alt="original 02.svg" /></td>
-                    <td class="cell"><img src="svg/02.svg" class="img mirror" alt="mirror 02.svg" /></td>
-                    <td class="cell"><img src="svg/02.svg" class="img rotate180" alt="rotate180 02.svg" /></td>
-                    <td class="cell"><img src="svg/02.svg" class="img squeezeY" alt="squeezeY 02.svg" /></td>
-                    <td class="cell"><img src="svg/02.svg" class="img grayscale" alt="grayscale 02.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/03.svg" class="img original" alt="original 03.svg" /></td>
-                    <td class="cell"><img src="svg/03.svg" class="img mirror" alt="mirror 03.svg" /></td>
-                    <td class="cell"><img src="svg/03.svg" class="img rotate180" alt="rotate180 03.svg" /></td>
-                    <td class="cell"><img src="svg/03.svg" class="img squeezeY" alt="squeezeY 03.svg" /></td>
-                    <td class="cell"><img src="svg/03.svg" class="img grayscale" alt="grayscale 03.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/04.svg" class="img original" alt="original 04.svg" /></td>
-                    <td class="cell"><img src="svg/04.svg" class="img mirror" alt="mirror 04.svg" /></td>
-                    <td class="cell"><img src="svg/04.svg" class="img rotate180" alt="rotate180 04.svg" /></td>
-                    <td class="cell"><img src="svg/04.svg" class="img squeezeY" alt="squeezeY 04.svg" /></td>
-                    <td class="cell"><img src="svg/04.svg" class="img grayscale" alt="grayscale 04.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/05.svg" class="img original" alt="original 05.svg" /></td>
-                    <td class="cell"><img src="svg/05.svg" class="img mirror" alt="mirror 05.svg" /></td>
-                    <td class="cell"><img src="svg/05.svg" class="img rotate180" alt="rotate180 05.svg" /></td>
-                    <td class="cell"><img src="svg/05.svg" class="img squeezeY" alt="squeezeY 05.svg" /></td>
-                    <td class="cell"><img src="svg/05.svg" class="img grayscale" alt="grayscale 05.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/06.svg" class="img original" alt="original 06.svg" /></td>
-                    <td class="cell"><img src="svg/06.svg" class="img mirror" alt="mirror 06.svg" /></td>
-                    <td class="cell"><img src="svg/06.svg" class="img rotate180" alt="rotate180 06.svg" /></td>
-                    <td class="cell"><img src="svg/06.svg" class="img squeezeY" alt="squeezeY 06.svg" /></td>
-                    <td class="cell"><img src="svg/06.svg" class="img grayscale" alt="grayscale 06.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/07.svg" class="img original" alt="original 07.svg" /></td>
-                    <td class="cell"><img src="svg/07.svg" class="img mirror" alt="mirror 07.svg" /></td>
-                    <td class="cell"><img src="svg/07.svg" class="img rotate180" alt="rotate180 07.svg" /></td>
-                    <td class="cell"><img src="svg/07.svg" class="img squeezeY" alt="squeezeY 07.svg" /></td>
-                    <td class="cell"><img src="svg/07.svg" class="img grayscale" alt="grayscale 07.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/08.svg" class="img original" alt="original 08.svg" /></td>
-                    <td class="cell"><img src="svg/08.svg" class="img mirror" alt="mirror 08.svg" /></td>
-                    <td class="cell"><img src="svg/08.svg" class="img rotate180" alt="rotate180 08.svg" /></td>
-                    <td class="cell"><img src="svg/08.svg" class="img squeezeY" alt="squeezeY 08.svg" /></td>
-                    <td class="cell"><img src="svg/08.svg" class="img grayscale" alt="grayscale 08.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/09.svg" class="img original" alt="original 09.svg" /></td>
-                    <td class="cell"><img src="svg/09.svg" class="img mirror" alt="mirror 09.svg" /></td>
-                    <td class="cell"><img src="svg/09.svg" class="img rotate180" alt="rotate180 09.svg" /></td>
-                    <td class="cell"><img src="svg/09.svg" class="img squeezeY" alt="squeezeY 09.svg" /></td>
-                    <td class="cell"><img src="svg/09.svg" class="img grayscale" alt="grayscale 09.svg" /></td>
-                  </tr>
-                  <tr>
-                    <td class="cell"><img src="svg/10.svg" class="img original" alt="original 10.svg" /></td>
-                    <td class="cell"><img src="svg/10.svg" class="img mirror" alt="mirror 10.svg" /></td>
-                    <td class="cell"><img src="svg/10.svg" class="img rotate180" alt="rotate180 10.svg" /></td>
-                    <td class="cell"><img src="svg/10.svg" class="img squeezeY" alt="squeezeY 10.svg" /></td>
-                    <td class="cell"><img src="svg/10.svg" class="img grayscale" alt="grayscale 10.svg" /></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </main>
-        </div>
-      </td>
-    </tr>
-
-    <!-- Layout 3 -->
-    <tr>
-      <td>
-        <div class="layout-label">Assignment 3</div>
-        <div class="layout layout-3" id="assignment-3">
-          <header>Item 3 (Interactive SVG Diagrams)</header>
-
-          <main class="layout-3-main">
-            <div class="layout-3-intro">
-              <div class="layout-3-intro-title">Hover each diagram to see interactions</div>
-              <p class="layout-3-intro-text">
-                Left column shows SVG diagrams, right column explains what each interaction does.
-              </p>
-            </div>
-
-            <div class="layout-3-grid">
-              <!-- ROW 1 -->
-              <div class="layout-3-card" aria-label="Diagram 1: parallelogram">
-                <svg id="parSVG" class="diagram" width="220" height="220" viewBox="-8 -8 116 116" role="img" aria-labelledby="cap1">
-                  <title id="cap1">Parallelogram — hover to animate outline (red)</title>
-                  <rect x="-8" y="-8" width="116" height="116" fill="#fff" />
-                  <g aria-hidden="true">
-                    <g class="grid-line">
-                      <line x1="10" x2="10" y1="0" y2="100" />
-                      <line x1="20" x2="20" y1="0" y2="100" />
-                      <line x1="30" x2="30" y1="0" y2="100" />
-                      <line x1="40" x2="40" y1="0" y2="100" />
-                      <line x1="50" x2="50" y1="0" y2="100" />
-                      <line x1="60" x2="60" y1="0" y2="100" />
-                      <line x1="70" x2="70" y1="0" y2="100" />
-                      <line x1="80" x2="80" y1="0" y2="100" />
-                      <line x1="90" x2="90" y1="0" y2="100" />
-                      <line y1="10" y2="10" x1="0" x2="100" />
-                      <line y1="20" y2="20" x1="0" x2="100" />
-                      <line y1="30" y2="30" x1="0" x2="100" />
-                      <line y1="40" y2="40" x1="0" x2="100" />
-                      <line y1="50" y2="50" x1="0" x2="100" />
-                      <line y1="60" y2="60" x1="0" x2="100" />
-                      <line y1="70" y2="70" x1="0" x2="100" />
-                      <line y1="80" y2="80" x1="0" x2="100" />
-                      <line y1="90" y2="90" x1="0" x2="100" />
-                    </g>
-                  </g>
-
-                  <polygon class="r1-shape" points="20,20 80,20 60,80 0,80" />
-                  <polyline class="r1-outline" points="20,20 80,20 60,80 0,80 20,20" />
-
-                  <circle class="r1-dot" cx="20" cy="20" r="2.8" />
-                  <circle class="r1-dot" cx="80" cy="20" r="2.8" />
-                  <circle class="r1-dot" cx="60" cy="80" r="2.8" />
-                  <circle class="r1-dot" cx="0"  cy="80" r="2.8" />
-
-                  <g transform="translate(24,8)">
-                    <rect class="label-bg" x="-6" y="-7" width="54" height="16" rx="3"></rect>
-                    <text class="r1-label" x="0" y="4">A (2,2)</text>
-                  </g>
-                  <g transform="translate(84,8)">
-                    <rect class="label-bg" x="-6" y="-7" width="54" height="16" rx="3"></rect>
-                    <text class="r1-label" x="0" y="4">B (8,2)</text>
-                  </g>
-                  <g transform="translate(64,88)">
-                    <rect class="label-bg" x="-6" y="-7" width="54" height="16" rx="3"></rect>
-                    <text class="r1-label" x="0" y="4">C (6,8)</text>
-                  </g>
-                  <g transform="translate(8,88)">
-                    <rect class="label-bg" x="-6" y="-7" width="44" height="16" rx="3"></rect>
-                    <text class="r1-label" x="0" y="4">D (0,8)</text>
-                  </g>
-                </svg>
-              </div>
-
-              <div class="layout-3-caption">
-                <div class="layout-3-caption-title">Diagram 1</div>
-                <div class="layout-3-caption-sub">
-                  [Interaction] Hover to highlight the outline of the parallelogram.
-                </div>
-              </div>
-
-              <!-- ROW 2 -->
-              <div class="layout-3-card" aria-label="Diagram 2 nodes">
-                <svg id="nodesSVG" class="diagram" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="cap2">
-                  <title id="cap2">Alphabet nodes — hover on a node to connect it to A</title>
-                  <rect width="400" height="220" fill="#fff" opacity="0" />
-                  <path id="conn" class="conn" d="" />
-
-                  <g id="node-A" transform="translate(80,110)" data-id="A" aria-hidden="true">
-                    <circle class="node" r="20"></circle>
-                    <text class="node-label">A</text>
-                  </g>
-
-                  <g id="node-B" transform="translate(220,30)" data-id="B" tabindex="0" role="button" aria-label="B">
-                    <circle class="node" r="18"></circle>
-                    <text class="node-label">B</text>
-                  </g>
-
-                  <g id="node-C" transform="translate(350,60)" data-id="C" tabindex="0" role="button" aria-label="C">
-                    <circle class="node" r="18"></circle>
-                    <text class="node-label">C</text>
-                  </g>
-
-                  <g id="node-D" transform="translate(300,160)" data-id="D" tabindex="0" role="button" aria-label="D">
-                    <circle class="node" r="18"></circle>
-                    <text class="node-label">D</text>
-                  </g>
-
-                  <g id="node-E" transform="translate(180,175)" data-id="E" tabindex="0" role="button" aria-label="E">
-                    <circle class="node" r="18"></circle>
-                    <text class="node-label">E</text>
-                  </g>
-
-                  <g id="node-F" transform="translate(40,40)" data-id="F" tabindex="0" role="button" aria-label="F">
-                    <circle class="node" r="18"></circle>
-                    <text class="node-label">F</text>
-                  </g>
-
-                  <g id="node-G" transform="translate(320,100)" data-id="G" tabindex="0" role="button" aria-label="G">
-                    <circle class="node" r="18"></circle>
-                    <text class="node-label">G</text>
-                  </g>
-                </svg>
-              </div>
-
-              <div class="layout-3-caption">
-                <div class="layout-3-caption-title">Diagram 2</div>
-                <div class="layout-3-caption-sub">
-                  [Interaction] Hover on any letter node to draw an animated path from A to that node.
-                </div>
-              </div>
-
-              <!-- ROW 3 -->
-              <div class="layout-3-card" aria-label="Diagram 3 bimodal">
-                <svg id="bimodalSVG" class="diagram bimodal" viewBox="-5 -5 110 110" role="img" aria-labelledby="cap3">
-                  <title id="cap3">Bimodal curve — hover to show sample points and tangent vectors</title>
-                  <rect width="100" height="100" fill="#fff" />
-                  <g class="grid-line" aria-hidden="true">
-                    <line x1="10" x2="10" y1="0" y2="100" />
-                    <line x1="20" x2="20" y1="0" y2="100" />
-                    <line x1="30" x2="30" y1="0" y2="100" />
-                    <line x1="40" x2="40" y1="0" y2="100" />
-                    <line x1="50" x2="50" y1="0" y2="100" />
-                    <line x1="60" x2="60" y1="0" y2="100" />
-                    <line x1="70" x2="70" y1="0" y2="100" />
-                    <line x1="80" x2="80" y1="0" y2="100" />
-                    <line x1="90" x2="90" y1="0" y2="100" />
-                    <line y1="10" y2="10" x1="0" x2="100" />
-                    <line y1="20" y2="20" x1="0" x2="100" />
-                    <line y1="30" y2="30" x1="0" x2="100" />
-                    <line y1="40" y2="40" x1="0" x2="100" />
-                    <line y1="50" y2="50" x1="0" x2="100" />
-                    <line y1="60" y2="60" x1="0" x2="100" />
-                    <line y1="70" y2="70" x1="0" x2="100" />
-                    <line y1="80" y2="80" x1="0" x2="100" />
-                    <line y1="90" y2="90" x1="0" x2="100" />
-                  </g>
-
-                  <path id="curvePath" class="curve" d="M5,70 C25,10 35,5 50,30 C65,55 75,10 95,70" />
-
-                  <g id="samplePoints"></g>
-                  <g id="tangentLines"></g>
-                </svg>
-              </div>
-
-              <div class="layout-3-caption">
-                <div class="layout-3-caption-title">Diagram 3</div>
-                <div class="layout-3-caption-sub">
-                  [Interaction] Hover to reveal sampled points on the curve and animated tangent lines.
-                </div>
-              </div>
-
-              <!-- ROW 4 -->
-              <div class="layout-3-card" aria-label="Diagram 4 frequency chart">
-                <svg id="chart" class="diagram chart" viewBox="0 0 200 120" role="img" aria-labelledby="cap4">
-                  <title id="cap4">Frequency area chart — hover to show tooltip and frequency</title>
-                  <rect width="200" height="120" fill="#fff" />
-
-                  <g class="chart-grid" aria-hidden="true">
-                    <line x1="50" x2="50" y1="10" y2="100" />
-                    <line x1="80" x2="80" y1="10" y2="100" />
-                    <line x1="110" x2="110" y1="10" y2="100" />
-                    <line x1="140" x2="140" y1="10" y2="100" />
-                    <line x1="170" x2="170" y1="10" y2="100" />
-                    <line x1="30" x2="190" y1="20" y2="20" />
-                    <line x1="30" x2="190" y1="40" y2="40" />
-                    <line x1="30" x2="190" y1="60" y2="60" />
-                    <line x1="30" x2="190" y1="80" y2="80" />
-                    <line x1="30" x2="190" y1="100" y2="100" />
-                  </g>
-
-                  <g aria-hidden="true">
-                    <line class="axis" x1="30" x2="30" y1="10" y2="100" />
-                    <line class="axis" x1="30" x2="190" y1="100" y2="100" />
-                  </g>
-
-                  <path id="area" class="area-fill"></path>
-                  <path id="line" class="area-line"></path>
-
-                  <line id="vline" class="hover-line" x1="0" x2="0" y1="10" y2="100"></line>
-                  <circle id="dot" class="dot-circle" r="4"></circle>
-                  <g id="tooltip" style="display:none">
-                    <rect x="0" y="0" width="70" height="22" rx="4" ry="4" fill="#fff" stroke="#ddd" />
-                    <text id="tooltip-text" class="tooltip-text" x="8" y="15">val</text>
-                  </g>
-                </svg>
-              </div>
-
-              <div class="layout-3-caption">
-                <div class="layout-3-caption-title">Diagram 4</div>
-                <div class="layout-3-caption-sub">
-                  [Interaction] Move your mouse along the chart to see a tooltip with the frequency value.
-                </div>
-              </div>
-
-              <!-- ROW 5 -->
-              <div class="layout-3-card bars" aria-label="Diagram 5 bar chart">
-                <svg class="diagram" viewBox="0 0 120 100" role="img" aria-labelledby="cap5">
-                  <title id="cap5">Bar chart — hover to grow bars from axis</title>
-                  <rect width="120" height="100" fill="#fff" opacity="0" />
-                  <line x1="10" x2="10" y1="10" y2="90" stroke="#bbb" stroke-width="1" />
-                  <line x1="10" x2="110" y1="90" y2="90" stroke="#bbb" stroke-width="1" />
-
-                  <g transform="translate(22,0)">
-                    <rect class="bar" x="0" y="30" width="18" height="60" data-s="0.95"></rect>
-                  </g>
-                  <g transform="translate(52,0)">
-                    <rect class="bar" x="0" y="42" width="18" height="48" data-s="0.7"></rect>
-                  </g>
-                  <g transform="translate(82,0)">
-                    <rect class="bar" x="0" y="58" width="18" height="32" data-s="0.45"></rect>
-                  </g>
-
-                  <text x="31" y="96" font-size="9" text-anchor="middle">A</text>
-                  <text x="61" y="96" font-size="9" text-anchor="middle">B</text>
-                  <text x="91" y="96" font-size="9" text-anchor="middle">C</text>
-                </svg>
-              </div>
-
-              <div class="layout-3-caption">
-                <div class="layout-3-caption-title">Diagram 5</div>
-                <div class="layout-3-caption-sub">
-                  [Interaction] Hover over the chart to animate the bars growing from the axis.
-                </div>
-              </div>
-            </div>
-          </main>
-        </div>
-      </td>
-    </tr>
-
-    <!-- Layout 4 – will continue in PART 2/2 -->
-        <!-- Layout 4 -->
-    <tr>
-      <td>
-        <div class="layout-label">Assignment 4</div>
-        <div class="layout layout-4" id="assignment-4">
-          <header>Item 4 (Interactive Table)</header>
-
-          <main class="layout-4-main">
-            <h2>Attack–Defense Accuracy (Data_1 and Data_2)</h2>
-            <p style="margin-bottom: 0.75rem; font-size: 0.85rem;">
-              The visualization below is the inline interactive Attack–Defense accuracy heatmap.
-            </p>
-
-            <div class="layout-4-heatmap" id="heatmapRoot">
-              <h3>Attack-Defense Accuracy (Data_1 &amp; Data_2)</h3>
-
-              <div class="layout-top">
-                <div class="range-summary" id="rangeSummary">
-                  <div class="range-summary-title">Range summary</div>
-                  <div>Hover a cell or a legend band to view statistics here.</div>
-                </div>
-                <div class="top3-panel" id="top3Panel">
-                  <div class="top3-title">Top 3 scores in range</div>
-                  <div>No range selected.</div>
-                </div>
-              </div>
-
-              <div class="responsive-bubble-wrapper">
-                <div class="inner">
-                  <div class="meta-block">
-                    <!-- Row 1: Filter + bands -->
-                    <div class="meta-row">
-                      <div class="meta-left">
-                        <span class="controls-label">Filter attack:</span>
-                        <input type="text" id="filterInput" placeholder="type to filter…" />
-                      </div>
-                      <div class="meta-right">
-                        <div class="legend">
-                          <span class="legend-title">Bands:</span>
-                          <div class="legend-items" id="legendItems"></div>
-                          <span class="circle-legend-note">0.0 shows no circle</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Row 2: Sort + secondary legend -->
-                    <div class="meta-row">
-                      <div class="meta-left">
-                        <span class="controls-label">Sort attacks by:</span>
-                        <select id="sortSelect">
-                          <option value="original">Original order</option>
-                          <option value="attack">Attack name (A–Z)</option>
-                          <option value="max">Max score</option>
-                          <option value="avg">Average score</option>
-                        </select>
-                      </div>
-                      <div class="meta-right">
-                        <div class="legend-secondary-row">
-                          <span class="legend-secondary-title">Within-band tint:</span>
-                          <div class="legend-secondary-items">
-                            <div class="legend-secondary-item">
-                              <span class="legend-secondary-swatch" style="background:rgba(147,197,253,0.4);"></span>
-                              <span>Lower values</span>
-                            </div>
-                            <div class="legend-secondary-item">
-                              <span class="legend-secondary-swatch" style="background:rgba(37,99,235,0.75);"></span>
-                              <span>Higher values</span>
-                            </div>
-                            <span class="legend-secondary-note">
-                              <span class="legend-chevron legend-chevron-min">▼</span> min
-                              <span class="legend-chevron legend-chevron-max">▲</span> max
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Row 3: Size legend -->
-                    <div class="meta-row">
-                      <div class="meta-left"></div>
-                      <div class="meta-right">
-                        <div class="legend-size-row">
-                          <span class="legend-size-title">Circle size:</span>
-                          <svg width="70" height="18">
-                            <circle cx="12" cy="9" r="3" fill="#60a5fa" opacity="0.9"></circle>
-                            <circle cx="35" cy="9" r="5" fill="#60a5fa" opacity="0.9"></circle>
-                            <circle cx="60" cy="9" r="7" fill="#60a5fa" opacity="0.9"></circle>
-                          </svg>
-                          <span class="legend-size-note">Higher scores → larger circles</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <table id="bubbleTable">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th class="defense-header" data-defense="ERM">ERM</th>
-                        <th class="defense-header" data-defense="DA">DA</th>
-                        <th class="defense-header" data-defense="PGDT">PGDT</th>
-                        <th class="defense-header" data-defense="TRADES">TRADES</th>
-                        <th class="defense-header" data-defense="MART">MART</th>
-                        <th class="defense-header" data-defense="RS">RS</th>
-                        <th class="defense-header" data-defense="IBP">IBP</th>
-                        <th class="defense-header" data-defense="PRL">PRL</th>
-                        <th class="defense-header" data-defense="TandT">TandT</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <!-- Defense summary modal -->
-              <div class="defense-modal" id="defenseModal" aria-hidden="true">
-                <div class="defense-modal-backdrop" id="defenseModalBackdrop"></div>
-                <div class="defense-modal-panel" role="dialog" aria-modal="true" aria-labelledby="defenseModalTitle">
-                  <div class="defense-modal-header">
-                    <div>
-                      <div class="defense-modal-title" id="defenseModalTitle">Defense summary</div>
-                      <div class="defense-modal-subtitle" id="defenseModalSubtitle">
-                        Std Acc / CRR / CRA for CIFAR100, CIFAR10, SVHN, MNIST
-                      </div>
-                    </div>
-                    <button
-                      class="defense-modal-close"
-                      id="defenseModalClose"
-                      aria-label="Close defense summary"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div class="defense-modal-body" id="defenseModalContent"></div>
-                </div>
-              </div>
-            </div>
-          </main>
-        </div>
-      </td>
-    </tr>
-
-    <!-- Layout 5 -->
-    <tr>
-      <td>
-        <div class="layout-label">5 – Cards Layout</div>
-        <div class="layout layout-5" id="assignment-5">
-          <header>Cards Overview</header>
-          
-            <main>
-              <div class="card-grid">
-                <div class="card">
-                  <a href="#assignment-1" class="card-link">
-                    <strong>Assignment 1</strong>
-                    <span class="card-cta"></span>
-                  </a>
-                </div>
-
-                <div class="card">
-                  <a href="#assignment-2" class="card-link">
-                    <strong>Assignment 2</strong>
-                    <span class="card-cta"></span>
-                  </a>
-                </div>
-
-                <div class="card">
-                  <a href="#assignment-3" class="card-link">
-                    <strong>Assignment 3</strong>
-                    <span class="card-cta"></span>
-                  </a>
-                </div>
-
-                <div class="card">
-                  <a href="#assignment-4" class="card-link">
-                    <strong>Assignment 4</strong>
-                    <span class="card-cta"></span>
-                  </a>
-                </div>
-
-                <div class="card">
-                  <a href="#assignment-1" class="card-link">
-                    <strong>Back to Top</strong>
-                  </a>
-                </div>
-              </div>
-            </main>
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <!-- PSI dashboard script (external, as in your original) -->
-  <script src="psi_dashboard.js"></script>
-
-  <!-- SVG diagram interactions (Layout 3) -->
-  <script>
-    const $  = (s, r=document) => r.querySelector(s);
-    const $$ = (s, r=document) => Array.from((r || document).querySelectorAll(s));
-
-    /* ROW 2: nodes A..G interactions */
-    (() => {
-      const svg = document.getElementById('nodesSVG');
-      if (!svg) return;
-
-      const conn = svg.querySelector('#conn');
-      const nodeA = svg.querySelector('#node-A');
-      if (!conn || !nodeA) return;
-
-      const getCenter = (g) => {
-        const t = g.getAttribute('transform') || '';
-        const m = /translate\(\s*([-\d.]+)[ ,]+([-\d.]+)\s*\)/.exec(t);
-        if (m) return { x: +m[1], y: +m[2] };
-
-        const circle = g.querySelector('circle');
-        const box = circle.getBBox();
-        return {
-          x: box.x + box.width / 2,
-          y: box.y + box.height / 2
-        };
-      };
-
-      const aCenter = getCenter(nodeA);
-      const nodeIds = ['node-B', 'node-C', 'node-D', 'node-E', 'node-F', 'node-G'];
-
-      const setupNodeHover = (nodeId) => {
-        const g = document.getElementById(nodeId);
-        if (!g) return;
-
-        const onEnter = () => {
-          const c = getCenter(g);
-          const mx = (aCenter.x + c.x) / 2;
-          const cpY = Math.min(aCenter.y, c.y) - 20;
-          const d = `M ${aCenter.x} ${aCenter.y} Q ${mx} ${cpY} ${c.x} ${c.y}`;
-          conn.setAttribute('d', d);
-          conn.classList.add('show');
-          g.classList.add('active');
-        };
-
-        const onLeave = () => {
-          conn.classList.remove('show');
-          g.classList.remove('active');
-        };
-
-        g.addEventListener('mouseenter', onEnter);
-        g.addEventListener('mouseleave', onLeave);
-        g.addEventListener('focus', onEnter);
-        g.addEventListener('blur', onLeave);
-      };
-
-      nodeIds.forEach(setupNodeHover);
-    })();
-
-    /* ROW 3: sample points and tangent lines */
-    (() => {
-      const svg = $('#bimodalSVG');
-      if (!svg) return;
-      const path = $('#curvePath', svg);
-      if (!path) return;
-
-      const ptsG = $('#samplePoints', svg);
-      const vecG = $('#tangentLines', svg);
-
-      const total = path.getTotalLength();
-      const samples = 6;
-      const arrowLen = 18;
-      const delta = Math.max(1, total * 0.006);
-
-      for (let i = 0; i < samples; i++) {
-        const L = ((i + 1) / (samples + 1)) * total;
-        const p = path.getPointAtLength(L);
-
-        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        c.setAttribute('class', 'pt');
-        c.setAttribute('r', '2.8');
-        c.setAttribute('cx', `${p.x}`);
-        c.setAttribute('cy', `${p.y}`);
-        ptsG.appendChild(c);
-
-        const f = path.getPointAtLength(Math.min(total, L + delta));
-        let dx = f.x - p.x;
-        let dy = f.y - p.y;
-        const len = Math.hypot(dx, dy) || 1;
-        dx /= len;
-        dy /= len;
-
-        const x2 = p.x + dx * arrowLen;
-        const y2 = p.y + dy * arrowLen;
-
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('class', 'vec');
-        line.setAttribute('x1', `${p.x}`);
-        line.setAttribute('y1', `${p.y}`);
-        line.setAttribute('x2', `${x2}`);
-        line.setAttribute('y2', `${y2}`);
-        vecG.appendChild(line);
-      }
-    })();
-
-    /* ROW 4: area chart with hover tooltip */
-    (() => {
-      const svg = $('#chart');
-      if (!svg) return;
-
-      const area = $('#area', svg);
-      const line = $('#line', svg);
-      const vline = $('#vline', svg);
-      const dot = $('#dot', svg);
-      const tip = $('#tooltip', svg);
-      const ttext = $('#tooltip-text', svg);
-
-      const data = [
-        { x: 0,    v: 0   },
-        { x: 0.08, v: 0.5 },
-        { x: 0.18, v: 1.2 },
-        { x: 0.28, v: 0.6 },
-        { x: 0.38, v: 0.9 },
-        { x: 0.48, v: 2.5 },
-        { x: 0.58, v: 1.1 },
-        { x: 0.68, v: 3.5 },
-        { x: 0.78, v: 2.2 },
-        { x: 0.88, v: 4.0 },
-        { x: 1,    v: 0.8 }
-      ];
-
-      const left = 30, right = 190, bottom = 100, top = 10;
-      const w = right - left;
-      const h = bottom - top;
-      const vmax = Math.max(...data.map(d => d.v));
-
-      const vx = t => left + t * w;
-      const vy = v => bottom - (v / vmax) * h;
-
-      let dArea = `M ${vx(data[0].x)} ${bottom}`;
-      let dLine = `M ${vx(data[0].x)} ${vy(data[0].v)}`;
-
-      data.forEach((pt, i) => {
-        const x = vx(pt.x);
-        const y = vy(pt.v);
-        dArea += ` L ${x} ${y}`;
-        if (i > 0) dLine += ` L ${x} ${y}`;
-      });
-
-      dArea += ` L ${vx(data[data.length - 1].x)} ${bottom} Z`;
-
-      area.setAttribute('d', dArea);
-      line.setAttribute('d', dLine);
-
-      vline.style.opacity = 0;
-      dot.style.opacity  = 0;
-      tip.style.display  = 'none';
-
-      svg.addEventListener('mousemove', (e) => {
-        const pt = svg.createSVGPoint();
-        pt.x = e.clientX;
-        pt.y = e.clientY;
-        const p = pt.matrixTransform(svg.getScreenCTM().inverse());
-
-        if (p.x < left || p.x > right) {
-          vline.style.opacity = 0;
-          dot.style.opacity   = 0;
-          tip.style.display   = 'none';
-          return;
-        }
-
-        vline.setAttribute('x1', p.x);
-        vline.setAttribute('x2', p.x);
-        vline.style.opacity = 1;
-
-        const tx = (p.x - left) / w;
-        let best = Infinity;
-        let nearest = data[0];
-
-        data.forEach(d => {
-          const dd = Math.abs(d.x - tx);
-          if (dd < best) {
-            best = dd;
-            nearest = d;
-          }
-        });
-
-        const nx = vx(nearest.x);
-        const ny = vy(nearest.v);
-
-        dot.setAttribute('cx', nx);
-        dot.setAttribute('cy', ny);
-        dot.style.opacity = 1;
-
-        tip.style.display = 'block';
-        const txPos = Math.min(120, Math.max(10, nx + 6));
-        tip.setAttribute('transform', `translate(${txPos},${Math.max(12, ny - 28)})`);
-        if (ttext) ttext.textContent = `freq: ${nearest.v.toFixed(2)}`;
-      });
-
-      svg.addEventListener('mouseleave', () => {
-        vline.style.opacity = 0;
-        dot.style.opacity   = 0;
-        tip.style.display   = 'none';
-      });
-    })();
-  </script>
-
-  <!-- Heatmap logic (Layout 4) -->
-  <script>
-    // ----------------- Config & data -----------------
-    const DATA_URL = "data_2.json"; // optional external JSON
-
-    const defenses = ["ERM","DA","PGDT","TRADES","MART","RS","IBP","PRL","TandT"];
-
-    const attackDefenseDataFallback = [
-      ["No Attack",94.85,94.21,84.38,80.42,81.54,89.45,48.40,93.82,94.23],
-      ["TIFGSM",35.10,33.00,65.70,62.90,69.10,45.40,40.20,34.00,92.80],
-      ["MIFGSM",0.00,0.00,50.90,51.90,50.50,5.80,38.10,0.00,92.80],
-      ["DIFGSM",1.00,0.00,51.75,50.50,53.60,4.10,38.10,3.10,92.80],
-      ["VMIFGSM",0.00,0.00,51.10,50.90,51.90,4.10,38.10,0.00,93.90],
-      ["TPGD",38.10,39.20,69.30,69.10,70.10,48.50,50.00,28.90,91.80],
-      ["FGSM",29.90,25.80,57.95,54.60,61.90,28.90,38.10,25.80,93.80],
-      ["RFGSM",0.00,0.00,49.15,50.40,48.50,3.70,38.10,0.00,90.00],
-      ["BIM",0.00,0.00,52.00,57.20,47.40,2.10,38.10,0.00,90.70],
-      ["FAB",1.00,2.10,43.00,46.40,40.20,5.30,38.10,4.10,90.10],
-      ["CW",0.00,0.00,32.20,35.10,29.90,1.00,40.20,1.00,92.90],
-      ["UPGD",0.00,0.00,49.85,50.50,49.80,5.10,38.10,0.00,93.80],
-      ["FFGSM",19.60,23.70,60.55,55.70,66.00,33.00,42.30,29.90,92.80],
-      ["Jitter",11.30,12.40,48.15,47.40,49.50,34.00,39.20,24.70,90.70],
-      ["PGD",0.00,0.00,57.40,54.60,60.80,7.20,40.20,0.00,91.80],
-      ["EOTPGD",0.00,0.00,50.10,50.30,50.50,3.00,38.10,0.00,90.70],
-      ["APGD",0.00,0.00,48.40,51.00,46.40,1.00,38.10,0.00,90.70],
-      ["NIFGSM",0.00,0.00,57.95,59.80,59.80,7.20,38.10,1.00,92.80],
-      ["SiniFGSM",4.10,1.00,59.00,56.70,61.90,23.70,38.10,12.40,93.70],
-      ["VNIFGSM",0.00,0.00,50.45,53.00,48.50,5.10,38.10,0.00,92.90],
-      ["APGDT",0.00,0.00,40.90,44.30,38.10,0.00,38.10,0.00,88.70],
-      ["Square",0.00,1.00,50.40,54.00,47.40,3.10,38.10,2.10,88.08],
-      ["Add Gaussian Noise",25.80,43.30,79.10,78.40,80.40,74.20,42.30,45.40,87.60],
-      ["OnePixel",79.40,83.50,78.05,74.20,82.50,83.50,42.50,80.40,89.70],
-      ["Pixle",0.00,0.00,12.55,11.30,14.40,1.00,10.30,0.00,17.50],
-      ["PGDL2",1.00,0.00,35.80,36.10,36.10,5.20,36.10,0.00,92.90]
-    ];
-
-    const colorStops = [
-      { min: 0,  max: 20,  color: "#60a5fa" },
-      { min: 20, max: 40,  color: "#60a5fa" },
-      { min: 40, max: 60,  color: "#60a5fa" },
-      { min: 60, max: 80,  color: "#60a5fa" },
-      { min: 80, max: 101, color: "#60a5fa" }
-    ];
-
-    const HIGHLIGHT_LEVEL_CLASSES = [
-      "highlight-level-1",
-      "highlight-level-2",
-      "highlight-level-3",
-      "highlight-level-4",
-      "highlight-level-5"
-    ];
-
-    let attackDefenseData = [];
-    let currentData = [];
-    let activeBand = null;
-    let tooltipDiv = null;
-
-    // Defense summary data
-    const defenseSummaryData = {
-      "ERM": {
-        "Std Acc": { "CIFAR100": 81.03, "CIFAR10": 94.85, "SVHN": 94.44, "MNIST": 99.37 },
-        "CRR":     { "CIFAR100": 9.28,  "CIFAR10": 1.25,  "SVHN": 52.72, "MNIST": 26.01 },
-        "CRA":     { "CIFAR100": 4.52,  "CIFAR10": 1.25,  "SVHN": 51.04, "MNIST": 24.96 }
+<header>
+  <h1>Public Transportation Ridership In Singapore</h1>
+  <p class="subtitle">Interact to learn more about public transportation ridership from 2000 - 2025</p>
+</header>
+
+<div class="wrap">
+
+  <div class="tabs" role="region" aria-label="Chapters">
+    <div class="tablist" role="tablist" aria-label="Chapters">
+      <button class="tab" role="tab" aria-selected="true"  data-state="baseline">Travel Intensity</button>
+      <button class="tab" role="tab" aria-selected="false" data-state="modes">Mode Split</button>
+      <button class="tab" role="tab" aria-selected="false" data-state="system">Growth Race</button>
+    </div>
+
+    <div class="panel active" id="panel-baseline">
+      <div class="kicker">Travel Intensity</div>
+      <h2>How busy is daily travel?</h2>
+      <p>Trips per 100 people per day, with population shown on a second axis for context.</p>
+    </div>
+
+    <div class="panel" id="panel-modes">
+      <div class="kicker">Mode Split</div>
+      <h2>Bus vs rail: who takes what share?</h2>
+      <p>100% stacked share view: MRT+LRT vs Bus. Bus fill has no “100% ceiling stroke”. Crosshair snaps to the nearest year.</p>
+    </div>
+
+    <div class="panel" id="panel-system">
+      <div class="kicker">Growth Race</div>
+      <h2>What grew faster: total, rail, or bus demand?</h2>
+      <p>Indexed growth since 2000 (2000 = 100). Comparing total ridership vs rail ridership vs bus ridership.</p>
+    </div>
+  </div>
+
+  <div id="chart-card">
+    <div id="summary" aria-label="Summary">
+      <div class="ttl" id="sumTitle">Year: —</div>
+      <div id="sumBody"></div>
+    </div>
+
+    <div id="chart-title"></div>
+    <div id="chart-subtitle"></div>
+    <div id="chart-hint">Move mouse over chart to interact.</div>
+
+    <div id="legend" aria-label="Legend"></div>
+
+    <canvas id="chart"></canvas>
+
+    <div class="timeline" aria-label="Timeline scrubber">
+      <div class="year-pill" id="yearPill">Year: —</div>
+      <input id="yearSlider" type="range" min="0" max="0" value="0" step="1" aria-label="Select year"/>
+      <div class="mini">Drag to pin. Click chart to jump.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Source: data.gov.sg · Built with HTML, JavaScript, Chart.js · Debug: <code>window.app</code>
+</footer>
+
+<script type="application/json" id="DATA">
+{
+  "years":[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
+  "population":[4027887,4138012,4175950,4114826,4166664,4265762,4401365,4588599,4839396,4987573,5076732,5183688,5312437,5399162,5469724,5535002,5607283,5612253,5638676,5703569,5685807,5453566,5637022,5917648,6036860],
+  "rail":[1086000,1112000,1120000,1221000,1325000,1390000,1482000,1606000,1786000,1872000,2169000,2406000,2649000,2755000,2899000,3023000,3275000,3312000,3501000,3592000,2162000,2251000,2929000,3445000,3622000],
+  "bus":[3251000,3281000,3197000,2992000,2805000,2779000,2833000,2932000,3087000,3047000,3199000,3385000,3481000,3601000,3751000,3891000,3939000,3952000,4037000,4099000,2878000,3008000,3461000,3747000,3837000],
+  "total":[4337000,4393000,4317000,4213000,4130000,4169000,4315000,4538000,4873000,4919000,5268000,5791000,6129000,6356000,6650000,6914000,7214000,7264000,7708000,7791000,4160000,4259000,6390000,7192000,7459000]
+}
+</script>
+
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("DATA").textContent);
+  const years = D.years;
+  const pop = D.population;
+  const rail = D.rail;
+  const bus = D.bus;
+  const total = D.total;
+
+  const titleEl = document.getElementById("chart-title");
+  const subtitleEl = document.getElementById("chart-subtitle");
+  const legendEl = document.getElementById("legend");
+
+  const slider = document.getElementById("yearSlider");
+  const yearPill = document.getElementById("yearPill");
+
+  const sumTitle = document.getElementById("sumTitle");
+  const sumBody = document.getElementById("sumBody");
+
+  slider.min = 0;
+  slider.max = String(years.length - 1);
+  slider.value = String(years.length - 1);
+
+  // ---------- helpers ----------
+  const fmtInt = (n) => (n==null || Number.isNaN(n)) ? "n/a" : new Intl.NumberFormat().format(Math.round(n));
+  const fmt1 = (n) => (n==null || Number.isNaN(n)) ? "n/a" : Number(n).toFixed(1);
+  const fmt2 = (n) => (n==null || Number.isNaN(n)) ? "n/a" : Number(n).toFixed(2);
+
+  const indexTo100 = (arr) => {
+    const base = arr.find(v => v!=null);
+    return arr.map(v => (v==null || base==null || base===0) ? null : (v/base)*100);
+  };
+
+  const tripsPer100 = total.map((v,i)=> (v!=null && pop[i]!=null && pop[i]!==0) ? (v/pop[i])*100 : null);
+
+  function extent(arr){
+    const vals = arr.filter(v => v!=null && !Number.isNaN(v));
+    let mn = Math.min(...vals), mx = Math.max(...vals);
+    if (mn === mx) { mn -= 1; mx += 1; }
+    const pad = (mx - mn) * 0.08;
+    return {min: mn - pad, max: mx + pad};
+  }
+
+  // ---------- Crosshair plugin (X only) ----------
+  const crosshair = {
+    id: "crosshair",
+    afterDatasetsDraw(chart) {
+      const active = chart.getActiveElements?.() || [];
+      if (!active.length) return;
+
+      const a = active[0];
+      const meta = chart.getDatasetMeta(a.datasetIndex);
+      const el = meta?.data?.[a.index];
+      if (!el) return;
+
+      const area = chart.chartArea;
+      const ctx = chart.ctx;
+
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3,3]);
+      ctx.strokeStyle = "rgba(255,255,255,0.22)";
+      ctx.beginPath();
+      ctx.moveTo(el.x, area.top);
+      ctx.lineTo(el.x, area.bottom);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  // Chapter 3 baseline at 100
+  const baseline100 = {
+    id: "baseline100",
+    afterDraw(chart) {
+      if (chart.$state !== "system") return;
+      const area = chart.chartArea;
+      const yScale = chart.scales?.y;
+      if (!area || !yScale) return;
+
+      const y = yScale.getPixelForValue(100);
+      const ctx = chart.ctx;
+
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4,4]);
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.beginPath();
+      ctx.moveTo(area.left, y);
+      ctx.lineTo(area.right, y);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.font = "12px system-ui";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("2000 baseline (100)", area.left + 6, y - 4);
+      ctx.restore();
+    }
+  };
+
+  Chart.register(crosshair, baseline100);
+
+  // ---------- chart ----------
+  const canvas = document.getElementById("chart");
+  const ctx = canvas.getContext("2d");
+
+  const chart = new Chart(ctx, {
+    type: "line",
+    data: { labels: years.map(String), datasets: [] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 120 },
+      interaction: { mode: "nearest", intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false } // no tooltips
       },
-      "DA": {
-        "Std Acc": { "CIFAR100": 78.27, "CIFAR10": 94.21, "SVHN": 94.69, "MNIST": 99.42 },
-        "CRR":     { "CIFAR100": 15.04, "CIFAR10": 81.08, "SVHN": 82.08, "MNIST": 85.23 },
-        "CRA":     { "CIFAR100": 6.15,  "CIFAR10": 76.07, "SVHN": 82.01, "MNIST": 84.12 }
-      },
-      "PGDT": {
-        "Std Acc": { "CIFAR100": 64.35, "CIFAR10": 84.38, "SVHN": 91.19, "MNIST": 99.16 },
-        "CRR":     { "CIFAR100": 57.07, "CIFAR10": 87.07, "SVHN": 87.89, "MNIST": 94.65 },
-        "CRA":     { "CIFAR100": 32.93, "CIFAR10": 82.90, "SVHN": 86.68, "MNIST": 94.63 }
-      },
-      "TRADES": {
-        "Std Acc": { "CIFAR100": 62.55, "CIFAR10": 80.42, "SVHN": 86.16, "MNIST": 99.10 },
-        "CRR":     { "CIFAR100": 59.27, "CIFAR10": 88.54, "SVHN": 87.89, "MNIST": 94.76 },
-        "CRA":     { "CIFAR100": 38.85, "CIFAR10": 78.80, "SVHN": 84.76, "MNIST": 94.61 }
-      },
-      "MART": {
-        "Std Acc": { "CIFAR100": 63.68, "CIFAR10": 81.54, "SVHN": 90.20, "MNIST": 98.94 },
-        "CRR":     { "CIFAR100": 58.79, "CIFAR10": 78.90, "SVHN": 85.23, "MNIST": 94.13 },
-        "CRA":     { "CIFAR100": 49.37, "CIFAR10": 72.21, "SVHN": 78.82, "MNIST": 94.09 }
-      },
-      "RS": {
-        "Std Acc": { "CIFAR100": 56.87, "CIFAR10": 89.45, "SVHN": 88.35, "MNIST": 97.16 },
-        "CRR":     { "CIFAR100": 60.38, "CIFAR10": 90.00, "SVHN": 76.29, "MNIST": 87.15 },
-        "CRA":     { "CIFAR100": 47.50, "CIFAR10": 87.98, "SVHN": 70.64, "MNIST": 86.29 }
-      },
-      "IBP": {
-        "Std Acc": { "CIFAR100": 39.45, "CIFAR10": 48.40, "SVHN": 73.09, "MNIST": 97.78 },
-        "CRR":     { "CIFAR100": 49.34, "CIFAR10": 54.70, "SVHN": 61.94, "MNIST": 89.18 },
-        "CRA":     { "CIFAR100": 29.20, "CIFAR10": 40.00, "SVHN": 57.26, "MNIST": 88.51 }
-      },
-      "PRL": {
-        "Std Acc": { "CIFAR100": 64.89, "CIFAR10": 93.82, "SVHN": 92.00, "MNIST": 99.32 },
-        "CRR":     { "CIFAR100": 56.71, "CIFAR10": 90.71, "SVHN": 93.11, "MNIST": 96.03 },
-        "CRA":     { "CIFAR100": 50.77, "CIFAR10": 90.63, "SVHN": 91.07, "MNIST": 95.01 }
-      },
-      "TandT": {
-        "Std Acc": { "CIFAR100": 65.56, "CIFAR10": 94.23, "SVHN": 94.79, "MNIST": 99.32 },
-        "CRR":     { "CIFAR100": 62.05, "CIFAR10": 95.08, "SVHN": 93.15, "MNIST": 97.80 },
-        "CRA":     { "CIFAR100": 52.07, "CIFAR10": 91.75, "SVHN": 92.81, "MNIST": 96.80 }
-      }
-    };
-
-    const DATASETS_ORDER = ["CIFAR100","CIFAR10","SVHN","MNIST"];
-    const METRICS_ORDER  = ["Std Acc","CRR","CRA"];
-    const METRIC_COLORS = {
-      "Std Acc": "#60a5fa",
-      "CRR": "#34d399",
-      "CRA": "#f97316"
-    };
-
-    // Short labels for tooltip
-    function getShortAttackName(name) {
-      const aliases = {
-        "Add Gaussian Noise": "AGN",
-        "No Attack": "No Atk"
-      };
-      return aliases[name] || name;
-    }
-
-    function ensureTooltip() {
-      if (!tooltipDiv) {
-        const root = document.getElementById("heatmapRoot");
-        tooltipDiv = document.createElement("div");
-        tooltipDiv.className = "value-cell-tooltip";
-        (root || document.body).appendChild(tooltipDiv);
-      }
-    }
-
-    function buildArrayFromJson(jsonData) {
-      const rows = [];
-      for (const attack of Object.keys(jsonData)) {
-        const row = [attack];
-        defenses.forEach(def => {
-          row.push(jsonData[attack][def]);
-        });
-        rows.push(row);
-      }
-      return rows;
-    }
-
-    async function loadData() {
-      try {
-        const res = await fetch(DATA_URL);
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const jsonData = await res.json();
-        attackDefenseData = buildArrayFromJson(jsonData);
-      } catch (err) {
-        console.warn("Failed to load", DATA_URL, "– using inline fallback.", err);
-        attackDefenseData = attackDefenseDataFallback.slice();
-        const rs = document.getElementById("rangeSummary");
-        if (rs) {
-          rs.innerHTML = `
-            <div class="range-summary-title">Range summary (fallback data)</div>
-            <div>Could not load <code>${DATA_URL}</code>. Using embedded data instead.</div>
-          `;
-        }
-      }
-      currentData = attackDefenseData.slice();
-    }
-
-    // Helpers
-    function levelIndex(value) {
-      return colorStops.findIndex(s => value >= s.min && value < s.max);
-    }
-
-    function bandForValue(value) {
-      const idx = levelIndex(value);
-      const band = colorStops[idx];
-      const displayMax = band.max === 101 ? 100 : band.max;
-      const label = idx === 0 ? `0–${displayMax}` : `${band.min}–${displayMax}`;
-      return { ...band, label };
-    }
-
-    function heatColor(value) {
-      return colorStops[levelIndex(value)].color;
-    }
-
-    function circleRadius(value, svgSize) {
-      const idx = levelIndex(value);
-      const minR = 2.5;
-      const maxR = svgSize / 2 - 2.5;
-      return minR + idx * ((maxR - minR) / 4);
-    }
-
-    // Summary & Top 3
-    function resetSummaryPanels() {
-      document.getElementById("rangeSummary").innerHTML = `
-        <div class="range-summary-title">Range summary</div>
-        <div>Hover a cell or a legend band to view statistics here.</div>
-      `;
-      document.getElementById("top3Panel").innerHTML = `
-        <div class="top3-title">Top 3 scores in range</div>
-        <div>No range selected.</div>
-      `;
-    }
-
-    function computeBandCells(min, max) {
-      const allCells = [];
-      const bestPerAttack = new Map();
-
-      currentData.forEach(row => {
-        const attack = row[0];
-        row.slice(1).forEach((v, j) => {
-          if (v >= min && v < max) {
-            const defense = defenses[j];
-            const cell = { attack, defense, value: v };
-            allCells.push(cell);
-            const existing = bestPerAttack.get(attack);
-            if (!existing || v > existing.value) {
-              bestPerAttack.set(attack, cell);
+      elements: { line: { spanGaps: false } },
+      scales: {
+        x: {
+          type: "category",
+          ticks: {
+            maxRotation: 0,
+            color: "rgba(255,255,255,.85)",
+            callback: function(value) {
+              const year = Number(this.getLabelForValue(value));
+              return year % 5 === 0 ? String(year) : "";
             }
-          }
-        });
-      });
-
-      return { allCells, bestPerAttack };
-    }
-
-    function updateSummaryAndTop3(min, max) {
-      const displayMax = max === 101 ? 100 : max;
-      const rangeSummary = document.getElementById("rangeSummary");
-      const top3Panel = document.getElementById("top3Panel");
-
-      const { allCells, bestPerAttack } = computeBandCells(min, max);
-      if (!allCells.length) {
-        rangeSummary.innerHTML = `
-          <div class="range-summary-title">Range ${min}-${displayMax}</div>
-          <div>No values in this range (with current filter).</div>
-        `;
-        top3Panel.innerHTML = `
-          <div class="top3-title">Top 3 scores in ${min}-${displayMax}</div>
-          <div>No entries.</div>
-        `;
-        return;
+          },
+          grid: { color: "rgba(255,255,255,.08)" }
+        },
+        y: {
+          position: "left",
+          ticks: { color: "rgba(255,255,255,.85)" },
+          grid: { color: "rgba(255,255,255,.08)" },
+          title: { display: false, text: "" }
+        },
+        y2: {
+          display: false,
+          position: "right",
+          ticks: { color: "rgba(255,255,255,.85)" },
+          grid: { drawOnChartArea: false },
+          title: { display: false, text: "" }
+        }
       }
-
-      const vals = allCells.map(c => c.value);
-      const minVal = Math.min(...vals);
-      const maxVal = Math.max(...vals);
-      const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
-
-      rangeSummary.innerHTML = `
-        <div class="range-summary-title">Range ${min}-${displayMax} (${vals.length} values)</div>
-        <div>Min: ${minVal.toFixed(1)} | Avg: ${avgVal.toFixed(1)} | Max: ${maxVal.toFixed(1)}</div>
-        <div class="range-legend-note">
-          Within this band: lighter blue ≈ lower, darker blue ≈ higher.
-          Min = red ▼, Max = green ▲.
-        </div>
-      `;
-
-      const top3 = Array.from(bestPerAttack.values())
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 3);
-
-      top3Panel.innerHTML = `
-        <div class="top3-title">Top 3 scores in ${min}-${displayMax}</div>
-        <div class="top3-row">
-          ${top3.map((t, i) => `
-            <div class="top3-box">
-              <strong>${i + 1})</strong> ${t.attack} • ${t.defense}<br />
-              ${t.value.toFixed(1)}
-            </div>
-          `).join("")}
-        </div>
-      `;
     }
+  });
 
-    // Defense summary modal + grouped chart
-    function createDefenseChartsHTML(summary) {
-      let maxVal = 0;
-      DATASETS_ORDER.forEach(ds => {
-        METRICS_ORDER.forEach(metric => {
-          const v = summary[metric]?.[ds] ?? 0;
-          if (v > maxVal) maxVal = v;
-        });
+  // ---------- legend: filter ----------
+  function setDatasetBaseColors(){
+    chart.data.datasets.forEach(ds => {
+      ds._baseBorderColor = ds.borderColor;
+      ds._baseBackgroundColor = ds.backgroundColor;
+    });
+  }
+
+  function setVisibilityFilter(diOrNull){
+    chart.$filterDi = (diOrNull == null ? null : Number(diOrNull));
+    chart.data.datasets.forEach((ds, i) => {
+      ds.hidden = (chart.$filterDi != null && i !== chart.$filterDi);
+    });
+    chart.update("none");
+    setActiveAtIndex(Number(slider.value));
+  }
+
+  function renderLegend(){
+    legendEl.innerHTML = "";
+
+    const allBtn = document.createElement("button");
+    allBtn.className = "leg-btn active";
+    allBtn.type = "button";
+    allBtn.innerHTML = `<span class="swatch" style="background:rgba(255,255,255,.75)"></span><span>All</span>`;
+    allBtn.addEventListener("click", () => {
+      legendEl.querySelectorAll(".leg-btn").forEach(b => b.classList.remove("active"));
+      allBtn.classList.add("active");
+      setVisibilityFilter(null);
+    });
+    legendEl.appendChild(allBtn);
+
+    chart.data.datasets.forEach((ds, i) => {
+      const btn = document.createElement("button");
+      btn.className = "leg-btn";
+      btn.type = "button";
+      btn.innerHTML = `<span class="swatch" style="background:${ds._baseBorderColor}"></span><span>${ds.label}</span>`;
+      btn.addEventListener("click", () => {
+        legendEl.querySelectorAll(".leg-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        setVisibilityFilter(i);
       });
-      if (maxVal <= 0) maxVal = 1;
+      legendEl.appendChild(btn);
+    });
 
-      const width = 380;
-      const height = 130;
-      const marginLeft = 30;
-      const marginRight = 10;
-      const marginTop = 20;
-      const marginBottom = 22;
-      const chartWidth = width - marginLeft - marginRight;
-      const chartHeight = height - marginTop - marginBottom;
-      const groupWidth = chartWidth / DATASETS_ORDER.length;
-      const barGroupTotalWidth = groupWidth * 0.7;
-      const barWidth = barGroupTotalWidth / METRICS_ORDER.length;
-      const groupOffset = (groupWidth - barGroupTotalWidth) / 2;
-      const axisY = height - marginBottom;
-      const ticks = [0, maxVal];
+    setVisibilityFilter(null);
+  }
 
-      const legendHtml = `
-        <div class="defense-chart-legend">
-          ${METRICS_ORDER.map(metric => `
-            <div class="defense-chart-legend-item">
-              <span class="defense-chart-legend-swatch" style="background:${METRIC_COLORS[metric]};"></span>
-              <span>${metric}</span>
-            </div>
-          `).join("")}
-        </div>
-      `;
+  // ---------- summary ----------
+  function setSummary(i){
+    const idx = Math.max(0, Math.min(years.length - 1, i|0));
+    const year = years[idx];
+    sumTitle.textContent = `Year: ${year}`;
 
-      let svg = `<svg class="defense-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
+    const rows = [];
+    const visible = chart.data.datasets
+      .map((ds, di) => ({ds, di}))
+      .filter(x => chart.isDatasetVisible(x.di));
 
-      ticks.forEach(t => {
-        const y = axisY - (t / maxVal) * chartHeight;
-        const label = t.toFixed(0);
-        svg += `
-          <line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}"
-                stroke="#1f2933" stroke-width="0.6"
-                stroke-dasharray="${t === 0 ? "0" : "2,2"}"></line>
-          <text x="${marginLeft - 4}" y="${y + 2}" text-anchor="end"
-                font-size="7" fill="#6b7280">${label}</text>
-        `;
-      });
+    if (chart.$state === "baseline"){
+      const showTrips = visible.some(v => v.ds.label.startsWith("Trips"));
+      const showPop = visible.some(v => v.ds.label === "Population");
+      if (showTrips) rows.push({c:"rgba(255,90,90,.95)", t:`<span class="dim">Trips:</span> ${fmt2(tripsPer100[idx])} trips/100 people/day`});
+      if (showPop) rows.push({c:"rgba(120,160,255,.85)", t:`<span class="dim">Population:</span> ${fmtInt(pop[idx])} people`});
+      if (showTrips && showPop) rows.push({c:"rgba(255,255,255,.55)", t:`<span class="dim">Total rides:</span> ${fmtInt(total[idx])} rides/day`});
 
-      svg += `<line x1="${marginLeft}" y1="${axisY}" x2="${width - marginRight}" y2="${axisY}" stroke="#4b5563" stroke-width="0.8"></line>`;
+    } else if (chart.$state === "modes"){
+      const railShareV = rail[idx] / (rail[idx] + bus[idx]) * 100;
+      const busShareV = 100 - railShareV;
 
-      DATASETS_ORDER.forEach((ds, i) => {
-        const xGroupStart = marginLeft + i * groupWidth + groupOffset;
-        const shortLabel = ds.replace("CIFAR", "C");
-        METRICS_ORDER.forEach((metric, mIndex) => {
-          const v = summary[metric]?.[ds] ?? 0;
-          const barHeight = (v / maxVal) * chartHeight;
-          const x = xGroupStart + mIndex * barWidth;
-          const y = axisY - barHeight;
-          const color = METRIC_COLORS[metric];
-          const xCenter = x + barWidth / 2;
-          const labelY = y - 2;
+      const showRail = visible.some(v => v.ds.label.startsWith("Rail"));
+      const showBus  = visible.some(v => v.ds.label === "Bus");
 
-          svg += `
-            <rect class="defense-bar"
-                  x="${x.toFixed(1)}"
-                  y="${y.toFixed(1)}"
-                  width="${barWidth.toFixed(1)}"
-                  height="${Math.max(barHeight, 0.5).toFixed(1)}"
-                  fill="${color}" opacity="0.9" rx="2" ry="2">
-              <title>${metric} – ${ds}: ${v.toFixed(2)}</title>
-            </rect>
-            <text x="${xCenter.toFixed(1)}" y="${labelY.toFixed(1)}"
-                  text-anchor="middle" font-size="7" fill="#e5e7eb">
-              ${v.toFixed(2)}
-            </text>
-          `;
-        });
+      if (showRail) rows.push({c:"rgba(92,108,255,.95)", t:`<span class="dim">Rail (MRT+LRT):</span> ${fmt1(railShareV)}% | ${fmtInt(rail[idx])} rides/day`});
+      if (showBus)  rows.push({c:"rgba(255,170,60,.95)", t:`<span class="dim">Bus:</span> ${fmt1(busShareV)}% | ${fmtInt(bus[idx])} rides/day`});
 
-        svg += `
-          <text x="${(xGroupStart + barGroupTotalWidth / 2).toFixed(1)}"
-                y="${height - 5}"
-                text-anchor="middle"
-                font-size="7"
-                fill="#9ca3af">
-            ${shortLabel}
-          </text>
-        `;
-      });
+    } else {
+      const totalIdx = indexTo100(total)[idx];
+      const railIdx  = indexTo100(rail)[idx];
+      const busIdx   = indexTo100(bus)[idx];
 
-      svg += `
-        <text x="${marginLeft}" y="${marginTop - 6}"
-              text-anchor="start" font-size="8" fill="#9ca3af">
-          Datasets vs. metrics
-        </text>
-      `;
-      svg += `</svg>`;
+      const showTotal = visible.some(v => v.ds.label === "Total rides");
+      const showRail  = visible.some(v => v.ds.label === "Rail rides");
+      const showBus   = visible.some(v => v.ds.label === "Bus rides");
 
-      return `
-        <div class="defense-charts">
-          <div class="defense-chart-block">
-            ${legendHtml}
-            ${svg}
-          </div>
-        </div>
-      `;
+      if (showTotal) rows.push({c:"rgba(255,90,90,.95)", t:`<span class="dim">Total rides:</span> ${fmt1(totalIdx)} (2000=100) | ${fmtInt(total[idx])} rides/day`});
+      if (showRail)  rows.push({c:"rgba(92,108,255,.95)", t:`<span class="dim">Rail rides:</span> ${fmt1(railIdx)} (2000=100) | ${fmtInt(rail[idx])} rides/day`});
+      if (showBus)   rows.push({c:"rgba(255,170,60,.95)", t:`<span class="dim">Bus rides:</span> ${fmt1(busIdx)} (2000=100) | ${fmtInt(bus[idx])} rides/day`});
     }
 
-    function renderDefenseSummary(defenseKey) {
-      const modal = document.getElementById("defenseModal");
-      const title = document.getElementById("defenseModalTitle");
-      const subtitle = document.getElementById("defenseModalSubtitle");
-      const content = document.getElementById("defenseModalContent");
+    sumBody.innerHTML = rows.map(r => `
+      <div class="row">
+        <span class="swatch" style="background:${r.c}"></span>
+        <div>${r.t}</div>
+      </div>
+    `).join("");
+  }
 
-      title.textContent = `Defense summary: ${defenseKey}`;
-      subtitle.textContent = "Std Acc / CRR / CRA for CIFAR100, CIFAR10, SVHN, MNIST";
+  // ---------- pin year (no tooltip) ----------
+  function setActiveAtIndex(i){
+    const idx = Math.max(0, Math.min(years.length - 1, i|0));
+    slider.value = String(idx);
+    yearPill.textContent = `Year: ${years[idx]}`;
+    setSummary(idx);
 
-      const summary = defenseSummaryData[defenseKey];
+    const visibleDs = chart.data.datasets
+      .map((ds, di) => ({ds, di}))
+      .filter(x => chart.isDatasetVisible(x.di));
 
-      if (!summary) {
-        content.innerHTML = `<p>No summary data found for <strong>${defenseKey}</strong>.</p>`;
-      } else {
-        const badges = METRICS_ORDER.map(metric =>
-          `<span class="defense-summary-badge">${metric}</span>`
-        ).join(" ");
+    const active = visibleDs.map(v => ({ datasetIndex: v.di, index: idx }));
+    chart.setActiveElements(active);
+    chart.update("none");
+  }
 
-        const rowsHtml = DATASETS_ORDER.map(ds => {
-          const cells = METRICS_ORDER.map(metric => {
-            const v = summary[metric][ds];
-            return `<td>${v.toFixed(2)}</td>`;
-          }).join("");
-          return `<tr><td>${ds}</td>${cells}</tr>`;
-        }).join("");
+  slider.addEventListener("input", () => setActiveAtIndex(Number(slider.value)), { passive: true });
 
-        const chartsHtml = createDefenseChartsHTML(summary);
+  // Click to jump
+  canvas.addEventListener("click", (evt) => {
+    const points = chart.getElementsAtEventForMode(evt, "nearest", { intersect:false }, true);
+    if (!points.length) return;
+    setActiveAtIndex(points[0].index);
+  });
 
-        content.innerHTML = `
-          <div>${badges}</div>
-          <table class="defense-summary-table">
-            <thead>
-              <tr>
-                <th>Dataset</th>
-                <th>Std Acc</th>
-                <th>CRR</th>
-                <th>CRA</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-          ${chartsHtml}
-        `;
-      }
+  // snap mousemove
+  canvas.addEventListener("mousemove", (evt) => {
+    const area = chart.chartArea;
+    if (!area) return;
 
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden", "false");
-    }
+    const rect = canvas.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
 
-    function hideDefenseModal() {
-      const modal = document.getElementById("defenseModal");
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden", "true");
-    }
+    if (x < area.left || x > area.right || y < area.top || y > area.bottom) return;
 
-    // Highlighting
-    function clearHighlights() {
-      document.querySelectorAll(".value-cell").forEach(td => {
-        td.classList.remove(
-          "highlight-range",
-          "dimmed-range",
-          ...HIGHLIGHT_LEVEL_CLASSES
-        );
-        const marker = td.querySelector(".cell-marker");
-        if (marker) marker.remove();
-      });
-      resetSummaryPanels();
-    }
+    const raw = chart.scales.x.getValueForPixel(x);
+    const idx = Math.round(Number(raw));
+    if (!Number.isFinite(idx)) return;
 
-    function highlightRange(min, max) {
-      const cells = document.querySelectorAll(".value-cell");
-      const bandCells = [];
+    const clamped = Math.max(0, Math.min(years.length - 1, idx));
+    if (clamped !== Number(slider.value)) setActiveAtIndex(clamped);
+  }, { passive: true });
 
-      cells.forEach(td => {
-        const v = parseFloat(td.dataset.value);
-        td.classList.remove(
-          "highlight-range",
-          "dimmed-range",
-          ...HIGHLIGHT_LEVEL_CLASSES
-        );
-        const oldMarker = td.querySelector(".cell-marker");
-        if (oldMarker) oldMarker.remove();
+  // ---------- states ----------
+  function setState(stateId){
+    chart.$state = stateId;
 
-        if (v >= min && v < max) {
-          td.classList.add("highlight-range");
-          bandCells.push({ td, value: v });
-        } else {
-          td.classList.add("dimmed-range");
+    // reset scales
+    chart.options.scales.y2.display = false;
+    chart.options.scales.y.stacked = false;
+    chart.options.scales.x.stacked = false;
+    chart.options.scales.y.min = undefined;
+    chart.options.scales.y.max = undefined;
+    chart.options.scales.y.title.display = false;
+    chart.options.scales.y.title.text = "";
+    chart.options.scales.y2.title.display = false;
+    chart.options.scales.y2.title.text = "";
+
+    if (stateId === "baseline"){
+      titleEl.textContent = "Travel Intensity: Trips per 100 people per day";
+      subtitleEl.textContent = "Red: trips/100 people/day. Blue: population (right axis).";
+
+      const e = extent(tripsPer100);
+      chart.options.scales.y.min = e.min;
+      chart.options.scales.y.max = e.max;
+
+      chart.options.scales.y.title.display = true;
+      chart.options.scales.y.title.text = "Trips per 100 people per day";
+
+      chart.options.scales.y2.display = true;
+      chart.options.scales.y2.title.display = true;
+      chart.options.scales.y2.title.text = "Population";
+
+      chart.data.datasets = [
+        {
+          label: "Population",
+          data: pop,
+          yAxisID: "y2",
+          tension: 0.25,
+          borderColor: "rgba(120,160,255,.85)",
+          backgroundColor: "rgba(120,160,255,.10)",
+          borderDash: [4,4],
+          fill: true,
+          pointRadius: 3,
+          pointHoverRadius: 8,
+          hitRadius: 14,
+          pointBackgroundColor: "rgba(120,160,255,0)",
+          pointBorderColor: "rgba(120,160,255,0)"
+        },
+        {
+          label: "Trips per 100 people per day",
+          data: tripsPer100,
+          yAxisID: "y",
+          tension: 0.25,
+          borderColor: "rgba(255,90,90,.95)",
+          backgroundColor: "rgba(255,90,90,.10)",
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          hitRadius: 14,
+          fill: false
         }
-      });
-
-      if (!bandCells.length) {
-        updateSummaryAndTop3(min, max);
-        return;
-      }
-
-      const vals = bandCells.map(c => c.value);
-      const minVal = Math.min(...vals);
-      const maxVal = Math.max(...vals);
-
-      bandCells.forEach(({ td, value }) => {
-        if (value === minVal) {
-          td.classList.add("highlight-level-1");
-          td.insertAdjacentHTML("beforeend", `
-            <div class="cell-marker cell-marker-min">
-              <svg viewBox="0 0 12 12" aria-hidden="true">
-                <polyline points="2,4 6,8 10,4"
-                          fill="none" stroke="#f97373"
-                          stroke-width="1.6"
-                          stroke-linecap="round"
-                          stroke-linejoin="round" />
-              </svg>
-            </div>
-          `);
-        } else if (value === maxVal) {
-          td.classList.add("highlight-level-5");
-          td.insertAdjacentHTML("beforeend", `
-            <div class="cell-marker cell-marker-max">
-              <svg viewBox="0 0 12 12" aria-hidden="true">
-                <polyline points="2,8 6,4 10,8"
-                          fill="none" stroke="#4ade80"
-                          stroke-width="1.6"
-                          stroke-linecap="round"
-                          stroke-linejoin="round" />
-              </svg>
-            </div>
-          `);
-        } else {
-          const ratio = (value - minVal) / (maxVal - minVal || 1);
-          let level = Math.floor(ratio * 5);
-          if (level < 1) level = 1;
-          if (level > 5) level = 5;
-          td.classList.add(`highlight-level-${level}`);
-        }
-      });
-
-      updateSummaryAndTop3(min, max);
+      ];
+      setDatasetBaseColors();
     }
 
-    // Sorting & filtering
-    function getFilteredSortedData() {
-      const filterText = (document.getElementById("filterInput").value || "")
-        .trim()
-        .toLowerCase();
-      const sortMode = document.getElementById("sortSelect").value;
+    if (stateId === "modes"){
+      titleEl.textContent = "Mode Split: Bus vs Rail share";
+      subtitleEl.textContent = "100% stacked share: MRT+LRT vs Bus. Bus has no misleading 100% stroke.";
 
-      let data = attackDefenseData
-        .filter(row => row[0].toLowerCase().includes(filterText));
+      const railShare = rail.map((r,i)=> (r!=null && bus[i]!=null && (r+bus[i])!==0) ? (r/(r+bus[i]))*100 : null);
+      const busShare  = railShare.map(v => (v==null ? null : 100 - v));
 
-      if (sortMode === "attack") {
-        data.sort((a, b) => a[0].localeCompare(b[0]));
-      } else if (sortMode === "max") {
-        data.sort((a, b) =>
-          Math.max(...b.slice(1)) - Math.max(...a.slice(1))
-        );
-      } else if (sortMode === "avg") {
-        const avg = row => row.slice(1).reduce((s, v) => s + v, 0) / (row.length - 1);
-        data.sort((a, b) => avg(b) - avg(a));
-      }
-      return data;
+      chart.options.scales.y.stacked = true;
+      chart.options.scales.x.stacked = true;
+      chart.options.scales.y.min = 0;
+      chart.options.scales.y.max = 100;
+      chart.options.scales.y.title.display = true;
+      chart.options.scales.y.title.text = "Share of public transport ridership (%)";
+
+      chart.data.datasets = [
+        {
+          label: "Rail (MRT+LRT)",
+          data: railShare,
+          tension: 0.25,
+          borderColor: "rgba(92,108,255,.95)",
+          backgroundColor: "rgba(92,108,255,.18)",
+          borderWidth: 2,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          hitRadius: 16,
+          fill: true
+        },
+        {
+          label: "Bus",
+          data: busShare,
+          tension: 0.25,
+          borderColor: "rgba(255,170,60,0)",
+          backgroundColor: "rgba(255,170,60,.14)",
+          borderWidth: 0,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          hitRadius: 16,
+          fill: true
+        }
+      ];
+      setDatasetBaseColors();
     }
 
-    // Rendering cells / table / legend
-    function createValueCell(value, defense, attack, svgSize = 20) {
-      ensureTooltip();
-      const td = document.createElement("td");
-      td.className = "value-cell";
-      td.dataset.value = value;
+    if (stateId === "system"){
+      titleEl.textContent = "Growth Race: Demand (2000 = 100)";
+      subtitleEl.textContent = "Indexed growth since 2000. Total vs rail vs bus ridership.";
 
-      const svgNS = "http://www.w3.org/2000/svg";
-      const svg = document.createElementNS(svgNS, "svg");
-      svg.classList.add("bubble-svg");
-      svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
+      chart.options.scales.y.title.display = true;
+      chart.options.scales.y.title.text = "Index (2000 = 100)";
 
-      if (value !== 0) {
-        const circle = document.createElementNS(svgNS, "circle");
-        circle.setAttribute("cx", svgSize / 2);
-        circle.setAttribute("cy", svgSize / 2);
-        circle.setAttribute("r", circleRadius(value, svgSize));
-        circle.setAttribute("fill", heatColor(value));
-        circle.setAttribute("opacity", "0.92");
-        circle.setAttribute("class", "bubble-circle");
-        svg.appendChild(circle);
-      }
-      td.appendChild(svg);
+      const totalIdx = indexTo100(total);
+      const railIdx  = indexTo100(rail);
+      const busIdx   = indexTo100(bus);
 
-      const label = document.createElement("div");
-      label.className = "bubble-label";
-      label.textContent = value.toFixed(1);
-      td.appendChild(label);
-
-      td.addEventListener("mouseenter", () => {
-        td.classList.add("hover-outline");
-        if (tooltipDiv) {
-          const band = activeBand ? activeBand : bandForValue(value);
-          let markerType = null;
-          const { allCells } = computeBandCells(band.min, band.max);
-          if (allCells.length > 0) {
-            const vals = allCells.map(c => c.value);
-            const minVal = Math.min(...vals);
-            const maxVal = Math.max(...vals);
-            if (value === minVal) markerType = "min";
-            else if (value === maxVal) markerType = "max";
-          }
-
-          let chevronHTML = "";
-          if (markerType === "min") {
-            chevronHTML = `<span class="legend-chevron legend-chevron-min">▼</span>`;
-          } else if (markerType === "max") {
-            chevronHTML = `<span class="legend-chevron legend-chevron-max">▲</span>`;
-          }
-
-          const shortAttack = getShortAttackName(attack);
-          tooltipDiv.innerHTML = `
-            <div class="tooltip-inner">
-              <div class="tooltip-top">
-                <span class="tooltip-score">${value.toFixed(2)}</span>
-                ${chevronHTML}
-              </div>
-              <div class="tooltip-bottom">
-                <span class="tooltip-meta">${shortAttack} • ${defense}</span>
-              </div>
-            </div>
-          `;
-
-          const cellRect = td.getBoundingClientRect();
-          tooltipDiv.style.width = `${cellRect.width}px`;
-          tooltipDiv.style.height = `${cellRect.height}px`;
-          tooltipDiv.style.left = `${cellRect.left}px`;
-          tooltipDiv.style.top = `${cellRect.top}px`;
-          tooltipDiv.style.visibility = "visible";
-          tooltipDiv.classList.add("visible");
+      chart.data.datasets = [
+        {
+          label: "Total rides",
+          data: totalIdx,
+          tension: 0.25,
+          borderColor: "rgba(255,90,90,.95)",      /* ✅ red */
+          backgroundColor: "rgba(255,90,90,.10)",  /* ✅ soft red fill */
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          hitRadius: 14
+        },
+        {
+          label: "Rail rides",
+          data: railIdx,
+          tension: 0.25,
+          borderColor: "rgba(92,108,255,.95)",
+          backgroundColor: "rgba(92,108,255,.12)",
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          hitRadius: 14
+        },
+        {
+          label: "Bus rides",
+          data: busIdx,
+          tension: 0.25,
+          borderColor: "rgba(255,170,60,.95)",
+          backgroundColor: "rgba(255,170,60,.08)",
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          hitRadius: 14
         }
-
-        if (!activeBand) {
-          const band = bandForValue(value);
-          highlightRange(band.min, band.max);
-        }
-      });
-
-      td.addEventListener("mouseleave", () => {
-        td.classList.remove("hover-outline");
-        if (tooltipDiv) {
-          tooltipDiv.classList.remove("visible");
-          tooltipDiv.style.visibility = "hidden";
-        }
-        if (!activeBand) {
-          clearHighlights();
-        } else {
-          highlightRange(activeBand.min, activeBand.max);
-        }
-      });
-
-      return td;
+      ];
+      setDatasetBaseColors();
     }
 
-    function renderTable(data) {
-      currentData = data.slice();
-      const tbody = document.querySelector("#bubbleTable tbody");
-      tbody.innerHTML = "";
+    chart.update();
+    renderLegend();
 
-      currentData.forEach(row => {
-        const attack = row[0];
-        const tr = document.createElement("tr");
+    chart.$filterDi = null;
+    chart.data.datasets.forEach(ds => ds.hidden = false);
+    chart.update("none");
 
-        const labelCell = document.createElement("td");
-        labelCell.textContent = attack;
-        tr.appendChild(labelCell);
+    setActiveAtIndex(Number(slider.value));
+  }
 
-        row.slice(1).forEach((value, j) => {
-          const def = defenses[j];
-          tr.appendChild(createValueCell(value, def, attack));
-        });
+  // ---------- tabs ----------
+  const tabs = Array.from(document.querySelectorAll(".tab"));
+  const panels = {
+    baseline: document.getElementById("panel-baseline"),
+    modes: document.getElementById("panel-modes"),
+    system: document.getElementById("panel-system")
+  };
 
-        tbody.appendChild(tr);
-      });
-    }
+  function activateTab(btn){
+    const state = btn.dataset.state;
+    tabs.forEach(b => b.setAttribute("aria-selected", b === btn ? "true" : "false"));
+    Object.values(panels).forEach(p => p.classList.remove("active"));
+    panels[state].classList.add("active");
+    setState(state);
+  }
 
-    function setActiveLegendIndex(activeIndex) {
-      const items = document.querySelectorAll(".legend-item");
-      items.forEach((item, idx) => {
-        if (idx === activeIndex) {
-          item.classList.add("legend-item--active");
-        } else {
-          item.classList.remove("legend-item--active");
-        }
-      });
-    }
+  tabs.forEach(btn => btn.addEventListener("click", () => activateTab(btn)));
 
-    function renderLegend() {
-      const legendItems = document.getElementById("legendItems");
-      legendItems.innerHTML = "";
-      const svgSize = 14;
-      const svgNS = "http://www.w3.org/2000/svg";
+  // ---------- boot ----------
+  yearPill.textContent = `Year: ${years[Number(slider.value)]}`;
+  setState("baseline");
 
-      colorStops.forEach((stop, idx) => {
-        const item = document.createElement("div");
-        item.className = "legend-item";
-        item.dataset.bandIndex = idx.toString();
-
-        const svg = document.createElementNS(svgNS, "svg");
-        svg.classList.add("legend-circle-svg");
-        svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
-
-        const circle = document.createElementNS(svgNS, "circle");
-        circle.setAttribute("cx", svgSize / 2);
-        circle.setAttribute("cy", svgSize / 2);
-        circle.setAttribute("r", svgSize / 2 - 2);
-        circle.setAttribute("fill", stop.color);
-        circle.setAttribute("opacity", "0.92");
-        svg.appendChild(circle);
-
-        const labelSpan = document.createElement("span");
-        const maxVal = stop.max === 101 ? 100 : stop.max;
-        labelSpan.textContent = idx === 0 ? `0–${maxVal}` : `${stop.min}–${maxVal}`;
-
-        item.appendChild(svg);
-        item.appendChild(labelSpan);
-        legendItems.appendChild(item);
-
-        item.addEventListener("mouseenter", () => {
-          if (activeBand) return;
-          highlightRange(stop.min, stop.max);
-        });
-
-        item.addEventListener("mouseleave", () => {
-          if (!activeBand) {
-            clearHighlights();
-          } else {
-            highlightRange(activeBand.min, activeBand.max);
-          }
-        });
-
-        item.addEventListener("click", () => {
-          const isSameActive = activeBand &&
-            activeBand.min === stop.min &&
-            activeBand.max === stop.max;
-          if (isSameActive) {
-            activeBand = null;
-            setActiveLegendIndex(-1);
-            clearHighlights();
-          } else {
-            activeBand = { min: stop.min, max: stop.max };
-            setActiveLegendIndex(idx);
-            highlightRange(activeBand.min, activeBand.max);
-          }
-        });
-      });
-    }
-
-    // Init controls
-    function bindControls() {
-      const sortSelect = document.getElementById("sortSelect");
-      const filterInput = document.getElementById("filterInput");
-
-      sortSelect.addEventListener("change", () => {
-        renderTable(getFilteredSortedData());
-        if (activeBand) {
-          highlightRange(activeBand.min, activeBand.max);
-        } else {
-          clearHighlights();
-        }
-      });
-
-      filterInput.addEventListener("input", () => {
-        renderTable(getFilteredSortedData());
-        if (activeBand) {
-          highlightRange(activeBand.min, activeBand.max);
-        } else {
-          clearHighlights();
-        }
-      });
-
-      // Defense header -> modal
-      document.querySelectorAll("th.defense-header").forEach(th => {
-        th.addEventListener("click", () => {
-          const def = th.dataset.defense;
-          renderDefenseSummary(def);
-        });
-        th.addEventListener("keypress", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            const def = th.dataset.defense;
-            renderDefenseSummary(def);
-          }
-        });
-        th.setAttribute("tabindex", "0");
-        th.setAttribute("title", "Click to view defense summary");
-      });
-
-      // Modal close
-      document.getElementById("defenseModalClose")
-        .addEventListener("click", hideDefenseModal);
-      document.getElementById("defenseModalBackdrop")
-        .addEventListener("click", hideDefenseModal);
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") hideDefenseModal();
-      });
-    }
-
-    async function initHeatmap() {
-      const root = document.getElementById("heatmapRoot");
-      if (!root) return; // safety
-
-      await loadData();
-      renderTable(getFilteredSortedData());
-      renderLegend();
-      if (!attackDefenseData.length) {
-        resetSummaryPanels();
-      }
-      bindControls();
-    }
-
-    // Run on DOM ready (script is at bottom so DOM is already parsed)
-    initHeatmap();
-  </script>
+  window.app = { chart, setState, setActiveAtIndex, years };
+})();
+</script>
 </body>
 </html>
-
