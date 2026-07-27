@@ -63,7 +63,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 <aside class="narrative" id="narrative">
   <div class="narr-photo-wrap">
-    <img class="narr-photo" id="narrPhoto" alt="" src="photo1.jpg" onerror="this.style.opacity=0;var p=document.getElementById('narrPhotoPh');if(p)p.hidden=false;">
+    <img class="narr-photo" id="narrPhoto" alt="">
     <span class="narr-photo-ph" id="narrPhotoPh" hidden></span>
   </div>
   <div class="narr-body">
@@ -85,9 +85,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 </div>
 
 <script>
-/* Narrative frames — Scene 1 to Scene 8. Photos sit beside this file: photo1.jpg … photo8.jpg
+/* Narrative frames — Scene 1 to Scene 8. Photos sit beside this file: photo1.jpeg … photo8.jpeg
    cp:true marks a checkpoint scene. */
-const PHOTO_EXT = '.jpg';   /* change here if the files are .png / .webp */
+const PHOTO_EXTS = ['.jpeg', '.jpg', '.png', '.webp'];   /* tried in order */
 
 const NARR = [
  {"n": "Scene 1", "label": "Arrival screening", "photo": 1, "time": "8:00 a.m.", "place": "KKH Children’s Emergency Entrance", "cp": false, "text": "The journey begins at 8:00 a.m. The mother and her six-year-old child arrive at the hospital entrance. The child, pale and visibly weak from hours of vomiting, clings to the mother. They join a short queue outside the main doors. A nurse, wearing protective gear, approaches them to begin the mandatory screening questionnaire regarding recent travel and potential exposure to contagious diseases. The morning light is cool, and the atmosphere is quiet but anxious."},
@@ -106,13 +106,16 @@ function renderNarrative(){
   const img = document.getElementById('narrPhoto');
   const ph = document.getElementById('narrPhotoPh');
   if(img){
-    const src = 'photo' + f.photo + PHOTO_EXT;
-    if(img.getAttribute('src') !== src){
+    let tryExt = 0;
+    img.style.opacity = 0;
+    img.onload = ()=>{ img.style.opacity = 1; if(ph) ph.hidden = true; };
+    img.onerror = ()=>{
+      if(++tryExt < PHOTO_EXTS.length){ img.src = 'photo' + f.photo + PHOTO_EXTS[tryExt]; return; }
       img.style.opacity = 0;
-      img.onload = ()=>{ img.style.opacity = 1; if(ph) ph.hidden = true; };
-      img.onerror = ()=>{ img.style.opacity = 0; if(ph){ ph.hidden = false; ph.textContent = 'Photo ' + f.photo + ' \u2014 add photo' + f.photo + PHOTO_EXT + ' next to this file'; } };
-      img.src = src;
-    }
+      if(ph){ ph.hidden = false; ph.textContent = 'Photo ' + f.photo + ' \u2014 add photo' + f.photo + PHOTO_EXTS[0] + ' next to this file'; }
+    };
+    if(ph) ph.hidden = true;
+    img.src = 'photo' + f.photo + PHOTO_EXTS[0];
   }
   const step = document.getElementById('narrStep');
   const meta = document.getElementById('narrMeta');
