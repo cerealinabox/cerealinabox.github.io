@@ -34,7 +34,12 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .narr-photo-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6B7A90;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;padding:20px;text-align:center;}
 .narr-body{margin-top:22px;}
 .narr-step{display:block;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--now);}
-.narr-text{margin-top:12px;font-size:16.5px;line-height:1.62;color:#E9EEF4;font-weight:400;}
+.narr-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.chip-cp{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.28);border-radius:99px;padding:3px 8px;}
+.chip-cp[hidden]{display:none}
+.narr-meta{display:block;margin-top:9px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#8FA1B8;}
+.narr-meta:empty{display:none}
+.narr-text{margin-top:14px;font-size:16.5px;line-height:1.62;color:#E9EEF4;font-weight:400;}
 
 /* ---------- narrative controls ---------- */
 .controls{margin-top:26px;display:flex;align-items:center;gap:7px;background:var(--ink);border-radius:99px;padding:7px;box-shadow:0 12px 34px rgba(20,34,56,.42)}
@@ -58,11 +63,15 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 <aside class="narrative" id="narrative">
   <div class="narr-photo-wrap">
-    <img class="narr-photo" id="narrPhoto" alt="" src="assets/photo0.jpg" onerror="this.style.opacity=0;var p=document.getElementById('narrPhotoPh');if(p)p.hidden=false;">
+    <img class="narr-photo" id="narrPhoto" alt="" src="photo1.jpg" onerror="this.style.opacity=0;var p=document.getElementById('narrPhotoPh');if(p)p.hidden=false;">
     <span class="narr-photo-ph" id="narrPhotoPh" hidden></span>
   </div>
   <div class="narr-body">
-    <span class="narr-step" id="narrStep"></span>
+    <div class="narr-head">
+      <span class="narr-step" id="narrStep"></span>
+      <span class="chip-cp" id="narrCp" hidden>Checkpoint</span>
+    </div>
+    <span class="narr-meta" id="narrMeta"></span>
     <p class="narr-text" id="narrText"></p>
   </div>
 
@@ -76,18 +85,19 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 </div>
 
 <script>
-/* Narrative frames. Photos live in assets/photo0.jpg … photo8.jpg
-   Stage 0 uses photo0; Scenes 1–8 keep their original photo1–photo8. */
+/* Narrative frames — Scene 1 to Scene 8. Photos sit beside this file: photo1.jpg … photo8.jpg
+   cp:true marks a checkpoint scene. */
+const PHOTO_EXT = '.jpg';   /* change here if the files are .png / .webp */
+
 const NARR = [
- {n:'Stage 0', label:'Caregiver & Child', photo:0, text:'It is 8:00 a.m. when you and your child arrive at KKH Children\u2019s Emergency after your child has been vomiting for the past four hours. Your child looks weak, uneasy, and uncomfortable.'},
- {n:'Scene 1', label:'Arrival screening', photo:1, text:'At the entrance, you and your child join a short queue to answer screening questions about recent travel to countries with contagious diseases. The process takes about 15 minutes while your child waits anxiously.'},
- {n:'Scene 2', label:'Triage waiting', photo:2, text:'You and your child enter Children\u2019s Emergency and get a queue number. You wait about 45 minutes to be seen by a triage nurse. During this time, your child remains uneasy and vomits on and off.'},
- {n:'Scene 3', label:'Payment and first vomit', photo:3, text:'After triage, the nurse says your child does not need immediate admission and should proceed to payment before seeing a doctor. While waiting at the counter, your child vomits on the floor for the first time in the department. The nurses hand over a bag, and you complete payment after 15 to 20 minutes.'},
- {n:'Scene 4', label:'Doctor wait', photo:4, text:'You and your child move to the waiting area, where many sick children are also waiting. The estimated wait time is around three hours. About 1 hour and 45 minutes later, your child is finally seen by a doctor, who recommends a blood test.'},
- {n:'Scene 5', label:'Blood test delay', photo:5, text:'You go back out and wait again with your child. Your child vomits once more while waiting. After about 45 minutes, your child\u2019s blood is drawn, and then you wait another hour for the results.'},
- {n:'Scene 6', label:'Diagnosis and admission', photo:6, text:'The results show that your child has a severe rotavirus infection. The doctor says your child needs to be admitted and gives anti-nausea medicine for now. You receive a letter and walk with your child to the emergency pharmacy and admissions area.'},
- {n:'Scene 7', label:'Admission wait', photo:7, text:'The area is crowded, hot, and hard to move through. There are not enough seats, so you wait outside while watching for your queue number to be called. About 25 minutes later, you are called to the counter, check your child in, receive a tag, and get briefed while standing.'},
- {n:'Scene 8', label:'Bed assignment', photo:8, text:'You ask whether you can go get food because you are really hungry, and you are told you will be called on the phone. But when you return 45 minutes later, your number has already been called without you hearing it. You go back to the counter, confirm that your child\u2019s bed is ready, and wait for a porter to bring you both up to the ward.'}
+ {"n": "Scene 1", "label": "Arrival screening", "photo": 1, "time": "8:00 a.m.", "place": "KKH Children’s Emergency Entrance", "cp": false, "text": "The journey begins at 8:00 a.m. The mother and her six-year-old child arrive at the hospital entrance. The child, pale and visibly weak from hours of vomiting, clings to the mother. They join a short queue outside the main doors. A nurse, wearing protective gear, approaches them to begin the mandatory screening questionnaire regarding recent travel and potential exposure to contagious diseases. The morning light is cool, and the atmosphere is quiet but anxious."},
+ {"n": "Scene 2", "label": "Triage waiting", "photo": 2, "time": "8:45 a.m.", "place": "Triage Waiting Area", "cp": true, "text": "Forty-five minutes later, they have moved inside the hospital to the main Children’s Emergency triage waiting area. The mother holds a queue number (‘B124’) while seated in a busy, sterile room filled with other waiting families. The environment is warm and bright. The child, pale and defined as weak in Scene 1, rests their head on the mother’s lap, looking extremely uneasy. A passing staff member has just handed the child a small yellow bowl, as the child is vomiting intermittently while they wait to be called by the triage nurse."},
+ {"n": "Scene 3", "label": "Payment and first vomit", "photo": 3, "time": "", "place": "Registration / Payment Counter", "cp": false, "text": "Following triage, they are directed to the administrative counter. While the mother is distracted attempting to make payment, the child, overwhelmed by nausea, suddenly vomits directly onto the linoleum floor next to the counter for the first time inside the department. The scene captures the distress and mess. One nurse immediately steps forward, maintaining the same uniform style seen in previous scenes, and hands the mother a clean blue emesis bag. Another staff member is already approaching with a yellow cleaning cart in the background."},
+ {"n": "Scene 4", "label": "Doctor wait", "photo": 4, "time": "11:30 a.m. · 3.5 hours since arrival", "place": "Main Waiting Hall", "cp": true, "text": "The hours drag on. They are now in a massive, extremely crowded waiting hall, much larger than the area in Scene 2. The mother looks completely exhausted, rubbing her temples and checking her watch. The clock on the wall shows 11:30 a.m., emphasizing the long wait. The weak child is curled up, asleep on the mother’s lap, still clutching the blue emesis bag. The hall is packed with other families, creating an environment heavy with fatigue and distress under persistent fluorescent lights."},
+ {"n": "Scene 5", "label": "Blood test delay", "photo": 5, "time": "", "place": "Procedure / Blood Draw Room", "cp": false, "text": "Finally, the child is seen by a doctor and a blood test is ordered. They move to a small, dedicated procedure room. The child, still weak and pale, is seated while a compassionate nurse inserts a butterfly needle into their arm. The child grimaces and turns away, squeezing the mother’s hand. Crucially, on a small side table next to the medical equipment, an emesis bowl containing fresh vomit is visible, confirming that the child vomited again while waiting for this procedure. The blue bag is still close by."},
+ {"n": "Scene 6", "label": "Diagnosis and admission", "photo": 6, "time": "", "place": "Consultation Room", "cp": false, "text": "After another long wait for results, they are called into a clean, well-lit consultation room. A pediatrician in a white coat sits opposite the mother and child. The doctor reviews data on a computer screen and delivers the diagnosis: a severe Rotavirus infection. The mother looks serious and focused, holding the official ‘ADMISSION LETTER’ envelope and a small bottle of anti-nausea medicine the doctor just provided. The weak child is slumped in a chair, exhausted. The blue emesis bag remains visible on the desk, a constant reminder of the illness."},
+ {"n": "Scene 7", "label": "Admission wait", "photo": 7, "time": "", "place": "Admissions Lobby / Pharmacy", "cp": true, "text": "The setting shifts to the main Admissions and Pharmacy lobby, which is described as severely crowded, hot, and difficult to navigate. The environment is chaotic and humid, with warm, dim lighting. The mother and child are standing, squeezed tightly between other families and stacks of luggage; there are absolutely no seats available. The child is completely slumped against the mother’s leg, too exhausted to stand. An admissions counter is visible, where a clerk is briefing a standing parent. The mother watches a queue monitor (‘Now Serving: A105’) nervously, holding ticket A130."},
+ {"n": "Scene 8", "label": "Bed assignment", "photo": 8, "time": "", "place": "Admissions Counter", "cp": true, "text": "This is the final scene. The setting remains the crowded admissions counter from Scene 7. The mother is at the counter, looking very frustrated and pointing to her smartphone, which is dark. The stressed clerk (the same clerk from Scene 7) apologetically points to a computer screen that clearly displays ‘CALL MISSED’. The weak child is slumped, sleeping on a nearby wooden bench. The mother realizes the system failed to notify her over the noisy environment. However, the clerk is now typing the final information and handing the mother a slip that reads ‘WARD 7D, BED 22’, verbally confirming the bed is finally ready. A porter waits nearby with a wheelchair."}
 ];
 let narr = 0;
 
@@ -96,18 +106,22 @@ function renderNarrative(){
   const img = document.getElementById('narrPhoto');
   const ph = document.getElementById('narrPhotoPh');
   if(img){
-    const src = 'assets/photo' + f.photo + '.jpg';
+    const src = 'photo' + f.photo + PHOTO_EXT;
     if(img.getAttribute('src') !== src){
       img.style.opacity = 0;
       img.onload = ()=>{ img.style.opacity = 1; if(ph) ph.hidden = true; };
-      img.onerror = ()=>{ img.style.opacity = 0; if(ph){ ph.hidden = false; ph.textContent = 'Photo ' + f.photo + ' (add assets/photo' + f.photo + '.jpg)'; } };
+      img.onerror = ()=>{ img.style.opacity = 0; if(ph){ ph.hidden = false; ph.textContent = 'Photo ' + f.photo + ' \u2014 add photo' + f.photo + PHOTO_EXT + ' next to this file'; } };
       img.src = src;
     }
   }
   const step = document.getElementById('narrStep');
+  const meta = document.getElementById('narrMeta');
+  const cp   = document.getElementById('narrCp');
   const text = document.getElementById('narrText');
   if(step) step.textContent = f.n + ' \u00B7 ' + f.label;
-  if(text) text.innerHTML = f.text;
+  if(cp) cp.hidden = !f.cp;
+  if(meta) meta.textContent = [f.time, f.place].filter(Boolean).join(' \u2014 ');
+  if(text) text.textContent = f.text;
 
   document.getElementById('btnBack').disabled = narr === 0;
   document.getElementById('btnNext').disabled = narr === NARR.length - 1;
