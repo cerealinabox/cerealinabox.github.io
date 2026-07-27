@@ -1,768 +1,136 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Public Transportation Ridership in Singapore</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1220">
+<title>Children's Emergency — Journey narrative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0b1020; --fg:#eef2ff; --muted:rgba(255,255,255,.72);
-    --border:rgba(255,255,255,.14);
-    --accent: rgba(92,108,255,.95);
-    --accentSoft: rgba(92,108,255,.22);
-  }
+:root{
+  --ink:#142238;
+  --now:#F4A417;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font-body);
+  background:radial-gradient(120% 90% at 50% 0%,#20304A 0%,#0B1220 62%);
+  color:var(--ink);line-height:1.5;font-size:16px;
+  min-height:100vh;overflow-x:hidden;overflow-y:auto;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-  html, body{ height:100%; }
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--fg);
-    font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+/* ---------- single-column stage: narrative only ---------- */
+.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px 32px;box-sizing:border-box;}
+.narrative{width:min(620px,92vw);flex-shrink:0;}
+.narr-photo-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#0F1826;box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.06);}
+.narr-photo{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .35s ease;}
+.narr-photo-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6B7A90;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;padding:20px;text-align:center;}
+.narr-body{margin-top:22px;}
+.narr-step{display:block;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--now);}
+.narr-text{margin-top:12px;font-size:16.5px;line-height:1.62;color:#E9EEF4;font-weight:400;}
 
-    /* no-scroll layout */
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
+/* ---------- narrative controls ---------- */
+.controls{margin-top:26px;display:flex;align-items:center;gap:7px;background:var(--ink);border-radius:99px;padding:7px;box-shadow:0 12px 34px rgba(20,34,56,.42)}
+.ctrl{border-radius:99px;padding:0 16px;min-height:42px;font-weight:600;font-size:14.5px;white-space:nowrap;background:rgba(255,255,255,.15);color:#fff;transition:opacity .18s,background .18s}
+.ctrl:disabled{opacity:.28;cursor:not-allowed}
+.ctrl.primary{background:var(--now);color:#3A2A00}
+.ctrl.primary:disabled{background:rgba(255,255,255,.15);color:#fff}
+.ctrl:focus-visible{outline:2px solid var(--now);outline-offset:2px}
+.ctrl-hint{flex:1;min-width:0;text-align:center;font-size:10.5px;font-weight:500;line-height:1.25;color:rgba(255,255,255,.62)}
 
-  header, footer{
-    max-width:980px;
-    margin:0 auto;
-    padding:12px 18px;
-    text-align:center;
-  }
-  h1{ margin:6px 0 6px; font-size:36px; font-weight:800; }
-  .subtitle{ margin:0; color:var(--muted); font-size:14px; }
-
-  .wrap{
-    max-width:980px;
-    margin:0 auto;
-    padding:10px 18px 12px;
-    flex:1;
-    min-height:0;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  /* Tabs at top */
-  .tabs{
-    background:rgba(255,255,255,.04);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:12px;
-    flex:0 0 auto;
-    backdrop-filter: blur(6px);
-  }
-  .tablist{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; padding:4px; }
-  .tab{
-    appearance:none;
-    border:1px solid rgba(255,255,255,.18);
-    background:transparent;
-    color:var(--fg);
-    padding:10px 14px;
-    border-radius:999px;
-    cursor:pointer;
-    font-weight:650;
-    font-size:14px;
-  }
-  .tab[aria-selected="true"]{
-    border-color: var(--accent);
-    background: var(--accentSoft);
-  }
-  .panel{
-    margin-top:10px;
-    background:rgba(255,255,255,.06);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:12px 14px;
-    display:none;
-    text-align:left;
-  }
-  .panel.active{ display:block; }
-  .kicker{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; opacity:.7; margin:0 0 6px; }
-  h2{ margin:0 0 8px; font-size:18px; }
-  p{ margin:0; color:var(--muted); line-height:1.45; font-size:13px; }
-
-  /* Chart card fills remaining height */
-  #chart-card{
-    position:relative;
-    width:100%;
-    background:rgba(255,255,255,.06);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:12px;
-    backdrop-filter: blur(6px);
-
-    flex:1;
-    min-height:0;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-
-  #chart-title{ font-weight:750; font-size:13px; margin:0; text-align:left; }
-  #chart-subtitle{ font-size:12px; opacity:.78; margin:0; text-align:left; }
-  #chart-hint{ font-size:12px; opacity:.62; margin:0; text-align:left; }
-
-  /* Summary window (top-right) */
-  #summary{
-    position:absolute;
-    top:10px;
-    right:10px;
-    width:min(340px, 44vw);
-    background: rgba(0,0,0,.42);
-    border:1px solid rgba(255,255,255,.16);
-    border-radius:14px;
-    padding:10px;
-    z-index:25;
-    pointer-events:none;
-  }
-  #summary .ttl{
-    font-size:12px;
-    font-weight:800;
-    opacity:.95;
-    margin:0 0 6px;
-  }
-  #summary .row{
-    display:flex;
-    gap:8px;
-    align-items:flex-start;
-    margin:2px 0;
-    font-size:12px;
-    line-height:1.3;
-    color: rgba(255,255,255,.88);
-  }
-  #summary .dim{ opacity:.72; }
-  #summary .swatch{
-    width:10px; height:10px; border-radius:3px;
-    border:1px solid rgba(255,255,255,.22);
-    flex: 0 0 auto;
-    margin-top:3px;
-  }
-
-  /* Custom legend */
-  #legend{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin:4px 0 2px;
-    justify-content:flex-start;
-  }
-  .leg-btn{
-    appearance:none;
-    border:1px solid rgba(255,255,255,.18);
-    background:rgba(255,255,255,.04);
-    color:rgba(255,255,255,.9);
-    padding:6px 10px;
-    border-radius:999px;
-    cursor:pointer;
-    font-size:12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    user-select:none;
-    transition: transform .08s ease, background .12s ease, border-color .12s ease;
-  }
-  .leg-btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.35); }
-  .leg-btn.active{
-    border-color: var(--accent);
-    background: var(--accentSoft);
-  }
-  .swatch{
-    width:10px; height:10px; border-radius:3px;
-    border:1px solid rgba(255,255,255,.25);
-    display:inline-block;
-  }
-
-  /* make canvas fill height */
-  #chart{
-    flex:1;
-    min-height:0;
-    width:100% !important;
-    height:100% !important;
-    display:block;
-  }
-
-  .timeline{
-    padding:8px 10px;
-    border-radius:14px;
-    background:rgba(255,255,255,.04);
-    border:1px solid var(--border);
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-    flex:0 0 auto;
-  }
-  .year-pill{
-    font-size:12px;
-    padding:6px 10px;
-    border-radius:999px;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.14);
-    min-width:86px;
-    text-align:center;
-  }
-  input[type="range"]{
-    flex:1;
-    min-width:220px;
-    accent-color: rgb(92,108,255);
-  }
-  .mini{ font-size:12px; color:rgba(255,255,255,.65); }
-
-  footer{ font-size:12px; color:rgba(255,255,255,.6); }
-  code{ background:rgba(255,255,255,.08); padding:2px 6px; border-radius:8px; }
+@media(max-width:920px){
+  .stage{padding:24px 16px;}
+  .narr-text{font-size:15.5px;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
-
 <body>
-<header>
-  <h1>Public Transportation Ridership In Singapore</h1>
-  <p class="subtitle">Interact to learn more about public transportation ridership from 2000 - 2025</p>
-</header>
 
-<div class="wrap">
+<div class="stage">
 
-  <div class="tabs" role="region" aria-label="Chapters">
-    <div class="tablist" role="tablist" aria-label="Chapters">
-      <button class="tab" role="tab" aria-selected="true"  data-state="baseline">Travel Intensity</button>
-      <button class="tab" role="tab" aria-selected="false" data-state="modes">Mode Split</button>
-      <button class="tab" role="tab" aria-selected="false" data-state="system">Growth Race</button>
-    </div>
-
-    <div class="panel active" id="panel-baseline">
-      <div class="kicker">Travel Intensity</div>
-      <h2>How busy is daily travel?</h2>
-      <p>Trips per 100 people per day, with population shown on a second axis for context.</p>
-    </div>
-
-    <div class="panel" id="panel-modes">
-      <div class="kicker">Mode Split</div>
-      <h2>Bus vs rail: who takes what share?</h2>
-      <p>100% stacked share view: MRT+LRT vs Bus. Bus fill has no “100% ceiling stroke”. Crosshair snaps to the nearest year.</p>
-    </div>
-
-    <div class="panel" id="panel-system">
-      <div class="kicker">Growth Race</div>
-      <h2>What grew faster: total, rail, or bus demand?</h2>
-      <p>Indexed growth since 2000 (2000 = 100). Comparing total ridership vs rail ridership vs bus ridership.</p>
-    </div>
+<aside class="narrative" id="narrative">
+  <div class="narr-photo-wrap">
+    <img class="narr-photo" id="narrPhoto" alt="" src="assets/photo0.jpg" onerror="this.style.opacity=0;var p=document.getElementById('narrPhotoPh');if(p)p.hidden=false;">
+    <span class="narr-photo-ph" id="narrPhotoPh" hidden></span>
+  </div>
+  <div class="narr-body">
+    <span class="narr-step" id="narrStep"></span>
+    <p class="narr-text" id="narrText"></p>
   </div>
 
-  <div id="chart-card">
-    <div id="summary" aria-label="Summary">
-      <div class="ttl" id="sumTitle">Year: —</div>
-      <div id="sumBody"></div>
-    </div>
-
-    <div id="chart-title"></div>
-    <div id="chart-subtitle"></div>
-    <div id="chart-hint">Move mouse over chart to interact.</div>
-
-    <div id="legend" aria-label="Legend"></div>
-
-    <canvas id="chart"></canvas>
-
-    <div class="timeline" aria-label="Timeline scrubber">
-      <div class="year-pill" id="yearPill">Year: —</div>
-      <input id="yearSlider" type="range" min="0" max="0" value="0" step="1" aria-label="Select year"/>
-      <div class="mini">Drag to pin. Click chart to jump.</div>
-    </div>
+  <div class="controls">
+    <button class="ctrl" id="btnBack">Back</button>
+    <span class="ctrl-hint" id="ctrlHint"></span>
+    <button class="ctrl primary" id="btnNext">Next</button>
   </div>
+</aside>
 
 </div>
 
-<footer>
-  Source: data.gov.sg · Built with HTML, JavaScript, Chart.js · Debug: <code>window.app</code>
-</footer>
-
-<script type="application/json" id="DATA">
-{
-  "years":[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
-  "population":[4027887,4138012,4175950,4114826,4166664,4265762,4401365,4588599,4839396,4987573,5076732,5183688,5312437,5399162,5469724,5535002,5607283,5612253,5638676,5703569,5685807,5453566,5637022,5917648,6036860],
-  "rail":[1086000,1112000,1120000,1221000,1325000,1390000,1482000,1606000,1786000,1872000,2169000,2406000,2649000,2755000,2899000,3023000,3275000,3312000,3501000,3592000,2162000,2251000,2929000,3445000,3622000],
-  "bus":[3251000,3281000,3197000,2992000,2805000,2779000,2833000,2932000,3087000,3047000,3199000,3385000,3481000,3601000,3751000,3891000,3939000,3952000,4037000,4099000,2878000,3008000,3461000,3747000,3837000],
-  "total":[4337000,4393000,4317000,4213000,4130000,4169000,4315000,4538000,4873000,4919000,5268000,5791000,6129000,6356000,6650000,6914000,7214000,7264000,7708000,7791000,4160000,4259000,6390000,7192000,7459000]
-}
-</script>
-
 <script>
-(() => {
-  const D = JSON.parse(document.getElementById("DATA").textContent);
-  const years = D.years;
-  const pop = D.population;
-  const rail = D.rail;
-  const bus = D.bus;
-  const total = D.total;
+/* Narrative frames. Photos live in assets/photo0.jpg … photo8.jpg
+   Stage 0 uses photo0; Scenes 1–8 keep their original photo1–photo8. */
+const NARR = [
+ {n:'Stage 0', label:'Caregiver & Child', photo:0, text:'It is 8:00 a.m. when you and your child arrive at KKH Children\u2019s Emergency after your child has been vomiting for the past four hours. Your child looks weak, uneasy, and uncomfortable.'},
+ {n:'Scene 1', label:'Arrival screening', photo:1, text:'At the entrance, you and your child join a short queue to answer screening questions about recent travel to countries with contagious diseases. The process takes about 15 minutes while your child waits anxiously.'},
+ {n:'Scene 2', label:'Triage waiting', photo:2, text:'You and your child enter Children\u2019s Emergency and get a queue number. You wait about 45 minutes to be seen by a triage nurse. During this time, your child remains uneasy and vomits on and off.'},
+ {n:'Scene 3', label:'Payment and first vomit', photo:3, text:'After triage, the nurse says your child does not need immediate admission and should proceed to payment before seeing a doctor. While waiting at the counter, your child vomits on the floor for the first time in the department. The nurses hand over a bag, and you complete payment after 15 to 20 minutes.'},
+ {n:'Scene 4', label:'Doctor wait', photo:4, text:'You and your child move to the waiting area, where many sick children are also waiting. The estimated wait time is around three hours. About 1 hour and 45 minutes later, your child is finally seen by a doctor, who recommends a blood test.'},
+ {n:'Scene 5', label:'Blood test delay', photo:5, text:'You go back out and wait again with your child. Your child vomits once more while waiting. After about 45 minutes, your child\u2019s blood is drawn, and then you wait another hour for the results.'},
+ {n:'Scene 6', label:'Diagnosis and admission', photo:6, text:'The results show that your child has a severe rotavirus infection. The doctor says your child needs to be admitted and gives anti-nausea medicine for now. You receive a letter and walk with your child to the emergency pharmacy and admissions area.'},
+ {n:'Scene 7', label:'Admission wait', photo:7, text:'The area is crowded, hot, and hard to move through. There are not enough seats, so you wait outside while watching for your queue number to be called. About 25 minutes later, you are called to the counter, check your child in, receive a tag, and get briefed while standing.'},
+ {n:'Scene 8', label:'Bed assignment', photo:8, text:'You ask whether you can go get food because you are really hungry, and you are told you will be called on the phone. But when you return 45 minutes later, your number has already been called without you hearing it. You go back to the counter, confirm that your child\u2019s bed is ready, and wait for a porter to bring you both up to the ward.'}
+];
+let narr = 0;
 
-  const titleEl = document.getElementById("chart-title");
-  const subtitleEl = document.getElementById("chart-subtitle");
-  const legendEl = document.getElementById("legend");
-
-  const slider = document.getElementById("yearSlider");
-  const yearPill = document.getElementById("yearPill");
-
-  const sumTitle = document.getElementById("sumTitle");
-  const sumBody = document.getElementById("sumBody");
-
-  slider.min = 0;
-  slider.max = String(years.length - 1);
-  slider.value = String(years.length - 1);
-
-  // ---------- helpers ----------
-  const fmtInt = (n) => (n==null || Number.isNaN(n)) ? "n/a" : new Intl.NumberFormat().format(Math.round(n));
-  const fmt1 = (n) => (n==null || Number.isNaN(n)) ? "n/a" : Number(n).toFixed(1);
-  const fmt2 = (n) => (n==null || Number.isNaN(n)) ? "n/a" : Number(n).toFixed(2);
-
-  const indexTo100 = (arr) => {
-    const base = arr.find(v => v!=null);
-    return arr.map(v => (v==null || base==null || base===0) ? null : (v/base)*100);
-  };
-
-  const tripsPer100 = total.map((v,i)=> (v!=null && pop[i]!=null && pop[i]!==0) ? (v/pop[i])*100 : null);
-
-  function extent(arr){
-    const vals = arr.filter(v => v!=null && !Number.isNaN(v));
-    let mn = Math.min(...vals), mx = Math.max(...vals);
-    if (mn === mx) { mn -= 1; mx += 1; }
-    const pad = (mx - mn) * 0.08;
-    return {min: mn - pad, max: mx + pad};
-  }
-
-  // ---------- Crosshair plugin (X only) ----------
-  const crosshair = {
-    id: "crosshair",
-    afterDatasetsDraw(chart) {
-      const active = chart.getActiveElements?.() || [];
-      if (!active.length) return;
-
-      const a = active[0];
-      const meta = chart.getDatasetMeta(a.datasetIndex);
-      const el = meta?.data?.[a.index];
-      if (!el) return;
-
-      const area = chart.chartArea;
-      const ctx = chart.ctx;
-
-      ctx.save();
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3,3]);
-      ctx.strokeStyle = "rgba(255,255,255,0.22)";
-      ctx.beginPath();
-      ctx.moveTo(el.x, area.top);
-      ctx.lineTo(el.x, area.bottom);
-      ctx.stroke();
-      ctx.restore();
+function renderNarrative(){
+  const f = NARR[narr];
+  const img = document.getElementById('narrPhoto');
+  const ph = document.getElementById('narrPhotoPh');
+  if(img){
+    const src = 'assets/photo' + f.photo + '.jpg';
+    if(img.getAttribute('src') !== src){
+      img.style.opacity = 0;
+      img.onload = ()=>{ img.style.opacity = 1; if(ph) ph.hidden = true; };
+      img.onerror = ()=>{ img.style.opacity = 0; if(ph){ ph.hidden = false; ph.textContent = 'Photo ' + f.photo + ' (add assets/photo' + f.photo + '.jpg)'; } };
+      img.src = src;
     }
-  };
-
-  // Chapter 3 baseline at 100
-  const baseline100 = {
-    id: "baseline100",
-    afterDraw(chart) {
-      if (chart.$state !== "system") return;
-      const area = chart.chartArea;
-      const yScale = chart.scales?.y;
-      if (!area || !yScale) return;
-
-      const y = yScale.getPixelForValue(100);
-      const ctx = chart.ctx;
-
-      ctx.save();
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4,4]);
-      ctx.strokeStyle = "rgba(255,255,255,0.18)";
-      ctx.beginPath();
-      ctx.moveTo(area.left, y);
-      ctx.lineTo(area.right, y);
-      ctx.stroke();
-
-      ctx.fillStyle = "rgba(255,255,255,0.55)";
-      ctx.font = "12px system-ui";
-      ctx.textBaseline = "bottom";
-      ctx.fillText("2000 baseline (100)", area.left + 6, y - 4);
-      ctx.restore();
-    }
-  };
-
-  Chart.register(crosshair, baseline100);
-
-  // ---------- chart ----------
-  const canvas = document.getElementById("chart");
-  const ctx = canvas.getContext("2d");
-
-  const chart = new Chart(ctx, {
-    type: "line",
-    data: { labels: years.map(String), datasets: [] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 120 },
-      interaction: { mode: "nearest", intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false } // no tooltips
-      },
-      elements: { line: { spanGaps: false } },
-      scales: {
-        x: {
-          type: "category",
-          ticks: {
-            maxRotation: 0,
-            color: "rgba(255,255,255,.85)",
-            callback: function(value) {
-              const year = Number(this.getLabelForValue(value));
-              return year % 5 === 0 ? String(year) : "";
-            }
-          },
-          grid: { color: "rgba(255,255,255,.08)" }
-        },
-        y: {
-          position: "left",
-          ticks: { color: "rgba(255,255,255,.85)" },
-          grid: { color: "rgba(255,255,255,.08)" },
-          title: { display: false, text: "" }
-        },
-        y2: {
-          display: false,
-          position: "right",
-          ticks: { color: "rgba(255,255,255,.85)" },
-          grid: { drawOnChartArea: false },
-          title: { display: false, text: "" }
-        }
-      }
-    }
-  });
-
-  // ---------- legend: filter ----------
-  function setDatasetBaseColors(){
-    chart.data.datasets.forEach(ds => {
-      ds._baseBorderColor = ds.borderColor;
-      ds._baseBackgroundColor = ds.backgroundColor;
-    });
   }
+  const step = document.getElementById('narrStep');
+  const text = document.getElementById('narrText');
+  if(step) step.textContent = f.n + ' \u00B7 ' + f.label;
+  if(text) text.innerHTML = f.text;
 
-  function setVisibilityFilter(diOrNull){
-    chart.$filterDi = (diOrNull == null ? null : Number(diOrNull));
-    chart.data.datasets.forEach((ds, i) => {
-      ds.hidden = (chart.$filterDi != null && i !== chart.$filterDi);
-    });
-    chart.update("none");
-    setActiveAtIndex(Number(slider.value));
-  }
+  document.getElementById('btnBack').disabled = narr === 0;
+  document.getElementById('btnNext').disabled = narr === NARR.length - 1;
+  document.getElementById('ctrlHint').textContent =
+    (narr + 1) + ' of ' + NARR.length + (narr === NARR.length - 1 ? ' \u00B7 End of the journey' : '');
+}
 
-  function renderLegend(){
-    legendEl.innerHTML = "";
+function go(delta){
+  const n = narr + delta;
+  if(n < 0 || n > NARR.length - 1) return;
+  narr = n;
+  renderNarrative();
+}
 
-    const allBtn = document.createElement("button");
-    allBtn.className = "leg-btn active";
-    allBtn.type = "button";
-    allBtn.innerHTML = `<span class="swatch" style="background:rgba(255,255,255,.75)"></span><span>All</span>`;
-    allBtn.addEventListener("click", () => {
-      legendEl.querySelectorAll(".leg-btn").forEach(b => b.classList.remove("active"));
-      allBtn.classList.add("active");
-      setVisibilityFilter(null);
-    });
-    legendEl.appendChild(allBtn);
+document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
+document.getElementById('btnNext').addEventListener('click', ()=>go(1));
+document.addEventListener('keydown', e=>{
+  if(e.key === 'ArrowRight') go(1);
+  else if(e.key === 'ArrowLeft') go(-1);
+});
 
-    chart.data.datasets.forEach((ds, i) => {
-      const btn = document.createElement("button");
-      btn.className = "leg-btn";
-      btn.type = "button";
-      btn.innerHTML = `<span class="swatch" style="background:${ds._baseBorderColor}"></span><span>${ds.label}</span>`;
-      btn.addEventListener("click", () => {
-        legendEl.querySelectorAll(".leg-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        setVisibilityFilter(i);
-      });
-      legendEl.appendChild(btn);
-    });
-
-    setVisibilityFilter(null);
-  }
-
-  // ---------- summary ----------
-  function setSummary(i){
-    const idx = Math.max(0, Math.min(years.length - 1, i|0));
-    const year = years[idx];
-    sumTitle.textContent = `Year: ${year}`;
-
-    const rows = [];
-    const visible = chart.data.datasets
-      .map((ds, di) => ({ds, di}))
-      .filter(x => chart.isDatasetVisible(x.di));
-
-    if (chart.$state === "baseline"){
-      const showTrips = visible.some(v => v.ds.label.startsWith("Trips"));
-      const showPop = visible.some(v => v.ds.label === "Population");
-      if (showTrips) rows.push({c:"rgba(255,90,90,.95)", t:`<span class="dim">Trips:</span> ${fmt2(tripsPer100[idx])} trips/100 people/day`});
-      if (showPop) rows.push({c:"rgba(120,160,255,.85)", t:`<span class="dim">Population:</span> ${fmtInt(pop[idx])} people`});
-      if (showTrips && showPop) rows.push({c:"rgba(255,255,255,.55)", t:`<span class="dim">Total rides:</span> ${fmtInt(total[idx])} rides/day`});
-
-    } else if (chart.$state === "modes"){
-      const railShareV = rail[idx] / (rail[idx] + bus[idx]) * 100;
-      const busShareV = 100 - railShareV;
-
-      const showRail = visible.some(v => v.ds.label.startsWith("Rail"));
-      const showBus  = visible.some(v => v.ds.label === "Bus");
-
-      if (showRail) rows.push({c:"rgba(92,108,255,.95)", t:`<span class="dim">Rail (MRT+LRT):</span> ${fmt1(railShareV)}% | ${fmtInt(rail[idx])} rides/day`});
-      if (showBus)  rows.push({c:"rgba(255,170,60,.95)", t:`<span class="dim">Bus:</span> ${fmt1(busShareV)}% | ${fmtInt(bus[idx])} rides/day`});
-
-    } else {
-      const totalIdx = indexTo100(total)[idx];
-      const railIdx  = indexTo100(rail)[idx];
-      const busIdx   = indexTo100(bus)[idx];
-
-      const showTotal = visible.some(v => v.ds.label === "Total rides");
-      const showRail  = visible.some(v => v.ds.label === "Rail rides");
-      const showBus   = visible.some(v => v.ds.label === "Bus rides");
-
-      if (showTotal) rows.push({c:"rgba(255,90,90,.95)", t:`<span class="dim">Total rides:</span> ${fmt1(totalIdx)} (2000=100) | ${fmtInt(total[idx])} rides/day`});
-      if (showRail)  rows.push({c:"rgba(92,108,255,.95)", t:`<span class="dim">Rail rides:</span> ${fmt1(railIdx)} (2000=100) | ${fmtInt(rail[idx])} rides/day`});
-      if (showBus)   rows.push({c:"rgba(255,170,60,.95)", t:`<span class="dim">Bus rides:</span> ${fmt1(busIdx)} (2000=100) | ${fmtInt(bus[idx])} rides/day`});
-    }
-
-    sumBody.innerHTML = rows.map(r => `
-      <div class="row">
-        <span class="swatch" style="background:${r.c}"></span>
-        <div>${r.t}</div>
-      </div>
-    `).join("");
-  }
-
-  // ---------- pin year (no tooltip) ----------
-  function setActiveAtIndex(i){
-    const idx = Math.max(0, Math.min(years.length - 1, i|0));
-    slider.value = String(idx);
-    yearPill.textContent = `Year: ${years[idx]}`;
-    setSummary(idx);
-
-    const visibleDs = chart.data.datasets
-      .map((ds, di) => ({ds, di}))
-      .filter(x => chart.isDatasetVisible(x.di));
-
-    const active = visibleDs.map(v => ({ datasetIndex: v.di, index: idx }));
-    chart.setActiveElements(active);
-    chart.update("none");
-  }
-
-  slider.addEventListener("input", () => setActiveAtIndex(Number(slider.value)), { passive: true });
-
-  // Click to jump
-  canvas.addEventListener("click", (evt) => {
-    const points = chart.getElementsAtEventForMode(evt, "nearest", { intersect:false }, true);
-    if (!points.length) return;
-    setActiveAtIndex(points[0].index);
-  });
-
-  // snap mousemove
-  canvas.addEventListener("mousemove", (evt) => {
-    const area = chart.chartArea;
-    if (!area) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = evt.clientX - rect.left;
-    const y = evt.clientY - rect.top;
-
-    if (x < area.left || x > area.right || y < area.top || y > area.bottom) return;
-
-    const raw = chart.scales.x.getValueForPixel(x);
-    const idx = Math.round(Number(raw));
-    if (!Number.isFinite(idx)) return;
-
-    const clamped = Math.max(0, Math.min(years.length - 1, idx));
-    if (clamped !== Number(slider.value)) setActiveAtIndex(clamped);
-  }, { passive: true });
-
-  // ---------- states ----------
-  function setState(stateId){
-    chart.$state = stateId;
-
-    // reset scales
-    chart.options.scales.y2.display = false;
-    chart.options.scales.y.stacked = false;
-    chart.options.scales.x.stacked = false;
-    chart.options.scales.y.min = undefined;
-    chart.options.scales.y.max = undefined;
-    chart.options.scales.y.title.display = false;
-    chart.options.scales.y.title.text = "";
-    chart.options.scales.y2.title.display = false;
-    chart.options.scales.y2.title.text = "";
-
-    if (stateId === "baseline"){
-      titleEl.textContent = "Travel Intensity: Trips per 100 people per day";
-      subtitleEl.textContent = "Red: trips/100 people/day. Blue: population (right axis).";
-
-      const e = extent(tripsPer100);
-      chart.options.scales.y.min = e.min;
-      chart.options.scales.y.max = e.max;
-
-      chart.options.scales.y.title.display = true;
-      chart.options.scales.y.title.text = "Trips per 100 people per day";
-
-      chart.options.scales.y2.display = true;
-      chart.options.scales.y2.title.display = true;
-      chart.options.scales.y2.title.text = "Population";
-
-      chart.data.datasets = [
-        {
-          label: "Population",
-          data: pop,
-          yAxisID: "y2",
-          tension: 0.25,
-          borderColor: "rgba(120,160,255,.85)",
-          backgroundColor: "rgba(120,160,255,.10)",
-          borderDash: [4,4],
-          fill: true,
-          pointRadius: 3,
-          pointHoverRadius: 8,
-          hitRadius: 14,
-          pointBackgroundColor: "rgba(120,160,255,0)",
-          pointBorderColor: "rgba(120,160,255,0)"
-        },
-        {
-          label: "Trips per 100 people per day",
-          data: tripsPer100,
-          yAxisID: "y",
-          tension: 0.25,
-          borderColor: "rgba(255,90,90,.95)",
-          backgroundColor: "rgba(255,90,90,.10)",
-          pointRadius: 3,
-          pointHoverRadius: 6,
-          hitRadius: 14,
-          fill: false
-        }
-      ];
-      setDatasetBaseColors();
-    }
-
-    if (stateId === "modes"){
-      titleEl.textContent = "Mode Split: Bus vs Rail share";
-      subtitleEl.textContent = "100% stacked share: MRT+LRT vs Bus. Bus has no misleading 100% stroke.";
-
-      const railShare = rail.map((r,i)=> (r!=null && bus[i]!=null && (r+bus[i])!==0) ? (r/(r+bus[i]))*100 : null);
-      const busShare  = railShare.map(v => (v==null ? null : 100 - v));
-
-      chart.options.scales.y.stacked = true;
-      chart.options.scales.x.stacked = true;
-      chart.options.scales.y.min = 0;
-      chart.options.scales.y.max = 100;
-      chart.options.scales.y.title.display = true;
-      chart.options.scales.y.title.text = "Share of public transport ridership (%)";
-
-      chart.data.datasets = [
-        {
-          label: "Rail (MRT+LRT)",
-          data: railShare,
-          tension: 0.25,
-          borderColor: "rgba(92,108,255,.95)",
-          backgroundColor: "rgba(92,108,255,.18)",
-          borderWidth: 2,
-          pointRadius: 2,
-          pointHoverRadius: 6,
-          hitRadius: 16,
-          fill: true
-        },
-        {
-          label: "Bus",
-          data: busShare,
-          tension: 0.25,
-          borderColor: "rgba(255,170,60,0)",
-          backgroundColor: "rgba(255,170,60,.14)",
-          borderWidth: 0,
-          pointRadius: 2,
-          pointHoverRadius: 6,
-          hitRadius: 16,
-          fill: true
-        }
-      ];
-      setDatasetBaseColors();
-    }
-
-    if (stateId === "system"){
-      titleEl.textContent = "Growth Race: Demand (2000 = 100)";
-      subtitleEl.textContent = "Indexed growth since 2000. Total vs rail vs bus ridership.";
-
-      chart.options.scales.y.title.display = true;
-      chart.options.scales.y.title.text = "Index (2000 = 100)";
-
-      const totalIdx = indexTo100(total);
-      const railIdx  = indexTo100(rail);
-      const busIdx   = indexTo100(bus);
-
-      chart.data.datasets = [
-        {
-          label: "Total rides",
-          data: totalIdx,
-          tension: 0.25,
-          borderColor: "rgba(255,90,90,.95)",      /* ✅ red */
-          backgroundColor: "rgba(255,90,90,.10)",  /* ✅ soft red fill */
-          pointRadius: 2,
-          pointHoverRadius: 6,
-          hitRadius: 14
-        },
-        {
-          label: "Rail rides",
-          data: railIdx,
-          tension: 0.25,
-          borderColor: "rgba(92,108,255,.95)",
-          backgroundColor: "rgba(92,108,255,.12)",
-          pointRadius: 2,
-          pointHoverRadius: 6,
-          hitRadius: 14
-        },
-        {
-          label: "Bus rides",
-          data: busIdx,
-          tension: 0.25,
-          borderColor: "rgba(255,170,60,.95)",
-          backgroundColor: "rgba(255,170,60,.08)",
-          pointRadius: 2,
-          pointHoverRadius: 6,
-          hitRadius: 14
-        }
-      ];
-      setDatasetBaseColors();
-    }
-
-    chart.update();
-    renderLegend();
-
-    chart.$filterDi = null;
-    chart.data.datasets.forEach(ds => ds.hidden = false);
-    chart.update("none");
-
-    setActiveAtIndex(Number(slider.value));
-  }
-
-  // ---------- tabs ----------
-  const tabs = Array.from(document.querySelectorAll(".tab"));
-  const panels = {
-    baseline: document.getElementById("panel-baseline"),
-    modes: document.getElementById("panel-modes"),
-    system: document.getElementById("panel-system")
-  };
-
-  function activateTab(btn){
-    const state = btn.dataset.state;
-    tabs.forEach(b => b.setAttribute("aria-selected", b === btn ? "true" : "false"));
-    Object.values(panels).forEach(p => p.classList.remove("active"));
-    panels[state].classList.add("active");
-    setState(state);
-  }
-
-  tabs.forEach(btn => btn.addEventListener("click", () => activateTab(btn)));
-
-  // ---------- boot ----------
-  yearPill.textContent = `Year: ${years[Number(slider.value)]}`;
-  setState("baseline");
-
-  window.app = { chart, setState, setActiveAtIndex, years };
-})();
+renderNarrative();
 </script>
+
 </body>
 </html>
