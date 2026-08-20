@@ -233,6 +233,14 @@ body.outage .ward::after{content:none}
 .dot{width:24px;height:24px;border-radius:50%;background:var(--primary);
   border:3px solid rgba(0,0,0,.25);   /* decorative: 1.84:1, below the 3:1 a meaningful boundary needs */
   flex-shrink:0;position:relative}
+/* The ring is hidden on the three non-live dots until they beat once on a
+   change. The live dot beats too, on top of its slow cycle — a call can land
+   anywhere in the 6.4s quiet part, so it needs to react rather than wait. */
+.dot.past::after,.dot.miss::after,.dot.dot-ward::after{display:none}
+.dot.beat::after{display:block;animation:beat var(--m-slow) ease-out 2}
+.dot.past.beat::after{border-color:#5B87CE}
+.dot.miss.beat::after{border-color:var(--now)}
+.dot.dot-ward.beat::after{border-color:var(--label)}
 .dot.past{background:#5B87CE}
 .dot.miss{background:var(--now)}
 .dot.dot-ward{background:var(--label)}
@@ -242,15 +250,6 @@ body.outage .ward::after{content:none}
 .wards[data-agg="open"]    .dot-ward{background:var(--sig-green)}
 .wards[data-agg="limited"] .dot-ward{background:var(--sig-amber)}
 .wards[data-agg="none"]    .dot-ward{background:var(--ink-faint)}
-/* the ring is hidden on the non-live dots until they beat once on a change */
-.dot.past::after,.dot.miss::after,.dot.dot-ward::after{display:none}
-.dot.past.beat::after,.dot.miss.beat::after,.dot.dot-ward.beat::after{
-  display:block;animation:beat var(--m-slow) ease-out 2;
-}
-@keyframes beat{0%{opacity:.9;transform:scale(.85)}70%,100%{opacity:0;transform:scale(1.3)}}
-.dot.past.beat::after{border-color:#5B87CE}
-.dot.miss.beat::after{border-color:var(--now)}
-.dot.dot-ward.beat::after{border-color:var(--label)}
 .dot::after{content:'';position:absolute;inset:-8px;border-radius:50%;
   border:3px solid var(--primary);opacity:0;
   animation:ping 8s ease-out infinite}
@@ -258,12 +257,6 @@ body.outage .ward::after{content:none}
    is lit a tenth of the time — enough to read as live, quiet enough to sit in
    the corner of a stressed person's vision all day. */
 @keyframes ping{0%{opacity:.85;transform:scale(.85)}10%,100%{opacity:0;transform:scale(1.32)}}
-.dot.past.beat::after,.dot.miss.beat::after,.dot.dot-ward.beat::after{
-  display:block;animation:beat var(--m-slow) ease-out 2;
-}
-.dot.past.beat::after{border-color:#5B87CE}
-.dot.miss.beat::after{border-color:var(--now)}
-.dot.dot-ward.beat::after{border-color:var(--label)}
 .dot::after{content:'';position:absolute;inset:-8px;border-radius:50%;
   border:3px solid var(--primary);opacity:0;
   animation:ping 8s ease-out infinite}
@@ -633,7 +626,7 @@ function callNext(){
   var advance=function(){
     recent.unshift(cur);recent=recent.slice(0,MAXRECENT);
     cur++;heroNum.textContent=L(cur);
-    drawRecent();beat('.dot.past');chime();
+    drawRecent();beat('.dot.past');beat('.q-col.now .dot');chime();
     hero.classList.remove('turn');
     hero.classList.add('arrive');      /* park it below, without transition */
     void hero.offsetWidth;
