@@ -2,152 +2,804 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0B1220">
-<title>Children's Emergency — Journey narrative</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KKH Admissions — Overhead Front Desk Display v4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Tamil:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#142238;
-  --now:#F4A417;
-  --font-body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
-  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
+  --gap-grid:16px;   /* 4 columns of 249px across a 1044px panel */
+  --t-head:24px;     /* every section header on the board */
+  --sp:24px;         /* between blocks, and every panel edge */
+  --sp-lab:12px;     /* a label to the box it names */
+  /* MOTION — one scale, one curve. Nothing on this board moves for longer
+     than 'slow', and only the live dot and the ticker repeat. */
+  --m-quick:.28s; --m-base:.5s; --m-slow:.9s;
+  --m-lang:.85s;
+  --ping:8s;         /* one double-sweep every 8s on the live dot */     /* the language dissolve — slower than anything else on the board */
+  --m-ease:cubic-bezier(.22,.61,.36,1);
+  --outline:#000;    /* number outline */
+  --label:#000;      /* the four section labels */
+  /* THE EMPTY CONVENTION: 45° hatch, 4px on 12px, means "nothing here".
+     It is used for empty slots and missing data, and for nothing else — the
+     ground and the ward bars use pixel textures so the meaning stays single. */
+  --empty-angle:45deg; --empty-on:4px; --empty-off:12px;
+  --empty-bg:#E6ECF8;
+  --empty-ink:rgba(9,23,64,.12);       /* hosts override the hue, never the geometry */
+  --empty-fill:repeating-linear-gradient(var(--empty-angle),
+                 var(--empty-ink) 0 var(--empty-on),
+                 transparent var(--empty-on) var(--empty-off));
+  --ink:#091740; --ink-soft:#3D5280; --ink-faint:#546A96;
+  --paper:#EBF0FA; --surface:#FFFFFF; --rule:#C8D5EC; --rule-strong:#A6BCE0;
+  --navy:#0D2666; --azure:#2460D9; --sky:#B8D0F5; --frost:#EBF2FD;
+  --primary:#1345B8;
+  --now:#D4006A; --now-wash:#FFF0F7; --now-tint:#FFD6EB; --now-ink:#A8005A;
+  --todo:#9CBAEC;
+  --go:#0E7A46; --go-tint:#A9DEC3;
+  /* Signal colours: these mean one thing only, and appear nowhere else. */
+  --sig-amber:#B87A0A; --sig-green:#1E8E3E;
+  --font-display:Verdana,Geneva,'DejaVu Sans',Tahoma,'Noto Sans Tamil','Noto Sans SC',sans-serif;
+  --font-body:Verdana,Geneva,'DejaVu Sans',Tahoma,'Noto Sans Tamil','Noto Sans SC',sans-serif;
+  --radius:20px; --slot:310px; --slot-gap:24px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  font-family:var(--font-body);
-  background:radial-gradient(120% 90% at 50% 0%,#20304A 0%,#0B1220 62%);
-  color:var(--ink);line-height:1.5;font-size:16px;
-  min-height:100vh;overflow-x:hidden;overflow-y:auto;
+  font-family:var(--font-body);color:var(--ink);background:#14181F;
+  line-height:1.4;font-variant-numeric:tabular-nums;
+  display:flex;flex-direction:column;align-items:center;
+  padding:26px 20px 34px;gap:20px;min-height:100vh;
 }
-button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-
-/* ---------- single-column stage: narrative only ---------- */
-.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px 32px;box-sizing:border-box;}
-.narrative{width:min(620px,92vw);flex-shrink:0;}
-.narr-photo-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#0F1826;box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.06);}
-.narr-photo{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .35s ease;}
-.narr-photo-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6B7A90;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;padding:20px;text-align:center;}
-.narr-body{margin-top:22px;}
-.narr-step{display:block;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--now);}
-.narr-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.chip-cp{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.28);border-radius:99px;padding:3px 8px;}
-.chip-cp[hidden]{display:none}
-.narr-meta{display:block;margin-top:9px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#8FA1B8;}
-.narr-meta:empty{display:none}
-.narr-text{margin-top:14px;font-size:16.5px;line-height:1.62;color:#E9EEF4;font-weight:400;}
-
-/* ---------- narrative controls ---------- */
-.controls{margin-top:26px;display:flex;align-items:center;gap:7px;background:var(--ink);border-radius:99px;padding:7px;box-shadow:0 12px 34px rgba(20,34,56,.42)}
-.ctrl{border-radius:99px;padding:0 16px;min-height:42px;font-weight:600;font-size:14.5px;white-space:nowrap;background:rgba(255,255,255,.15);color:#fff;transition:opacity .18s,background .18s}
-.ctrl:disabled{opacity:.28;cursor:not-allowed}
-.ctrl.primary{background:var(--now);color:#3A2A00}
-.ctrl.primary:disabled{background:rgba(255,255,255,.15);color:#fff}
-.ctrl:focus-visible{outline:2px solid var(--now);outline-offset:2px}
-.ctrl-hint{flex:1;min-width:0;text-align:center;font-size:10.5px;font-weight:500;line-height:1.25;color:rgba(255,255,255,.62)}
-
-@media(max-width:920px){
-  .stage{padding:24px 16px;}
-  .narr-text{font-size:15.5px;}
+.mount{position:relative;flex-shrink:0;width:1920px;height:1080px}
+.frame{
+  position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;
+  background:var(--paper);border-radius:10px;overflow:hidden;
+  display:flex;flex-direction:column;
+  box-shadow:0 0 0 14px #23262B,0 0 0 17px #3A3E45,0 40px 90px rgba(0,0,0,.55);
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* GROUND: 6px pixel checkerboard. 6px divides both 1920 and 1080 exactly, so
+   it tiles the frame with no partial square at any edge, and being axis-aligned
+   it cannot moire against the panel's own pixel grid. */
+.frame{background-image:conic-gradient(
+  rgba(9,23,64,.085) 25%, rgba(9,23,64,0) 0 50%, rgba(9,23,64,.085) 0 75%, rgba(9,23,64,0) 0);
+  background-size:12px 12px}
+
+/* ============================================================
+   HEADER — mirrors the ticker below, so the board reads as framed.
+   The clock belongs here: it is about the board, not about the queue.
+   ============================================================ */
+.topbar{
+  height:78px;flex-shrink:0;background:var(--ink);color:#fff;
+  padding:0 44px;display:flex;align-items:center;gap:24px;
+}
+.crest{height:46px;width:46px;flex-shrink:0;display:block}
+.board{
+  font-family:var(--font-display);font-size:20px;font-weight:700;
+  color:var(--sky);letter-spacing:.14em;text-transform:uppercase;
+}
+.board span{
+  margin-left:18px;padding-left:20px;color:#fff;text-transform:uppercase;
+  border-left:2px solid rgba(184,208,245,.4);
+}
+.clock{margin-left:auto;display:flex;align-items:baseline;gap:16px}
+.clock b{font-family:var(--font-display);font-size:38px;font-weight:700;color:#fff;line-height:1}
+.clock span{font-size:18px;color:var(--sky);letter-spacing:.08em}
+
+/* ============================================================
+   BODY GRID — v1.3 proportions
+   ============================================================ */
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:734px 1fr;
+  gap:var(--sp);padding:var(--sp)}
+.col{display:flex;flex-direction:column;gap:var(--sp);min-height:0}
+.panel{
+  background:var(--surface);border-radius:var(--radius);border:1px solid var(--rule);
+  box-shadow:0 2px 3px rgba(9,23,64,.13),
+             0 12px 28px rgba(9,23,64,.17);   /* contact + lift, over the hatch */
+  padding:16px 32px var(--sp);display:flex;flex-direction:column;min-height:0;overflow:hidden;
+}
+.p-head{display:flex;align-items:center;gap:14px;height:34px;
+  margin-bottom:var(--sp-lab);flex-shrink:0}
+.p-head h2{
+  font-family:var(--font-display);font-size:var(--t-head);font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--label);
+  line-height:1.2;
+}
+
+/* ---------- 2. ONBOARDING ---------- */
+.onboard{
+  flex:1;background:var(--ink);
+  border:none;color:#fff;padding:14px 42px 25px;position:relative;overflow:hidden;
+  justify-content:flex-start;   /* headline ink aligns with JUST CALLED */
+}
+.pitch{position:relative;font-family:var(--font-display);font-weight:700;
+  font-size:48px;line-height:1.14;letter-spacing:-.015em;
+  margin-top:38px;height:110px;overflow:hidden;   /* fixed: the language changes, the layout does not */
+  transition:opacity var(--m-lang) ease-in-out}   /* cap top lands on the top edge of the just-called box */
+.pitch em{font-style:normal;color:var(--go-tint);display:block}
+body.lang-out .pitch,
+body.lang-out .pitch-sub,
+body.lang-out .steps,
+body.lang-out .phone-lang{opacity:0}
+.pitch-sub{position:relative;margin-top:56px;font-size:32px;color:var(--sky);
+  font-weight:400;line-height:1.35;max-width:640px;
+  height:87px;overflow:hidden;
+  transition:opacity var(--m-lang) ease-in-out}
+.scan{position:relative;margin-top:56px;display:flex;flex-direction:column;align-items:flex-start;
+  gap:88px}   /* even air on both sides of the sub-copy and the graphic */
+.qr{width:350px;height:350px;flex-shrink:0;background:#fff;
+  border:12px solid var(--outline);border-radius:22px;padding:0;overflow:hidden;
+  box-shadow:0 12px 34px rgba(0,0,0,.4)}
+.qr svg{display:block;width:100%;height:100%}
+.scan-top{display:flex;align-items:center;justify-content:center;gap:22px;width:100%}
+.phone{width:251px;height:auto;flex-shrink:0;overflow:visible}   /* the beam reaches past the viewBox */
+/* the phone shows the language the poster is currently speaking */
+.phone-chip{fill:var(--go-tint)}
+/* the camera's cone of view: narrow at the lens, widening toward the code,
+   fading out before it reaches it so the code is never tinted */
+.scan-beam{transform-box:fill-box;transform-origin:right center;
+  transition:transform var(--m-lang) ease-in-out}
+body.lang-out .scan-beam{transform:scaleY(.86)}
+/* a band runs up the cone toward the lens as the language changes — the
+   graphic performs the capture that produces the new language */
+.scan-sweep{opacity:0}
+body.lang-out .scan-sweep{animation:sweep var(--m-lang) cubic-bezier(.4,0,.5,1)}
+@keyframes sweep{
+  0%{opacity:0;transform:translateX(0)}
+  20%{opacity:.55}
+  75%{opacity:.35}
+  100%{opacity:0;transform:translateX(64px)}
+}
+/* the brackets pull in as the language changes — the phone re-focusing */
+.phone-focus{transform-box:fill-box;transform-origin:center;
+  transition:transform var(--m-lang) ease-in-out}
+body.lang-out .phone-focus{transform:scale(.86)}
+.phone-lang{fill:var(--ink);font-weight:700;dominant-baseline:middle;
+  transition:opacity var(--m-lang) ease-in-out}   /* 11.5:1 on the chip */   /* 251 x 350 — the code's height */
+.steps{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  height:34px;   /* pinned: the language changes size, the row does not */
+  transition:opacity var(--m-lang) ease-in-out}
+.step{display:flex;align-items:center}
+.sep{width:22px;height:22px;flex-shrink:0;fill:var(--go-tint);opacity:.75}
+.step p{font-size:var(--t-head);font-weight:700;color:#fff;line-height:1;padding-top:0}
+
+/* ---------- 3. WARD PLACES ---------- */
+.wards{flex-shrink:0}
+.ward-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap-grid);flex:1;min-height:0;
+  align-content:center}
+.ward{border:1px solid var(--rule);border-radius:14px;padding:0;
+  display:flex;flex-direction:column;background:var(--frost);overflow:hidden;text-align:center}
+
+.ward-letter{font-family:var(--font-display);font-size:76px;font-weight:700;
+  color:rgba(0,0,0,.5);   /* the letter labels the card; the bar is the data */
+  letter-spacing:-.015em;line-height:.9;white-space:nowrap;padding:18px 14px 14px;
+  text-indent:-.015em}
+.level{margin-top:auto;height:34px;background-color:var(--rule);
+  transition:background-color var(--m-slow) var(--m-ease)}
+
+/* Bar depth: a top-edge inset only. The bar is flush to the card edge, so a
+   shadow on the left, right or bottom would land on the card's own corner and
+   read as a seam. Shadowing one edge makes it a channel cut into the card. */
+.level{box-shadow:inset 0 5px 9px rgba(0,0,0,.30)}
+
+/* ============================================================
+   WARD STATES — High, Low, Unavailable.
+   High and Low both carry colour at full weight; only Unavailable
+   ghosts out, with a corner-to-corner rule across the card.
+   ============================================================ */
+
+/* Three states: High, Low, Unavailable. The first two carry colour and full
+   weight; only Unavailable ghosts out. Prominence runs 3.73 / 3.20 / 1.25
+   against the card, so the row can be read by weight alone. */
+.ward[data-avail="high"] .level{background-color:var(--sig-green)}
+.ward[data-avail="mid"]  .level{background-color:var(--sig-amber)}
+.ward[data-avail="low"]{background-color:#EDF1F7}
+.ward[data-avail="low"] .level{background-color:rgba(0,0,0,.1);box-shadow:none}
+.ward[data-avail="low"] .ward-letter{color:rgba(0,0,0,.1)}
+/* A single rule corner to corner. "to top right" is not 45° — CSS defines the
+   corner keyword so the colour-stop line passes exactly through the other two
+   corners, so it stays flush at any card size. On this card that is 28.3°.
+   Deliberately one line, not a hatch: a repeating 45° field already means
+   "no data" elsewhere on the board. */
+.ward[data-avail="low"]{position:relative}
+.ward[data-avail="low"]::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top right,
+    transparent calc(50% - 1.2px), rgba(9,23,64,.15) calc(50% - 1.2px),
+    rgba(9,23,64,.15) calc(50% + 1.2px), transparent calc(50% + 1.2px));
+}
+body.outage .ward::after{content:none}
+
+
+/* ============================================================
+   QUEUE PANEL — now serving and missed numbers in one place.
+   They answer the same question, so they stopped being two panels.
+   ============================================================ */
+.queue{
+  flex:1;background:var(--surface);
+  color:var(--ink);padding:16px 32px var(--sp);position:relative;overflow:hidden;
+  /* 17 not 24: the label's own leading supplies the missing 7px */
+}
+.q-lab{
+  display:flex;align-items:center;gap:14px;height:34px;flex-shrink:0;
+  font-family:var(--font-display);font-size:var(--t-head);font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--label);
+}
+.dot{width:24px;height:24px;border-radius:50%;background:var(--primary);
+  border:3px solid rgba(0,0,0,.25);   /* decorative: 1.84:1, below the 3:1 a meaningful boundary needs */
+  flex-shrink:0;position:relative}
+.dot.past{background:#5B87CE}
+.dot.miss{background:var(--now)}
+.dot.dot-ward{background:var(--label)}
+/* AGGREGATE — the panel marker summarises the four cards, weighted by who
+   the classes are for. C and B2 are subsidised; B1 and A are private, so
+   "a bed is free" in A only is not the same answer for most families. */
+.wards[data-agg="open"]    .dot-ward{background:var(--sig-green)}
+.wards[data-agg="limited"] .dot-ward{background:var(--sig-amber)}
+.wards[data-agg="none"]    .dot-ward{background:var(--ink-faint)}
+/* the ring is hidden on the non-live dots until they beat once on a change */
+.dot.past::after,.dot.miss::after,.dot.dot-ward::after{display:none}
+.dot.past.beat::after,.dot.miss.beat::after,.dot.dot-ward.beat::after{
+  display:block;animation:beat var(--m-slow) ease-out 2;
+}
+@keyframes beat{0%{opacity:.9;transform:scale(.85)}70%,100%{opacity:0;transform:scale(1.3)}}
+.dot.past.beat::after{border-color:#5B87CE}
+.dot.miss.beat::after{border-color:var(--now)}
+.dot.dot-ward.beat::after{border-color:var(--label)}
+.dot::after{content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:3px solid var(--primary);opacity:0;
+  animation:ping 8s ease-out infinite}
+/* One sweep every 8s on the live dot. 0.8s of movement in an 8s cycle, so it
+   is lit a tenth of the time — enough to read as live, quiet enough to sit in
+   the corner of a stressed person's vision all day. */
+@keyframes ping{0%{opacity:.85;transform:scale(.85)}10%,100%{opacity:0;transform:scale(1.32)}}
+.dot.past.beat::after,.dot.miss.beat::after,.dot.dot-ward.beat::after{
+  display:block;animation:beat var(--m-slow) ease-out 2;
+}
+.dot.past.beat::after{border-color:#5B87CE}
+.dot.miss.beat::after{border-color:var(--now)}
+.dot.dot-ward.beat::after{border-color:var(--label)}
+.dot::after{content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:3px solid var(--primary);opacity:0;
+  animation:ping 8s ease-out infinite}
+/* PING PATTERNS — the live dot's only job is to say the feed is moving.
+   Each sweep is about 0.8s; what changes is how often it repeats and how
+   many sweeps land together. Percentages are derived from the cycle length. */
+
+.q-main{position:relative;display:flex;align-items:stretch;gap:var(--gap-grid);flex-shrink:0}
+.q-col{flex:1;display:flex;flex-direction:column;gap:var(--sp-lab);min-width:0}
+.q-col.now{flex:1.35}   /* the number takes the width it needs */   /* 2 of 4 columns each */
+.q-col.miss{flex:0 0 auto;margin-top:var(--sp)}
+.hero{
+  flex:1;background:var(--primary);border:4px solid var(--outline);border-radius:24px;
+  position:relative;padding:78px 24px 79px;overflow:hidden;text-align:center;
+  box-shadow:0 3px 6px rgba(9,23,64,.22),
+             0 18px 40px rgba(19,69,184,.34);
+}
+/* the update blink — sound is useless in this room, so the change has to be seen */
+.hero::after{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:#fff;opacity:0;pointer-events:none;
+}
+.hero.flash::after{animation:blink var(--m-slow) ease-out 1}
+@keyframes blink{0%{opacity:.42}70%,100%{opacity:0}}
+.n{
+  display:block;font-family:var(--font-display);font-weight:700;font-size:137px;
+  -webkit-text-stroke:10.4px var(--outline);paint-order:stroke fill;   /* stroke scales with the type */
+  letter-spacing:.04em;line-height:.92;color:#fff;
+  transition:transform var(--m-base) var(--m-ease),opacity var(--m-base) var(--m-ease);
+}
+.hero.turn .n{transform:translateY(-38%);opacity:0}
+.hero.arrive .n{transform:translateY(38%);opacity:0;transition:none}
+.q-side{
+  --empty-bg:#DFE8F8; --empty-ink:rgba(19,69,184,.15);
+  flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+  background:var(--frost);border:1px solid var(--rule);border-radius:24px;padding:20px;
+}
+.q-side::after{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:var(--primary);opacity:0;pointer-events:none;
+}
+.q-side.flash::after{animation:none}
+.r-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.r-row span{animation:settle var(--m-base) var(--m-ease) both}
+.r-row span:nth-child(2){animation-delay:.04s}
+.r-row span:nth-child(3){animation-delay:.08s}
+.r-row span:nth-child(4){animation-delay:.12s}
+.r-row span:nth-child(5){animation-delay:.16s}
+.r-row span:nth-child(6){animation-delay:.20s}
+@keyframes settle{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+/* ============================================================
+   FEED OUTAGE — board-wide. Everything fed by the queue goes to the
+   empty convention; the clock, the QR and the ticker keep working
+   because none of them depend on the feed.
+   ============================================================ */
+body.outage .n{visibility:hidden}
+body.outage .r-row span{visibility:hidden}
+
+/* One surface, three boxes. The hatch was previously on .r-row, which sits
+   inside a padded box, so the just-called panel was inset while the other two
+   were full-bleed — and all three carried different borders and radii. */
+body.outage .hero,
+body.outage .q-side,
+body.outage .missed{
+  --empty-bg:#E6ECF8; --empty-ink:rgba(9,23,64,.12);
+  background-color:var(--empty-bg);
+  background-image:var(--empty-fill);
+  border:4px solid var(--rule-strong);
+  border-radius:24px;
+  box-shadow:none;
+}
+body.outage .r-row{background-color:transparent;background-image:none}
+body.outage .missed{padding:17px 21px}   /* 4px border, same 188px card height */
+body.outage .m-row{visibility:hidden}
+body.outage .m-head h2{color:var(--ink)}
+body.outage .m-head svg{fill:var(--ink);stroke:var(--ink)}
+body.outage .hero::after,
+body.outage .q-side::after{animation:none;opacity:0}
+body.outage .chip,
+body.outage .r-row span{animation:none}
+/* every dot variant must be cleared, or its coloured disc shows behind the
+   cross; and the arms are square-ended, which stays crisp at 18px where a
+   rounded 3px arm blurs into a blob */
+body.outage .dot,
+body.outage .dot.past,
+body.outage .dot.miss,
+body.outage .dot.dot-ward{background:none;box-shadow:none;border-radius:0;border:none}
+/* one slow turn, then a pause: the board is retrying, not spinning forever.
+   The cross has 4-fold symmetry, so it lands back on itself every quarter. */
+body.outage .dot{animation:seek 4.8s ease-in-out infinite}
+body.outage .dot.past{animation-delay:.25s}
+body.outage .dot.miss{animation-delay:.5s}
+body.outage .dot.dot-ward{animation-delay:.75s}
+@keyframes seek{
+  0%{transform:rotate(0)}
+  54%{transform:rotate(180deg)}
+  100%{transform:rotate(180deg)}
+}
+body.outage .dot::before,
+body.outage .dot::after{
+  content:'';display:block;position:absolute;inset:auto;
+  left:50%;top:50%;width:6px;height:22px;
+  background:var(--ink-soft);border:none;border-radius:0;
+  opacity:1;animation:none;
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+body.outage .dot::after{transform:translate(-50%,-50%) rotate(-45deg)}
+/* the whole card becomes one empty surface — a hatched bar inside an
+   untouched card was the loudest mismatch in the outage state */
+body.outage .ward{background-color:var(--empty-bg);background-image:var(--empty-fill)}
+body.outage .ward .level{background-color:transparent;background-image:none;box-shadow:none}
+body.outage .ward .ward-letter{color:rgba(0,0,0,.5);opacity:.35}
+
+
+.r-row span{
+  display:flex;align-items:center;justify-content:center;
+  height:68px;
+  font-family:var(--font-display);font-weight:700;font-size:28px;letter-spacing:0;
+  line-height:1;color:var(--navy);background:#9CBAEC;border:2px solid #7FA6E0;
+  border-radius:12px;
+}
+
+/* the alert, inset into the queue panel */
+.missed{
+  --empty-bg:#FBE4EF; --empty-ink:rgba(168,0,90,.15);
+  position:relative;background:var(--now-wash);
+  border:1px solid var(--now-tint);border-radius:24px;padding:20px 24px;color:var(--ink);
+}
+.m-head{display:flex;align-items:center;gap:14px;flex-shrink:0}
+/* one chevron geometry, used by both instruction lines */
+.m-head svg{
+  /* Two chevrons, not one mark. Every other marker on the board is an 18px
+     disc, so a lone shape in that slot risks being read as just another dot
+     and skipped. A doubled silhouette breaks the pattern and implies motion. */
+  width:31.2px;height:18px;flex-shrink:0;   /* 18px tall, same as the dots */
+  fill:var(--now);stroke:var(--now);stroke-width:2.6;   /* stroke rounds the corners */
+  stroke-linejoin:round;
+}
+/* neutral in the outage state: pink would imply something went wrong for you
+   specifically, when the board has simply gone quiet for everyone */
+.m-head h2{font-family:var(--font-display);font-size:var(--t-head);font-weight:700;
+  letter-spacing:-.01em;color:var(--now-ink);line-height:1.1}
+.m-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap-grid);
+  height:79px;margin:20px 0 0;border-radius:12px;   /* reserved height: never reflows */
+}
+.chip{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:56px;
+  -webkit-text-stroke:5.2px var(--outline);paint-order:stroke fill;
+  letter-spacing:.1em;line-height:1;color:#fff;background:var(--now);
+  border:3px solid var(--outline);border-radius:12px;
+}
+/* only the newest chip animates — re-rendering the list must not flash them all */
+.chip:first-child{animation:pop var(--m-base) cubic-bezier(.2,1.3,.4,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+
+/* ---------- 5. TICKER ---------- */
+.langs{flex-shrink:0;background:var(--ink);color:#fff;height:96px;
+  display:flex;align-items:center;overflow:hidden}
+.langs-tag{font-size:18px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sky);flex-shrink:0;padding:0 24px 0 44px;height:100%;
+  display:flex;align-items:center;background:var(--ink);position:relative;z-index:2}
+.langs-tag::after{content:'';position:absolute;right:-46px;top:0;bottom:0;width:46px;
+  background:linear-gradient(90deg,var(--ink),rgba(9,23,64,0))}
+.ticker{position:relative;flex:1;height:100%;overflow:hidden}
+.ticker-track{position:absolute;top:0;left:0;height:100%;display:flex;align-items:center;
+  white-space:nowrap;will-change:transform;animation:scroll var(--dur,60s) linear infinite}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick{display:inline-flex;align-items:center;font-size:29px;font-weight:400;color:#fff;padding-right:56px}
+.tick b{
+  background:var(--go-tint);color:var(--ink);   /* 11.5:1 */
+  font-weight:700;font-size:20px;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px 5px 14px;border-radius:8px;margin-right:16px;   /* the tracking needs the extra left pad */
+}
+.tick::after{content:'';width:8px;height:8px;border-radius:50%;
+  background:rgba(184,208,245,.4);margin-left:56px}
+
+@media(prefers-reduced-motion:reduce){
+  .ticker-track,.dot::after,.dot.beat::after,body.outage .dot,.chip,
+  .hero.flash::after,.r-row span{animation:none}
+  .phone-focus{transition:none}
+  .scan-sweep{animation:none}
+  .rail,.level{transition:none}
+}
+
+/* ---------- review chrome ---------- */
+.review{width:min(1160px,94vw);color:#8B93A1;font-size:12px}
+.rv-bar{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;   /* one line, always */
+  overflow-x:auto;scrollbar-width:none}
+.rv-bar::-webkit-scrollbar{display:none}
+.rv-label{white-space:nowrap;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#5E6674}
+.rv-group{display:flex;gap:1px}
+.rv-sep{width:1px;height:22px;background:#2B3240;margin:0 4px}
+.rv-scale{margin-left:auto;white-space:nowrap;color:#5E6674;font-variant-numeric:tabular-nums}
+.review button{font:inherit;font-weight:600;color:#C9D0DA;background:#232833;
+  border:1px solid #333A47;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.rv-group button:first-child{border-radius:8px 0 0 8px}
+.rv-group button:last-child{border-radius:0 8px 8px 0}
+.rv-group button:only-child{border-radius:8px}
+.review button:hover{background:#2C323F;color:#fff}
+.review button:focus-visible{outline:2px solid var(--go-tint);outline-offset:2px;z-index:1}
+.review button[aria-pressed="true"]{background:var(--go);border-color:var(--go);color:#fff}
 </style>
 </head>
 <body>
 
-<div class="stage">
+<div class="mount" id="mount">
+<div class="frame" id="frame">
 
-<aside class="narrative" id="narrative">
-  <div class="narr-photo-wrap">
-    <img class="narr-photo" id="narrPhoto" alt="">
-    <span class="narr-photo-ph" id="narrPhotoPh" hidden></span>
-  </div>
-  <div class="narr-body">
-    <div class="narr-head">
-      <span class="narr-step" id="narrStep"></span>
-      <span class="chip-cp" id="narrCp" hidden>Checkpoint</span>
+  <header class="topbar">
+    <svg class="crest" role="img" aria-label="KK Women's and Children's Hospital" xmlns="http://www.w3.org/2000/svg" viewBox="-0.600 -0.383 26.640 26.640"><g transform="translate(-274.15626,-437.81589)"><g id="g6515" transform="matrix(1.1629887,0,0,1.1629887,-44.684364,-76.334822)"><g transform="matrix(1.2488396,0,0,-1.2488396,221.05559,859.84807)"><g transform="translate(59.729,333.8948)"><path d="m 0,0 -0.013,0.149 -0.149,0.012 c -0.037,0.003 -3.769,0.308 -8.289,0.308 -4.521,0 -8.252,-0.305 -8.29,-0.308 L -16.89,0.149 -16.902,0 c -0.003,-0.036 -0.307,-3.769 -0.307,-8.289 0,-4.521 0.304,-8.252 0.307,-8.289 l 0.012,-0.149 0.149,-0.013 c 0.038,-0.002 3.769,-0.307 8.29,-0.307 4.52,0 8.252,0.305 8.289,0.307 l 0.149,0.013 0.013,0.149 c 0.003,0.037 0.307,3.768 0.307,8.289 C 0.307,-3.769 0.003,-0.036 0,0" style="fill:#568cd1;fill-rule:nonzero;stroke:none" /></g><g transform="translate(51.278,317.631)"><path d="m 0,0 c -3.812,0 -7.014,0.226 -7.696,0.278 -0.052,0.684 -0.279,3.884 -0.279,7.697 0,3.811 0.227,7.012 0.279,7.695 0.682,0.052 3.884,0.28 7.696,0.28 3.812,0 7.013,-0.228 7.696,-0.28 C 7.748,14.987 7.974,11.786 7.974,7.975 7.974,4.162 7.748,0.962 7.696,0.278 7.013,0.226 3.812,0 0,0" style="fill:#ffffff;fill-rule:nonzero;stroke:none" /></g></g><g transform="matrix(1.25,0,0,-1.25,290.05386,447.88958)"><path d="m 0,0 c -0.012,1.259 -1.293,2.393 -2.492,2.393 l -2.779,0 c -1.185,0 -2.638,-1.122 -2.665,-2.367 l -0.002,-2.878 2.503,0 0,2.736 5.437,0 L 0,0 z" style="fill:#f466ba;fill-rule:nonzero;stroke:none" /></g><g transform="matrix(1.25,0,0,-1.25,279.69173,448.16233)"><path d="m 0,0 c -1.26,-0.013 -2.394,-1.293 -2.394,-2.493 l 0,-2.778 c 0,-1.185 1.123,-2.639 2.367,-2.665 l 2.879,-0.002 0,2.503 -2.736,0 0,5.436 L 0,0 z" style="fill:#f466ba;fill-rule:nonzero;stroke:none" /></g><g transform="matrix(1.25,0,0,-1.25,280.09548,458.52383)"><path d="m 0,0 c 0.013,-1.259 1.293,-2.393 2.493,-2.393 l 2.778,0 c 1.185,0 2.639,1.122 2.665,2.367 l 0.003,2.878 -2.504,0 0,-2.736 -5.436,0 L 0,0 z" style="fill:#568cd1;fill-rule:nonzero;stroke:none" /></g><g transform="matrix(1.25,0,0,-1.25,290.45836,458.25108)"><path d="m 0,0 c 1.259,0.012 2.393,1.293 2.393,2.492 l 0,2.779 c 0,1.185 -1.122,2.638 -2.367,2.665 l -2.878,0.002 0,-2.503 2.737,0 0,-5.436 L 0,0 z" style="fill:#568cd1;fill-rule:nonzero;stroke:none" /></g></g></g></svg> <p class="board">KK Women's and Children's Hospital<span>Children's Emergency Admissions</span></p>
+    <div class="clock"><b id="clock">10:42</b><span id="date">SAT 16 AUG</span></div>
+  </header>
+
+  <div class="grid">
+
+    <div class="col">
+      <section class="panel onboard">
+        <h1 class="pitch" id="pitch">Stay with your child.<em>We will notify you.</em></h1>
+        <p class="pitch-sub">Scan the QR with your phone. Our web page will notify you.</p>
+        <div class="scan">
+          <div class="scan-top"><div class="qr"><svg id="qr" viewBox="0 0 41 41" shape-rendering="crispEdges" role="img" aria-label="QR code to the KKH admission companion"><rect width="41" height="41" fill="#fff"/><g fill="#091740"><rect x="4" y="4" width="7" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="17" y="4" width="8" height="1"/><rect x="26" y="4" width="2" height="1"/><rect x="30" y="4" width="7" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="12" y="5" width="1" height="1"/><rect x="15" y="5" width="1" height="1"/><rect x="17" y="5" width="1" height="1"/><rect x="19" y="5" width="4" height="1"/><rect x="27" y="5" width="1" height="1"/><rect x="30" y="5" width="1" height="1"/><rect x="36" y="5" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="6" y="6" width="3" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="12" y="6" width="5" height="1"/><rect x="18" y="6" width="1" height="1"/><rect x="23" y="6" width="2" height="1"/><rect x="27" y="6" width="2" height="1"/><rect x="30" y="6" width="1" height="1"/><rect x="32" y="6" width="3" height="1"/><rect x="36" y="6" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="6" y="7" width="3" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="13" y="7" width="1" height="1"/><rect x="16" y="7" width="2" height="1"/><rect x="20" y="7" width="3" height="1"/><rect x="26" y="7" width="3" height="1"/><rect x="30" y="7" width="1" height="1"/><rect x="32" y="7" width="3" height="1"/><rect x="36" y="7" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="6" y="8" width="3" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="14" y="8" width="1" height="1"/><rect x="19" y="8" width="1" height="1"/><rect x="21" y="8" width="1" height="1"/><rect x="23" y="8" width="1" height="1"/><rect x="25" y="8" width="1" height="1"/><rect x="28" y="8" width="1" height="1"/><rect x="30" y="8" width="1" height="1"/><rect x="32" y="8" width="3" height="1"/><rect x="36" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="13" y="9" width="2" height="1"/><rect x="16" y="9" width="1" height="1"/><rect x="18" y="9" width="2" height="1"/><rect x="21" y="9" width="1" height="1"/><rect x="23" y="9" width="4" height="1"/><rect x="28" y="9" width="1" height="1"/><rect x="30" y="9" width="1" height="1"/><rect x="36" y="9" width="1" height="1"/><rect x="4" y="10" width="7" height="1"/><rect x="12" y="10" width="1" height="1"/><rect x="14" y="10" width="1" height="1"/><rect x="16" y="10" width="1" height="1"/><rect x="18" y="10" width="1" height="1"/><rect x="20" y="10" width="1" height="1"/><rect x="22" y="10" width="1" height="1"/><rect x="24" y="10" width="1" height="1"/><rect x="26" y="10" width="1" height="1"/><rect x="28" y="10" width="1" height="1"/><rect x="30" y="10" width="7" height="1"/><rect x="13" y="11" width="1" height="1"/><rect x="15" y="11" width="1" height="1"/><rect x="18" y="11" width="1" height="1"/><rect x="21" y="11" width="1" height="1"/><rect x="24" y="11" width="1" height="1"/><rect x="5" y="12" width="3" height="1"/><rect x="9" y="12" width="2" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="16" y="12" width="1" height="1"/><rect x="19" y="12" width="1" height="1"/><rect x="21" y="12" width="1" height="1"/><rect x="23" y="12" width="3" height="1"/><rect x="34" y="12" width="2" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="6" y="13" width="1" height="1"/><rect x="9" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/><rect x="16" y="13" width="2" height="1"/><rect x="19" y="13" width="6" height="1"/><rect x="27" y="13" width="1" height="1"/><rect x="30" y="13" width="2" height="1"/><rect x="33" y="13" width="2" height="1"/><rect x="36" y="13" width="1" height="1"/><rect x="7" y="14" width="2" height="1"/><rect x="10" y="14" width="3" height="1"/><rect x="14" y="14" width="3" height="1"/><rect x="22" y="14" width="1" height="1"/><rect x="24" y="14" width="5" height="1"/><rect x="30" y="14" width="4" height="1"/><rect x="36" y="14" width="1" height="1"/><rect x="4" y="15" width="3" height="1"/><rect x="13" y="15" width="3" height="1"/><rect x="18" y="15" width="3" height="1"/><rect x="22" y="15" width="2" height="1"/><rect x="28" y="15" width="1" height="1"/><rect x="31" y="15" width="1" height="1"/><rect x="33" y="15" width="1" height="1"/><rect x="36" y="15" width="1" height="1"/><rect x="5" y="16" width="1" height="1"/><rect x="7" y="16" width="1" height="1"/><rect x="10" y="16" width="1" height="1"/><rect x="14" y="16" width="3" height="1"/><rect x="19" y="16" width="2" height="1"/><rect x="22" y="16" width="2" height="1"/><rect x="26" y="16" width="2" height="1"/><rect x="29" y="16" width="1" height="1"/><rect x="31" y="16" width="3" height="1"/><rect x="35" y="16" width="2" height="1"/><rect x="5" y="17" width="1" height="1"/><rect x="8" y="17" width="1" height="1"/><rect x="14" y="17" width="1" height="1"/><rect x="20" y="17" width="2" height="1"/><rect x="23" y="17" width="1" height="1"/><rect x="25" y="17" width="1" height="1"/><rect x="28" y="17" width="1" height="1"/><rect x="31" y="17" width="1" height="1"/><rect x="34" y="17" width="2" height="1"/><rect x="7" y="18" width="1" height="1"/><rect x="9" y="18" width="4" height="1"/><rect x="17" y="18" width="1" height="1"/><rect x="19" y="18" width="2" height="1"/><rect x="22" y="18" width="2" height="1"/><rect x="25" y="18" width="1" height="1"/><rect x="28" y="18" width="1" height="1"/><rect x="30" y="18" width="5" height="1"/><rect x="4" y="19" width="2" height="1"/><rect x="8" y="19" width="2" height="1"/><rect x="14" y="19" width="1" height="1"/><rect x="18" y="19" width="1" height="1"/><rect x="23" y="19" width="8" height="1"/><rect x="32" y="19" width="3" height="1"/><rect x="7" y="20" width="1" height="1"/><rect x="10" y="20" width="1" height="1"/><rect x="16" y="20" width="2" height="1"/><rect x="19" y="20" width="1" height="1"/><rect x="22" y="20" width="4" height="1"/><rect x="27" y="20" width="1" height="1"/><rect x="29" y="20" width="2" height="1"/><rect x="32" y="20" width="3" height="1"/><rect x="8" y="21" width="1" height="1"/><rect x="13" y="21" width="3" height="1"/><rect x="17" y="21" width="1" height="1"/><rect x="21" y="21" width="2" height="1"/><rect x="24" y="21" width="4" height="1"/><rect x="29" y="21" width="2" height="1"/><rect x="32" y="21" width="2" height="1"/><rect x="35" y="21" width="2" height="1"/><rect x="6" y="22" width="2" height="1"/><rect x="9" y="22" width="3" height="1"/><rect x="14" y="22" width="2" height="1"/><rect x="21" y="22" width="2" height="1"/><rect x="26" y="22" width="1" height="1"/><rect x="29" y="22" width="1" height="1"/><rect x="31" y="22" width="2" height="1"/><rect x="34" y="22" width="2" height="1"/><rect x="7" y="23" width="1" height="1"/><rect x="9" y="23" width="1" height="1"/><rect x="11" y="23" width="3" height="1"/><rect x="19" y="23" width="4" height="1"/><rect x="27" y="23" width="2" height="1"/><rect x="30" y="23" width="1" height="1"/><rect x="32" y="23" width="1" height="1"/><rect x="35" y="23" width="2" height="1"/><rect x="5" y="24" width="1" height="1"/><rect x="10" y="24" width="1" height="1"/><rect x="13" y="24" width="1" height="1"/><rect x="15" y="24" width="2" height="1"/><rect x="18" y="24" width="2" height="1"/><rect x="21" y="24" width="3" height="1"/><rect x="25" y="24" width="2" height="1"/><rect x="28" y="24" width="1" height="1"/><rect x="33" y="24" width="4" height="1"/><rect x="4" y="25" width="1" height="1"/><rect x="6" y="25" width="1" height="1"/><rect x="8" y="25" width="2" height="1"/><rect x="14" y="25" width="2" height="1"/><rect x="17" y="25" width="3" height="1"/><rect x="21" y="25" width="1" height="1"/><rect x="23" y="25" width="2" height="1"/><rect x="27" y="25" width="1" height="1"/><rect x="30" y="25" width="2" height="1"/><rect x="36" y="25" width="1" height="1"/><rect x="7" y="26" width="1" height="1"/><rect x="9" y="26" width="3" height="1"/><rect x="14" y="26" width="4" height="1"/><rect x="20" y="26" width="1" height="1"/><rect x="22" y="26" width="1" height="1"/><rect x="25" y="26" width="4" height="1"/><rect x="34" y="26" width="3" height="1"/><rect x="5" y="27" width="4" height="1"/><rect x="12" y="27" width="1" height="1"/><rect x="20" y="27" width="1" height="1"/><rect x="22" y="27" width="2" height="1"/><rect x="26" y="27" width="1" height="1"/><rect x="29" y="27" width="2" height="1"/><rect x="33" y="27" width="1" height="1"/><rect x="35" y="27" width="2" height="1"/><rect x="4" y="28" width="1" height="1"/><rect x="6" y="28" width="1" height="1"/><rect x="10" y="28" width="1" height="1"/><rect x="13" y="28" width="2" height="1"/><rect x="17" y="28" width="4" height="1"/><rect x="23" y="28" width="2" height="1"/><rect x="26" y="28" width="7" height="1"/><rect x="35" y="28" width="2" height="1"/><rect x="12" y="29" width="2" height="1"/><rect x="19" y="29" width="3" height="1"/><rect x="23" y="29" width="1" height="1"/><rect x="25" y="29" width="1" height="1"/><rect x="27" y="29" width="2" height="1"/><rect x="32" y="29" width="2" height="1"/><rect x="4" y="30" width="7" height="1"/><rect x="13" y="30" width="1" height="1"/><rect x="17" y="30" width="5" height="1"/><rect x="23" y="30" width="2" height="1"/><rect x="27" y="30" width="2" height="1"/><rect x="30" y="30" width="1" height="1"/><rect x="32" y="30" width="1" height="1"/><rect x="4" y="31" width="1" height="1"/><rect x="10" y="31" width="1" height="1"/><rect x="12" y="31" width="2" height="1"/><rect x="16" y="31" width="5" height="1"/><rect x="22" y="31" width="1" height="1"/><rect x="25" y="31" width="4" height="1"/><rect x="32" y="31" width="3" height="1"/><rect x="36" y="31" width="1" height="1"/><rect x="4" y="32" width="1" height="1"/><rect x="6" y="32" width="3" height="1"/><rect x="10" y="32" width="1" height="1"/><rect x="13" y="32" width="1" height="1"/><rect x="16" y="32" width="1" height="1"/><rect x="18" y="32" width="3" height="1"/><rect x="22" y="32" width="11" height="1"/><rect x="34" y="32" width="2" height="1"/><rect x="4" y="33" width="1" height="1"/><rect x="6" y="33" width="3" height="1"/><rect x="10" y="33" width="1" height="1"/><rect x="12" y="33" width="1" height="1"/><rect x="14" y="33" width="1" height="1"/><rect x="16" y="33" width="1" height="1"/><rect x="20" y="33" width="2" height="1"/><rect x="24" y="33" width="1" height="1"/><rect x="26" y="33" width="2" height="1"/><rect x="31" y="33" width="1" height="1"/><rect x="34" y="33" width="3" height="1"/><rect x="4" y="34" width="1" height="1"/><rect x="6" y="34" width="3" height="1"/><rect x="10" y="34" width="1" height="1"/><rect x="12" y="34" width="4" height="1"/><rect x="17" y="34" width="2" height="1"/><rect x="20" y="34" width="3" height="1"/><rect x="26" y="34" width="2" height="1"/><rect x="30" y="34" width="2" height="1"/><rect x="33" y="34" width="1" height="1"/><rect x="4" y="35" width="1" height="1"/><rect x="10" y="35" width="1" height="1"/><rect x="12" y="35" width="1" height="1"/><rect x="15" y="35" width="3" height="1"/><rect x="23" y="35" width="1" height="1"/><rect x="26" y="35" width="4" height="1"/><rect x="31" y="35" width="2" height="1"/><rect x="36" y="35" width="1" height="1"/><rect x="4" y="36" width="7" height="1"/><rect x="13" y="36" width="2" height="1"/><rect x="16" y="36" width="2" height="1"/><rect x="20" y="36" width="1" height="1"/><rect x="22" y="36" width="2" height="1"/><rect x="25" y="36" width="1" height="1"/><rect x="27" y="36" width="1" height="1"/><rect x="32" y="36" width="1" height="1"/><rect x="34" y="36" width="1" height="1"/></g></svg></div><svg class="phone" viewBox="0 0 148 206" aria-hidden="true"><defs><linearGradient id="scanBeam" gradientUnits="userSpaceOnUse" x1="46" y1="0" x2="-10" y2="0"><stop offset="0" stop-color="var(--go-tint)" stop-opacity=".34"/><stop offset="1" stop-color="var(--go-tint)" stop-opacity="0"/></linearGradient><clipPath id="beamClip"><path d="M46 86L-10 16L-10 186L46 116Z"/></clipPath></defs><path class="scan-beam" d="M46 86L-10 16L-10 186L46 116Z" fill="url(#scanBeam)"/><g clip-path="url(#beamClip)"><rect class="scan-sweep" x="-16" y="10" width="16" height="186" fill="var(--go-tint)"/></g><g fill="none" stroke="var(--sky)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="46" y="8" width="94" height="190" rx="16" fill="rgba(255,255,255,.06)"/><path d="M78 20h30"/></g><rect x="56" y="34" width="74" height="138" rx="7" fill="rgba(255,255,255,.10)"/><g class="phone-focus" fill="none" stroke="var(--go-tint)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M68 60V50h10"/><path d="M118 60V50h-10"/><path d="M68 146v10h10"/><path d="M118 146v10h-10"/></g><rect class="phone-chip" x="75" y="83" width="36" height="36" rx="7"/><text class="phone-lang" id="phoneLang" x="93" y="101" text-anchor="middle">EN</text></svg></div>
+          <ol class="steps">
+            <li class="step"><p>Scan QR</p></li><svg class="sep" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5L18 12L8 20.5Z"/></svg>
+            <li class="step"><p>Key number</p></li><svg class="sep" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5L18 12L8 20.5Z"/></svg>
+            <li class="step"><p>Wait anywhere</p></li>
+          </ol>
+        </div>
+      </section>
     </div>
-    <span class="narr-meta" id="narrMeta"></span>
-    <p class="narr-text" id="narrText"></p>
+
+    <div class="col">
+
+      <section class="panel queue">
+        <div class="q-main">
+          <div class="q-col past">
+            <p class="q-lab"><span class="dot past"></span>Just called</p>
+            <div class="q-side"><div class="r-row" id="recent"></div></div>
+          </div>
+          <div class="q-col now">
+            <p class="q-lab"><span class="dot"></span>Now serving</p>
+            <div class="hero" id="hero"><span class="n" id="heroNum">CE019</span></div>
+          </div>
+        </div>
+
+
+        <div class="q-col miss">
+          <p class="q-lab"><span class="dot miss"></span>Missed numbers</p>
+          <div class="missed">
+          <div class="m-head">
+            <svg viewBox="0 0 41.6 24"><path d="M18.4 12L1.3 22.7L1.3 1.3Z"/><path d="M40.3 12L23.2 22.7L23.2 1.3Z"/></svg>
+            <h2>Approach counter for assistance</h2>
+          </div>
+          <div class="m-row" id="missed"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel wards">
+        <div class="p-head"><span class="dot dot-ward"></span><h2>Ward availability</h2></div>
+        <div class="ward-row">
+          <article class="ward" data-avail="high"><p class="ward-letter">C</p><div class="level"></div></article>
+          <article class="ward" data-avail="mid"><p class="ward-letter">B2</p><div class="level"></div></article>
+          <article class="ward" data-avail="low"><p class="ward-letter">B1</p><div class="level"></div></article>
+          <article class="ward" data-avail="low"><p class="ward-letter">A</p><div class="level"></div></article>
+        </div>
+      </section>
+
+    </div>
   </div>
 
-  <div class="controls">
-    <button class="ctrl" id="btnBack">Back</button>
-    <span class="ctrl-hint" id="ctrlHint"></span>
-    <button class="ctrl primary" id="btnNext">Next</button>
-  </div>
-</aside>
+  <footer class="langs">
+    <span class="langs-tag">Also in</span>
+    <div class="ticker"><div class="ticker-track" id="track"></div></div>
+  </footer>
 
+
+</div>
+</div>
+
+<div class="review">
+  <div class="rv-bar">
+  <span class="rv-label">Queue</span>
+  <div class="rv-group">
+    <button id="callNext">Call next</button>
+    <button id="missOne">Miss a number</button>
+    <button id="clearMissed">Clear missed</button>
+  </div>
+  <span class="rv-sep"></span>
+  <span class="rv-label">State</span>
+  <div class="rv-group">
+    <button id="toggleOutage" aria-pressed="false">Feed outage</button>
+    <button id="toggleBand" aria-pressed="false">Busy hour</button>
+  </div>
+  <span class="rv-sep"></span>
+  <span class="rv-label">Sound</span>
+  <div class="rv-group">
+    <button id="toggleMute" aria-pressed="false">Muted</button>
+    <button id="playChime">Play chime</button>
+  </div>
+  <span id="scaleTag" class="rv-scale"></span>
+    </div>
 </div>
 
 <script>
-/* Narrative frames — Scene 1 to Scene 8. Photos sit beside this file: photo1.jpeg … photo8.jpeg
-   cp:true marks a checkpoint scene. */
-const PHOTO_EXTS = ['.jpeg', '.jpg', '.png', '.webp'];   /* tried in order */
+var frame=document.getElementById('frame'),mount=document.getElementById('mount'),
+    scaleTag=document.getElementById('scaleTag');
+function fit(){
+  var s=Math.min(Math.max(window.innerWidth-40,320)/1920,
+                 Math.max(window.innerHeight-170,240)/1080);
+  s=Math.max(s,0.12);
+  frame.style.transform='scale('+s+')';
+  mount.style.width=Math.round(1920*s)+'px';
+  mount.style.height=Math.round(1080*s)+'px';
+  scaleTag.textContent='shown at '+Math.round(s*100)+'%';
+}
+window.addEventListener('resize',fit);window.addEventListener('orientationchange',fit);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+fit();
 
-const NARR = [
- {"n": "Scene 1", "label": "Arrival screening", "photo": 1, "time": "8:00 a.m.", "place": "KKH Children’s Emergency Entrance", "cp": false, "text": "The journey begins at 8:00 a.m. The mother and her six-year-old child arrive at the hospital entrance. The child, pale and visibly weak from hours of vomiting, clings to the mother. They join a short queue outside the main doors. A nurse, wearing protective gear, approaches them to begin the mandatory screening questionnaire regarding recent travel and potential exposure to contagious diseases. The morning light is cool, and the atmosphere is quiet but anxious."},
- {"n": "Scene 2", "label": "Triage waiting", "photo": 2, "time": "8:45 a.m.", "place": "Triage Waiting Area", "cp": true, "text": "Forty-five minutes later, they have moved inside the hospital to the main Children’s Emergency triage waiting area. The mother holds a queue number (‘B124’) while seated in a busy, sterile room filled with other waiting families. The environment is warm and bright. The child, pale and defined as weak in Scene 1, rests their head on the mother’s lap, looking extremely uneasy. A passing staff member has just handed the child a small yellow bowl, as the child is vomiting intermittently while they wait to be called by the triage nurse."},
- {"n": "Scene 3", "label": "Payment and first vomit", "photo": 3, "time": "", "place": "Registration / Payment Counter", "cp": false, "text": "Following triage, they are directed to the administrative counter. While the mother is distracted attempting to make payment, the child, overwhelmed by nausea, suddenly vomits directly onto the linoleum floor next to the counter for the first time inside the department. The scene captures the distress and mess. One nurse immediately steps forward, maintaining the same uniform style seen in previous scenes, and hands the mother a clean blue emesis bag. Another staff member is already approaching with a yellow cleaning cart in the background."},
- {"n": "Scene 4", "label": "Doctor wait", "photo": 4, "time": "11:30 a.m. · 3.5 hours since arrival", "place": "Main Waiting Hall", "cp": true, "text": "The hours drag on. They are now in a massive, extremely crowded waiting hall, much larger than the area in Scene 2. The mother looks completely exhausted, rubbing her temples and checking her watch. The clock on the wall shows 11:30 a.m., emphasizing the long wait. The weak child is curled up, asleep on the mother’s lap, still clutching the blue emesis bag. The hall is packed with other families, creating an environment heavy with fatigue and distress under persistent fluorescent lights."},
- {"n": "Scene 5", "label": "Blood test delay", "photo": 5, "time": "", "place": "Procedure / Blood Draw Room", "cp": false, "text": "Finally, the child is seen by a doctor and a blood test is ordered. They move to a small, dedicated procedure room. The child, still weak and pale, is seated while a compassionate nurse inserts a butterfly needle into their arm. The child grimaces and turns away, squeezing the mother’s hand. Crucially, on a small side table next to the medical equipment, an emesis bowl containing fresh vomit is visible, confirming that the child vomited again while waiting for this procedure. The blue bag is still close by."},
- {"n": "Scene 6", "label": "Diagnosis and admission", "photo": 6, "time": "", "place": "Consultation Room", "cp": false, "text": "After another long wait for results, they are called into a clean, well-lit consultation room. A pediatrician in a white coat sits opposite the mother and child. The doctor reviews data on a computer screen and delivers the diagnosis: a severe Rotavirus infection. The mother looks serious and focused, holding the official ‘ADMISSION LETTER’ envelope and a small bottle of anti-nausea medicine the doctor just provided. The weak child is slumped in a chair, exhausted. The blue emesis bag remains visible on the desk, a constant reminder of the illness."},
- {"n": "Scene 7", "label": "Admission wait", "photo": 7, "time": "", "place": "Admissions Lobby / Pharmacy", "cp": true, "text": "The setting shifts to the main Admissions and Pharmacy lobby, which is described as severely crowded, hot, and difficult to navigate. The environment is chaotic and humid, with warm, dim lighting. The mother and child are standing, squeezed tightly between other families and stacks of luggage; there are absolutely no seats available. The child is completely slumped against the mother’s leg, too exhausted to stand. An admissions counter is visible, where a clerk is briefing a standing parent. The mother watches a queue monitor (‘Now Serving: A105’) nervously, holding ticket A130."},
- {"n": "Scene 8", "label": "Bed assignment", "photo": 8, "time": "", "place": "Admissions Counter", "cp": true, "text": "This is the final scene. The setting remains the crowded admissions counter from Scene 7. The mother is at the counter, looking very frustrated and pointing to her smartphone, which is dark. The stressed clerk (the same clerk from Scene 7) apologetically points to a computer screen that clearly displays ‘CALL MISSED’. The weak child is slumped, sleeping on a nearby wooden bench. The mother realizes the system failed to notify her over the noisy environment. However, the clerk is now typing the final information and handing the mother a slip that reads ‘WARD 7D, BED 22’, verbally confirming the bed is finally ready. A porter waits nearby with a wheelchair."}
+var DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'],
+    MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function tick(){
+  var d=new Date();
+  document.getElementById('clock').textContent=
+    String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('date').textContent=DAYS[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()];
+}
+tick();setInterval(tick,10000);
+wardAggregate();
+
+/* ---------- queue state ---------- */
+var cur=19, recent=[18,17,16,15,14,13], missed=[], MAXMISS=4, MAXRECENT=6,
+    hero=document.getElementById('hero'), heroNum=document.getElementById('heroNum'),
+    recentEl=document.getElementById('recent'), missedEl=document.getElementById('missed'),
+    reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function L(n){return 'CE'+('00'+(n%1000)).slice(-3)}   /* CE019 — padded, so the width never changes */
+
+/* one pulse = this block just changed. Continuous pulse stays with now-serving. */
+var SUBSIDISED=2;   /* the first two cards, C and B2 */
+function wardAggregate(){
+  var st=[].map.call(document.querySelectorAll('.ward-row .ward'),
+                     function(c){return c.dataset.avail});
+  var free=function(v){return v==='high'||v==='mid'};
+  /* green only when a SUBSIDISED ward is genuinely open. A subsidised ward
+     that is nearly full and beds that exist only in the private classes are
+     the same message to a family: something is there, but do not count on it. */
+  var agg = st.slice(0,SUBSIDISED).some(function(v){return v==='high'}) ? 'open'
+          : st.some(free)                                               ? 'limited'
+          :                                                               'none';
+  var panel=document.querySelector('.wards'), changed=panel.dataset.agg!==agg;
+  panel.dataset.agg=agg;
+  return changed;
+}
+
+function beat(sel){
+  if(reduce||document.body.classList.contains('outage')) return;   /* a dead feed has nothing to announce */
+  var d=document.querySelector(sel); if(!d) return;
+  d.classList.remove('beat'); void d.offsetWidth; d.classList.add('beat');
+  setTimeout(function(){d.classList.remove('beat')},1900);
+}
+function drawRecent(){
+  recentEl.innerHTML=recent.map(function(n){return '<span>'+L(n)+'</span>'}).join('');
+}
+function drawMissed(){
+  missedEl.innerHTML = missed.map(function(n){
+    return '<span class="chip">'+L(n)+'</span>';
+  }).join('');
+}
+heroNum.textContent=L(cur);   /* paint on load, not only on the first call */
+drawRecent();drawMissed();
+function callNext(){
+  if(document.body.classList.contains('outage')) return;
+  var advance=function(){
+    recent.unshift(cur);recent=recent.slice(0,MAXRECENT);
+    cur++;heroNum.textContent=L(cur);
+    drawRecent();beat('.dot.past');chime();
+    hero.classList.remove('turn');
+    hero.classList.add('arrive');      /* park it below, without transition */
+    void hero.offsetWidth;
+    hero.classList.remove('arrive');   /* then let it rise into place */
+    if(!reduce){
+      hero.classList.remove('flash');
+      void hero.offsetWidth;              /* restart the animation cleanly */
+      hero.classList.add('flash');
+      setTimeout(function(){hero.classList.remove('flash')},1000);
+    }
+  };
+  if(reduce){advance();return;}
+  hero.classList.add('turn');
+  setTimeout(advance,500);   /* matches --m-base */
+}
+function missOne(){
+  if(document.body.classList.contains('outage')) return;
+  /* the oldest still-listed number is the one nobody came for; it moves out
+     of "just called" so it never shows as both attended and missed */
+  var n=recent.pop();
+  if(n===undefined||missed.indexOf(n)>-1)return;
+  missed.unshift(n);
+  if(missed.length>MAXMISS)missed.pop();
+  drawRecent();drawMissed();beat('.dot.miss');
+}
+setInterval(callNext,9000);
+setInterval(function(){if(Math.random()<0.35)missOne()},27000);
+document.getElementById('callNext').addEventListener('click',callNext);
+document.getElementById('missOne').addEventListener('click',missOne);
+document.getElementById('clearMissed').addEventListener('click',function(){missed=[];drawMissed()});
+
+/* ---------- ticker ---------- */
+var TICKS=[
+  {lang:'中文',   text:'扫描二维码，输入排队号码。若错过号码，请到柜台。',f:"'Noto Sans SC',sans-serif"},
+  {lang:'Melayu', text:'Imbas kod, masukkan nombor giliran. Jika terlepas giliran, datang ke kaunter.',f:"var(--font-body)"},
+  {lang:'தமிழ்',  text:'குறியீட்டை ஸ்கேன் செய்யவும். எண்ணைத் தவறவிட்டால் கவுண்டரை அணுகவும்.',f:"'Noto Sans Tamil',sans-serif"},
+  {lang:'English',text:'Missed your number? Approach the counter.',f:"var(--font-body)"}
 ];
-let narr = 0;
-
-function renderNarrative(){
-  const f = NARR[narr];
-  const img = document.getElementById('narrPhoto');
-  const ph = document.getElementById('narrPhotoPh');
-  if(img){
-    let tryExt = 0;
-    img.style.opacity = 0;
-    img.onload = ()=>{ img.style.opacity = 1; if(ph) ph.hidden = true; };
-    img.onerror = ()=>{
-      if(++tryExt < PHOTO_EXTS.length){ img.src = 'photo' + f.photo + PHOTO_EXTS[tryExt]; return; }
-      img.style.opacity = 0;
-      if(ph){ ph.hidden = false; ph.textContent = 'Photo ' + f.photo + ' \u2014 add photo' + f.photo + PHOTO_EXTS[0] + ' next to this file'; }
-    };
-    if(ph) ph.hidden = true;
-    img.src = 'photo' + f.photo + PHOTO_EXTS[0];
-  }
-  const step = document.getElementById('narrStep');
-  const meta = document.getElementById('narrMeta');
-  const cp   = document.getElementById('narrCp');
-  const text = document.getElementById('narrText');
-  if(step) step.textContent = f.n + ' \u00B7 ' + f.label;
-  if(cp) cp.hidden = !f.cp;
-  if(meta) meta.textContent = [f.time, f.place].filter(Boolean).join(' \u2014 ');
-  if(text) text.textContent = f.text;
-
-  document.getElementById('btnBack').disabled = narr === 0;
-  document.getElementById('btnNext').disabled = narr === NARR.length - 1;
-  document.getElementById('ctrlHint').textContent =
-    (narr + 1) + ' of ' + NARR.length + (narr === NARR.length - 1 ? ' \u00B7 End of the journey' : '');
-}
-
-function go(delta){
-  const n = narr + delta;
-  if(n < 0 || n > NARR.length - 1) return;
-  narr = n;
-  renderNarrative();
-}
-
-document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
-document.getElementById('btnNext').addEventListener('click', ()=>go(1));
-document.addEventListener('keydown', e=>{
-  if(e.key === 'ArrowRight') go(1);
-  else if(e.key === 'ArrowLeft') go(-1);
+var track=document.getElementById('track');
+(function build(){
+  var html='';
+  for(var p=0;p<2;p++)TICKS.forEach(function(t){
+    html+='<span class="tick" style="font-family:'+t.f+'"><b>'+t.lang+'</b>'+t.text+'</span>';
+  });
+  track.innerHTML=html;
+  requestAnimationFrame(function(){track.style.setProperty('--dur',(track.scrollWidth/2/95)+'s')});
+})();
+window.addEventListener('resize',function(){
+  track.style.setProperty('--dur',(track.scrollWidth/2/95)+'s');
 });
 
-renderNarrative();
-</script>
+/* ---------- review controls ---------- */
+/* Alternative headlines, so the wording can be judged at real size. */
+var outage=false;
+document.getElementById('toggleOutage').addEventListener('click',function(){
+  outage=document.body.classList.toggle('outage');
+  this.setAttribute('aria-pressed',outage);
+  this.textContent=outage?'Restore feed':'Feed outage';
+});
 
+/* ============================================================
+   POSTER LANGUAGES — the panel itself rotates, so a Tamil or Malay
+   reader gets the same instruction the English reader gets, rather
+   than a translated footnote at the bottom of the board.
+   Translations need a native check before this goes live.
+   ============================================================ */
+var LANGS=[
+ {id:'en', f:"var(--font-body)", ph:48, ps:32, pt:28, tag:"EN", tagSize:15,
+  a:"Stay with your child.", b:"We will notify you.",
+  sub:"Scan the QR with your phone. Our web page will notify you.",
+  steps:['Scan QR','Key number','Wait anywhere']},
+ {id:'zh', f:"'Noto Sans SC',sans-serif", ph:46, ps:30, pt:26, tag:"中文", tagSize:13,
+  a:"陪着您的孩子。", b:"我们会通知您。",
+  sub:"用手机扫描二维码。我们的网页会通知您。",
+  steps:['扫描二维码','输入号码','随处等候']},
+ {id:'ms', f:"var(--font-body)", ph:38, ps:27, pt:24, tag:"BM", tagSize:15,
+  a:"Temani anak anda.", b:"Kami akan maklumkan anda.",
+  sub:"Imbas kod QR dengan telefon anda. Laman web kami akan memaklumkan anda.",
+  steps:['Imbas QR','Masukkan nombor','Tunggu di mana-mana']},
+ {id:'ta', f:"'Noto Sans Tamil',sans-serif", ph:32, ps:25, pt:22, tag:"தமிழ்", tagSize:11,
+  a:"உங்கள் குழந்தையுடன் இருங்கள்.", b:"நாங்கள் உங்களுக்குத் தெரிவிப்போம்.",
+  sub:"உங்கள் தொலைபேசியில் QR ஐ ஸ்கேன் செய்யவும். எங்கள் இணையப் பக்கம் தெரிவிக்கும்.",
+  steps:['QR ஸ்கேன்','எண் உள்ளிடவும்','எங்கும் காத்திருங்கள்']}
+];
+var li=0, pitchEl=document.getElementById('pitch'),
+    subEl=document.querySelector('.pitch-sub'),
+    stepEls=[].slice.call(document.querySelectorAll('.step p'));
+function paintLang(){
+  var L=LANGS[li];
+  pitchEl.style.fontFamily=subEl.style.fontFamily=L.f;
+  pitchEl.style.fontSize=L.ph+'px';
+  subEl.style.fontSize=L.ps+'px';
+  pitchEl.innerHTML=L.a+'<em>'+L.b+'</em>';
+  subEl.textContent=L.sub;
+  var pl=document.getElementById('phoneLang');
+  pl.textContent=L.tag; pl.style.fontFamily=L.f; pl.style.fontSize=L.tagSize+'px';
+  stepEls.forEach(function(el,i){
+    el.style.fontFamily=L.f; el.style.fontSize=L.pt+'px'; el.textContent=L.steps[i];
+  });
+}
+paintLang();
+setInterval(function(){
+  if(reduce){ li=(li+1)%LANGS.length; paintLang(); return; }
+  document.body.classList.add('lang-out');
+  setTimeout(function(){
+    li=(li+1)%LANGS.length; paintLang();
+    document.body.classList.remove('lang-out');
+  }, 880);
+}, 9000);
+
+/* ============================================================
+   CHIME — one warm pulse when a number is called.
+   A wooden knock: 262 Hz with its octave, struck and gone in 350ms.
+   Low tones are heard without triggering the startle response.
+   Muted on load, because a board that starts making noise the moment it is
+   opened is the wrong default in a waiting room. Unmute is a deliberate act.
+   Browsers also block audio until the page has been interacted with, so the
+   unmute click is what unlocks the audio context during review.
+   ============================================================ */
+var muted=true, actx=null;   /* starts silent */
+function chime(force){
+  if(muted&&!force) return;   /* Play previews even while muted */
+  try{
+    if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended') actx.resume();
+    /* An original warm chime, not a copy of anyone's sonic logo.
+       A D4 fundamental doubled 0.7 Hz apart so the two beat slowly against
+       each other — that slow beating is what reads as warmth rather than a
+       flat electronic tone. A fifth and an octave sit above at low gain and
+       fade first, leaving the fundamental to ring out. Nothing above 600 Hz. */
+    var t=actx.currentTime;
+    [[293.7,1,1.15],[294.4,.9,1.15],[440.0,.30,.75],[587.3,.14,.55]].forEach(function(pt){
+      var o=actx.createOscillator(), g=actx.createGain();
+      o.type='sine'; o.frequency.value=pt[0];
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(.16*pt[1],t+.03);   /* soft swell */
+      g.gain.exponentialRampToValueAtTime(.0001,t+pt[2]);     /* upper partials fade first */
+      o.start(t); o.stop(t+pt[2]+.05);
+    });
+  }catch(e){}
+}
+
+document.getElementById('toggleMute').addEventListener('click',function(){
+  muted=!muted;
+  this.setAttribute('aria-pressed',!muted);
+  this.textContent=muted?'Muted':'Unmuted';
+  if(!muted) chime(true);      /* the click also unlocks audio */
+});
+document.getElementById('playChime').addEventListener('click',function(){chime(true)});
+
+var busy=false;
+document.getElementById('toggleBand').addEventListener('click',function(){
+  busy=!busy;
+  var list=busy?['mid','low','low','low']:['high','mid','low','low'];
+  document.querySelectorAll('.ward-row .ward').forEach(function(el,i){el.dataset.avail=list[i]});
+  wardAggregate();
+  beat('.dot.dot-ward');
+  this.setAttribute('aria-pressed',busy);
+  this.textContent=busy?'Normal hour':'Busy hour';
+});
+</script>
 </body>
 </html>
